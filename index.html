@@ -116,9 +116,19 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="grey"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="grey"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
     
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="grey"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
     
@@ -126,9 +136,9 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="grey"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="grey"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
     
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
     
@@ -383,8 +393,8 @@
 
 
 
-<p><img src="media/crisp_logo.png" alt="CRISP Controllers Logo" /></p>
-<h1 id="crisp-cartesian-impedance-and-operational-space-control-for-learning-based-policies">CRISP - <strong>C</strong>a<strong>R</strong>tesian <strong>I</strong>mpedance and Operational <strong>S</strong>pace Control for Learning-based <strong>P</strong>olicies</h1>
+<p><img src="media/crisp_logo.png" alt="CRISP Controllers Logo"/></p>
+<h1 id="crisp-cartesian-impedance-and-operational-space-control-for-learning-based-policies">CRISP - <strong>C</strong>a<strong>R</strong>tesian <strong>I</strong>mpedance and Operational <strong>SP</strong>ace Control for Learning-based Policies</h1>
 <p><em>Authors: Daniel San Jose Pro, Oliver Hausdoerfer, Ralf Roemer, Martin Schuck and Angela Schoellig.</em></p>
 <blockquote>
 <p>Collection of C++ controllers for torque-based control for manipulators compatible with <code>ros2_control</code>, including Operational Space Control and Cartesian Impedance Control. </p>
@@ -393,14 +403,14 @@
 <table>
 <thead>
 <tr>
-<th style="text-align: center;"><video src="media/pap_demo.mp4" controls="true" loop="true" autoplay="true" width="840"/></th>
-<th style="text-align: center;"><video src="media/policy.mp4" controls="true" loop="true" autoplay="true" width="840"/></th>
+<th style="text-align: center;"><video src="media/pap_demo.mp4" controls="true" loop="true" autoplay="true" width="800"/></th>
+<th style="text-align: center;"><video src="media/policy.mp4" controls="true" loop="true" autoplay="true" width="800"/></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;">Recording trajectories with <a href="https://github.com/utiasDSL/crisp_gym">crisp_gym <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span></a> (video speed x1).</td>
-<td style="text-align: center;">Diffusion Policy trained deployed from the same demonstrations (video speed x1).</td>
+<td style="text-align: center;">Robot teleoperated using a Follower-Leader system in <a href="https://github.com/utiasDSL/crisp_gym">crisp_gym <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span></a></td>
+<td style="text-align: center;">Diffusion Policy trained and deployed from the same demonstrations.</td>
 </tr>
 </tbody>
 </table>
@@ -423,14 +433,14 @@
 <table>
 <thead>
 <tr>
-<th style="text-align: center;"><img src="media/franka_eight_reduced.gif" width="180"/> <img src="media/franka_ns_reduced.gif" width="180"/></th>
-<th style="text-align: center;"><img src="media/franka_teleop.gif" width="640"/></th>
+<th style="text-align: center;"><img alt="franka_eight_reduced" src="media/franka_eight_reduced.gif" /><img alt="franka_ns_reduced" src="media/franka_ns_reduced.gif" /></th>
+<th style="text-align: center;"><img alt="vicon" src="media/franka_teleop.gif" /></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: center;"><em>Real robot following a target and being disturbed (contact) + null space control demonstration</em></td>
-<td style="text-align: center;"><em>Demonstration using a cartesian controller teleoperated using Vicon tracking system (video speed x4)</em></td>
+<td style="text-align: center;"><em>Demonstration using a cartesian controller teleoperated using Vicon tracking system (Speed x4)</em></td>
 </tr>
 </tbody>
 </table>
@@ -442,12 +452,12 @@ Our controllers incorporate friction compensation, joint limit avoidance, and er
 <p>Designed for fast integration and real-time control, our implementation lowers the barrier to deploying learning-based algorithms on <code>ROS2</code>-compatible platforms.</p>
 <h2 id="features">Features</h2>
 <ul>
-<li>🤖 Cartesian Impedance Controller as well as Operational Space Controller for torque-based control.  </li>
+<li>🤖 Operational Space Controller as well as Cartesian Impedance Controller for torque-based control.  </li>
 <li>🚫 No MoveIt or complicated path-planning, just a simple C++ <code>ros2_controller</code>. Ready to use.  </li>
 <li>⚙️ Dynamically and highly parametrizable: powered by the <code>generate_parameter_library</code> you can modify stiffness and more during operation.  </li>
-<li>🐍 Python interface to move your ROS2 robot around without having to think about topics, spinning, and more ROS2 concepts but without loosing the powerful ROS2 API. Check <a href="https://github.com/utiasDSL/crisp_py">crisp_py <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span></a> for more information and examples.</li>
-<li>🔁 Gym environment with utilities to record trajectories in LeRobotFormat and deploy trained policies. Check <a href="https://github.com/utiasDSL/crisp_gym">crisp_gym <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span></a>.</li>
-<li>❓ Demos showcasing how to use the controller with FR3 of Franka Emika in single and bimanual setup. Check the <a href="https://github.com/utiasDSL/crisp_controllers_demos">crisp_controller_demos <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span></a>.</li>
+<li>🐍 Python interface to move your ROS2 robot around without having to think about topics, spinning, and more ROS2 concepts but without loosing the powerful ROS2 API. Check <a href="https://github.com/utiasDSL/crisp_py">crisp_py</a> for more information and examples.</li>
+<li>🔁 Gym environment with utilities to record trajectories in LeRobotFormat and deploy trained policies. Check <a href="https://github.com/utiasDSL/crisp_gym">crisp_gym</a>.</li>
+<li>❓ Demos showcasing how to use the controller with FR3 of Franka Emika in single and bimanual setup. Check the <a href="https://github.com/utiasDSL/crisp_controllers_demos">crisp_controller_demos</a>.</li>
 </ul>
 <h2 id="citing">Citing</h2>
 <pre><code class="language-bibtex">@inproceeding{
