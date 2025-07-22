@@ -51,12 +51,21 @@ generate_parameter_library(
   src/torque_feedback_controller.yaml
 )
 
+generate_parameter_library(
+  wrench_feedback_controller_parameters
+  src/wrench_feedback_controller.yaml
+)
+
 add_library(
         ${PROJECT_NAME}
         SHARED
         src/cartesian_impedance_controller.cpp
         src/pose_broadcaster.cpp
         src/torque_feedback_controller.cpp
+        src/wrench_feedback_controller.cpp
+        src/utils/kinematics_utils.cpp
+        src/utils/nullspace_control.cpp
+        src/utils/torque_utils.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -78,6 +87,7 @@ target_link_libraries(${PROJECT_NAME}
     cartesian_impedance_controller_parameters
     pose_broadcaster_parameters
     torque_feedback_controller_parameters
+    wrench_feedback_controller_parameters
 )
 
 
@@ -153,8 +163,53 @@ if(BUILD_TESTING)
   target_include_directories(test_filters PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   )
-  target_link_libraries(test_pseudo_inverse
+  target_link_libraries(test_filters
     Eigen3::Eigen
+  )
+
+  # Test for torque feedback controller (simplified to avoid linking issues)
+  ament_add_gtest(test_torque_feedback_controller
+    tests/test_torque_feedback_controller.cpp
+  )
+  target_include_directories(test_torque_feedback_controller PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  )
+  target_link_libraries(test_torque_feedback_controller
+    Eigen3::Eigen
+  )
+
+  # Test for feedback control core utilities
+  ament_add_gtest(test_feedback_control_core
+    tests/test_feedback_control_core.cpp
+  )
+  target_include_directories(test_feedback_control_core PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  )
+  target_link_libraries(test_feedback_control_core
+    Eigen3::Eigen
+  )
+
+  # Test for nullspace controller utilities
+  ament_add_gtest(test_nullspace_controller
+    tests/test_nullspace_controller.cpp
+  )
+  target_include_directories(test_nullspace_controller PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  )
+  target_link_libraries(test_nullspace_controller
+    Eigen3::Eigen
+  )
+
+  # Test for wrench feedback controller
+  ament_add_gtest(test_wrench_feedback_controller
+    tests/test_wrench_feedback_controller.cpp
+  )
+  target_include_directories(test_wrench_feedback_controller PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  )
+  target_link_libraries(test_wrench_feedback_controller
+    Eigen3::Eigen
+    geometry_msgs::geometry_msgs__rosidl_typesupport_cpp
   )
 endif()
 

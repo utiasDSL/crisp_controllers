@@ -1,4 +1,4 @@
-#include <crisp_controllers/torque_feedback_controller.hpp>
+#include <crisp_controllers/wrench_feedback_controller.hpp>
 #include <crisp_controllers/utils/friction_model.hpp>
 #include <crisp_controllers/utils/kinematics_utils.hpp>
 #include <crisp_controllers/utils/nullspace_control.hpp>
@@ -9,11 +9,10 @@
 #include <rclcpp/logging.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-
 namespace crisp_controllers {
 
 controller_interface::InterfaceConfiguration
-TorqueFeedbackController::command_interface_configuration() const {
+WrenchFeedbackController::command_interface_configuration() const {
   controller_interface::InterfaceConfiguration config;
   config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
   for (const auto &joint_name : joint_names_) {
@@ -23,7 +22,7 @@ TorqueFeedbackController::command_interface_configuration() const {
 }
 
 controller_interface::InterfaceConfiguration
-TorqueFeedbackController::state_interface_configuration() const {
+WrenchFeedbackController::state_interface_configuration() const {
   controller_interface::InterfaceConfiguration config;
   config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
   for (const auto &joint_name : joint_names_) {
@@ -39,7 +38,7 @@ TorqueFeedbackController::state_interface_configuration() const {
 }
 
 controller_interface::return_type
-TorqueFeedbackController::update(const rclcpp::Time & /*time*/,
+WrenchFeedbackController::update(const rclcpp::Time & /*time*/,
                                  const rclcpp::Duration & /*period*/) {
   // Update joint states
   for (int i = 0; i < num_joints_; i++) {
@@ -51,9 +50,12 @@ TorqueFeedbackController::update(const rclcpp::Time & /*time*/,
   kinematics_utils::computeForwardKinematicsAndJacobian(
       model_, data_, q_, dq_, J_, end_effector_frame_id_);
 
-  // Apply threshold to external torques based on vector magnitude
-  Eigen::VectorXd tau_ext_thresholded = torque_utils::applyTorqueThreshold(
-      tau_ext_, params_.torque_threshold);
+  // Apply threshold to external wrench based on vector magnitude
+  Eigen::VectorXd wrench_ext_thresholded = torque_utils::applyTorqueThreshold(
+      wrench_ext_, params_.wrench_threshold);
+
+  // Convert wrench to joint torques using Jacobian transpose: tau = J^T * wrench
+  Eigen::VectorXd tau_from_wrench = J_.transpose() * wrench_ext_thresholded;
 
   // Create nullspace parameters structure
   nullspace_control::NullspaceParams ns_params;
@@ -67,21 +69,20 @@ TorqueFeedbackController::update(const rclcpp::Time & /*time*/,
   Eigen::VectorXd tau_nullspace = nullspace_control::computeNullspaceControl(
       q_, dq_, q_init_, J_, model_, data_, ns_params, nullspace_weights_,
       get_node()->get_logger());
-  
-  if (tau_nullspace.size() == 0) {
-    return controller_interface::return_type::ERROR;
-  }
-  
-  auto tau_d = -params_.k_fb * tau_ext_thresholded - params_.kd * dq_;
+
+  // Compute feedback and friction torques
+  auto tau_d = -params_.k_fb * tau_from_wrench - params_.kd * dq_;
   auto tau_f = get_friction(dq_, friction_fp1_, friction_fp2_, friction_fp3_);
 
-  // Save commanded torques for wrench computation
+  // Total commanded torques
   tau_commanded_ = tau_d + tau_f + tau_nullspace;
 
+  // Send commands to joints
   for (int i = 0; i < num_joints_; i++) {
     command_interfaces_[i].set_value(tau_commanded_[i]);
   }
 
+  // Update dynamic parameters
   params_listener_->refresh_dynamic_parameters();
   params_ = params_listener_->get_params();
   
@@ -93,10 +94,10 @@ TorqueFeedbackController::update(const rclcpp::Time & /*time*/,
   return controller_interface::return_type::OK;
 }
 
-CallbackReturn TorqueFeedbackController::on_init() {
+CallbackReturn WrenchFeedbackController::on_init() {
   // Initialize parameters
   params_listener_ =
-      std::make_shared<torque_feedback_controller::ParamListener>(get_node());
+      std::make_shared<wrench_feedback_controller::ParamListener>(get_node());
   params_listener_->refresh_dynamic_parameters();
   params_ = params_listener_->get_params();
 
@@ -110,28 +111,30 @@ CallbackReturn TorqueFeedbackController::on_init() {
   tau_commanded_ = Eigen::VectorXd::Zero(num_joints_);
   q_init_ = Eigen::VectorXd::Zero(num_joints_);
 
-  tau_ext_ = Eigen::VectorXd::Zero(num_joints_);
+  // Initialize 6D wrench vector (3 forces + 3 torques)
+  wrench_ext_ = Eigen::VectorXd::Zero(6);
 
   nullspace_weights_ = Eigen::VectorXd::Ones(num_joints_);
   for (size_t i = 0; i < joint_names_.size(); ++i) {
     nullspace_weights_[i] = params_.nullspace.weights.joints_map.at(joint_names_[i]).value;
   }
 
+  // Initialize friction parameters
   friction_fp1_ = Eigen::Map<const Eigen::VectorXd>(params_.friction.fp1.data(), params_.friction.fp1.size());
   friction_fp2_ = Eigen::Map<const Eigen::VectorXd>(params_.friction.fp2.data(), params_.friction.fp2.size());
   friction_fp3_ = Eigen::Map<const Eigen::VectorXd>(params_.friction.fp3.data(), params_.friction.fp3.size());
 
-
-  joint_sub_ = get_node()->create_subscription<sensor_msgs::msg::JointState>(
-      params_.joint_source_topic,
+  // Create wrench subscriber
+  wrench_sub_ = get_node()->create_subscription<geometry_msgs::msg::WrenchStamped>(
+      params_.wrench_source_topic,
       rclcpp::QoS(1).best_effort().keep_last(1).durability_volatile(),
-      std::bind(&TorqueFeedbackController::target_joint_callback_, this,
+      std::bind(&WrenchFeedbackController::target_wrench_callback_, this,
                 std::placeholders::_1));
 
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn TorqueFeedbackController::on_configure(
+CallbackReturn WrenchFeedbackController::on_configure(
     const rclcpp_lifecycle::State & /*previous_state*/) {
   
   // Get robot description for pinocchio model
@@ -166,68 +169,46 @@ CallbackReturn TorqueFeedbackController::on_configure(
   // Get end-effector frame ID
   end_effector_frame_id_ = model_.getFrameId(params_.end_effector_frame);
   
-  // Initialize jacobian matrix
+  // Initialize jacobian matrix (6x nv for 6D wrench)
   J_ = Eigen::MatrixXd::Zero(6, model_.nv);
-  
-  wrench_pub_ = get_node()->create_publisher<geometry_msgs::msg::WrenchStamped>(
-      "~/commanded_wrench", rclcpp::QoS(10));
-  
-  wrench_timer_ = get_node()->create_wall_timer(
-      std::chrono::milliseconds(5),
-      std::bind(&TorqueFeedbackController::publish_wrench_callback_, this));
 
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn TorqueFeedbackController::on_activate(
+CallbackReturn WrenchFeedbackController::on_activate(
     const rclcpp_lifecycle::State & /*previous_state*/) {
+  // Initialize joint states and record initial positions
   for (int i = 0; i < num_joints_; i++) {
     q_[i] = state_interfaces_[i].get_value();
     dq_[i] = state_interfaces_[num_joints_ + i].get_value();
-    tau_ext_[i] = 0.0;
     q_init_[i] = q_[i];
   }
+
+  // Initialize external wrench to zero
+  wrench_ext_.setZero();
 
   return CallbackReturn::SUCCESS;
 }
 
-controller_interface::CallbackReturn TorqueFeedbackController::on_deactivate(
+controller_interface::CallbackReturn WrenchFeedbackController::on_deactivate(
     const rclcpp_lifecycle::State & /*previous_state*/) {
   return CallbackReturn::SUCCESS;
 }
 
-void TorqueFeedbackController::target_joint_callback_(
-    const sensor_msgs::msg::JointState::SharedPtr msg) {
-  for (size_t i = 0; i < msg->effort.size(); i++) {
-    if ((int)i < num_joints_) {
-      tau_ext_[i] = msg->effort[i];
-    }
-  }
-}
-
-void TorqueFeedbackController::publish_wrench_callback_() {
-  // Convert joint torques to Cartesian wrench using Jacobian transpose
-  // F = J^T * tau
-  Eigen::VectorXd wrench_commanded = J_.transpose() * tau_commanded_;
-  
-  // Create and publish wrench message
-  auto wrench_msg = geometry_msgs::msg::WrenchStamped();
-  wrench_msg.header.stamp = get_node()->get_clock()->now();
-  wrench_msg.header.frame_id = params_.end_effector_frame;
-  
-  wrench_msg.wrench.force.x = wrench_commanded[0];
-  wrench_msg.wrench.force.y = wrench_commanded[1];
-  wrench_msg.wrench.force.z = wrench_commanded[2];
-  wrench_msg.wrench.torque.x = wrench_commanded[3];
-  wrench_msg.wrench.torque.y = wrench_commanded[4];
-  wrench_msg.wrench.torque.z = wrench_commanded[5];
-  
-  wrench_pub_->publish(wrench_msg);
+void WrenchFeedbackController::target_wrench_callback_(
+    const geometry_msgs::msg::WrenchStamped::SharedPtr msg) {
+  // Convert geometry_msgs::WrenchStamped to 6D Eigen vector
+  wrench_ext_[0] = msg->wrench.force.x;
+  wrench_ext_[1] = msg->wrench.force.y;
+  wrench_ext_[2] = msg->wrench.force.z;
+  wrench_ext_[3] = msg->wrench.torque.x;
+  wrench_ext_[4] = msg->wrench.torque.y;
+  wrench_ext_[5] = msg->wrench.torque.z;
 }
 
 } // namespace crisp_controllers
 
 #include "pluginlib/class_list_macros.hpp"
 // NOLINTNEXTLINE
-PLUGINLIB_EXPORT_CLASS(crisp_controllers::TorqueFeedbackController,
+PLUGINLIB_EXPORT_CLASS(crisp_controllers::WrenchFeedbackController,
                        controller_interface::ControllerInterface)

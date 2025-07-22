@@ -1,0 +1,88 @@
+wrench_feedback_controller:
+  use_fake_hardware:
+    type: bool
+    default_value: false
+    description: "Whether to use fake hardware"
+  joints:
+    type: string_array
+    default_value: []
+    description: "Names of the joints"
+  k_fb:
+    type: double
+    default_value: 0.6
+    description: "Feedback coefficient for wrench control."
+    validation:
+      bounds<>: [0.1, 1.0]
+  kd:
+    type: double
+    default_value: 0.1
+    description: "Damping for the joints."
+    validation:
+      bounds<>: [0.0, 1.0]
+  wrench_source_topic:
+    type: string
+    default_value: "target_wrench"
+    description: "Target wrench topic to track"
+  end_effector_frame:
+    type: string
+    description: "Name of the end-effector frame for jacobian computation"
+  wrench_threshold:
+    type: double
+    default_value: 0.1
+    description: "Minimum wrench threshold below which wrenches are ignored"
+    validation:
+      bounds<>: [0.0, 10.0]
+
+  nullspace:
+    stiffness:
+      type: double
+      default_value: 0.5
+      description: "Stiffness of the nullspace controller to maintain joint positions"
+      validation:
+        bounds<>: [0.0, 50.0]
+    damping:
+      type: double
+      default_value: -1.0
+      description: "Damping of the nullspace controller. If negative, then 2*sqrt(stiffness) is used"
+      validation:
+        bounds<>: [-1.0, 50.0]
+    weights:
+      __map_joints:
+        value:
+          type: double
+          default_value: 1.0
+          description: "Weights for each joint for the nullspace control"
+          validation:
+            bounds<>: [0.0, 10.0]
+    max_tau:
+      type: double
+      default_value: 2.0
+      description: "Maximum torque value that can be applied in the nullspace"
+      validation:
+        bounds<>: [0.0, 50.0]
+    regularization:
+      type: double
+      default_value: 0.000001
+      description: "Regularization value for the pseudo-inverse"
+      validation:
+        bounds<>: [0.000001, 0.0001]
+    projector_type:
+      type: string
+      default_value: "kinematic"
+      description: "Which type of nullspace projector should be used: kinematic, dynamic or none"
+      validation:
+        one_of<>: [["kinematic", "dynamic", "none"]]
+
+  friction:
+    fp1:
+      type: double_array
+      default_value: [0.54615, 0.87224, 0.64068, 1.2794, 0.83904, 0.30301, 0.56489]
+      description: "Friction parameters part 1"
+    fp2:
+      type: double_array
+      default_value: [5.1181, 9.0657, 10.136, 5.5903, 8.3469, 17.133, 10.336]
+      description: "Friction parameters part 2"
+    fp3:
+      type: double_array
+      default_value: [0.039533, 0.025882, -0.04607, 0.036194, 0.026226, -0.021047, 0.0035526]
+      description: "Friction parameters part 3"
