@@ -10,6 +10,8 @@
       
       
       
+        <link rel="next" href="getting_started/">
+      
       
       <link rel="icon" href="images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
@@ -42,6 +44,8 @@
       
     
     
+      <link rel="stylesheet" href="stylesheets/extra.css">
+    
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -68,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#crisp-ros2-compatible-compliant-controllers-for-learning-based-manipulation" class="md-skip">
+        <a href="#crisp-cartesian-impedance-and-operational-space-control-for-learning-based-policies" class="md-skip">
           Skip to content
         </a>
       
@@ -200,7 +204,7 @@
               
                 
               
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -310,6 +314,50 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="new_robot_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting up a robot that is not available in the demos
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -384,9 +432,8 @@
 
 
 <p><img src="media/crisp_logo.webp" alt="CRISP Controllers Logo"/></p>
-<!-- # CRISP - **C**a**R**tesian **I**mpedance and Operational **SP**ace Control for Learning-based Policies -->
-<h1 id="crisp-ros2-compatible-compliant-controllers-for-learning-based-manipulation">CRISP - ROS2 compatible <strong>C</strong>ompliant Cont<strong>r</strong>ollers for Learn<strong>i</strong>ng-ba<strong>s</strong>ed Mani<strong>p</strong>ulation</h1>
-<p><em>Authors: <a href="https://danielsanjosepro.github.io">Daniel San Jose Pro</a>, <a href="https://oliver.hausdoerfer.de/">Oliver Hausdörfer</a>, <a href="https://ralfroemer99.github.io/">Ralf Römer</a>, Martin Schuck and Angela Schöllig.</em></p>
+<h1 id="crisp-cartesian-impedance-and-operational-space-control-for-learning-based-policies">CRISP - <strong>C</strong>a<strong>R</strong>tesian <strong>I</strong>mpedance and Operational <strong>SP</strong>ace Control for Learning-based Policies</h1>
+<p><em>Authors: <a href="https://danielsanjosepro.github.io">Daniel San Jose Pro</a>, <a href="https://oliver.hausdoerfer.de/">Oliver Hausdörfer</a>, <a href="https://ralfroemer99.github.io">Ralf Römer</a>, <a href="https://amacati.github.io/">Martin Schuck</a> and Angela Schoellig.</em></p>
 <blockquote>
 <p>Collection of C++ controllers for torque-based control for manipulators compatible with <code>ros2_control</code>, including Operational Space Control and Cartesian Impedance Control. Developed for deploying high-level learning-based policies (VLA, Diffusion, ...).</p>
 </blockquote>
@@ -452,10 +499,10 @@ Our controllers incorporate friction compensation, joint limit avoidance, and er
 <li>❓ Demos showcasing how to use the controller with FR3 of Franka Emika in single and bimanual setup. Check the <a href="https://github.com/utiasDSL/crisp_controllers_demos">crisp_controller_demos</a>.</li>
 </ul>
 <h2 id="citing">Citing</h2>
-<pre><code class="language-bibtex">@inproceeding{
-   TODO
-}
-</code></pre>
+<div class="language-bibtex highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nc">@inproceeding</span><span class="p">{</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">   </span><span class="nl">TODO</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">}</span>
+</span></code></pre></div>
 
 
 
@@ -524,7 +571,7 @@ Our controllers incorporate friction compensation, joint limit avoidance, and er
     
     
       
-      <script id="__config" type="application/json">{"base": ".", "features": ["header.autohide"], "search": "assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": ".", "features": ["header.autohide", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="assets/javascripts/bundle.56ea9cef.min.js"></script>
