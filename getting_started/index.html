@@ -608,29 +608,29 @@
 
 
 <h1 id="getting-started">Getting started</h1>
-<p>Here is an overview of the framework</p>
+<p>Here is an overview of the framework.</p>
 <p><img alt="Stack overview" src="../media/crisp_overview.png#only-light" />
 <img alt="Stack overview" src="../media/crisp_overview_dark.png#only-dark" /></p>
-<p>In short you have:</p>
+<p>In short, you have:</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 1. The first part is the setup for the low level controllers i.e. <a href="https://github.com/utiasDSL/crisp_controllers">crisp_controllers</a>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 2. Then, we will try out to move the robot around using <a href="https://github.com/utiasDSL/crisp_py">crisp_py</a>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 3. After that, we can include cameras to the setup or further sensors. </li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 4. Finally, we can setup <a href="https://github.com/utiasDSL/crisp_gym">crisp_gym</a> and start recording episodes.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 1. The first part is the setup for the low-level controllers, i.e., <a href="https://github.com/utiasDSL/crisp_controllers">crisp_controllers</a>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 2. Then, we will try to move the robot around using <a href="https://github.com/utiasDSL/crisp_py">crisp_py</a>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 3. After that, we can include cameras in the setup or further sensors. </li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 4. Finally, we can set up <a href="https://github.com/utiasDSL/crisp_gym">crisp_gym</a> and start recording episodes.</li>
 </ul>
 <h2 id="1-getting-the-low-level-controller-ready">1. Getting the low-level controller ready</h2>
-<p>First, the computer running the controller needs a realtime patch for the controller to run smoothly and safely.
+<p>First, the computer running the controller needs a real-time patch for the controller to run smoothly and safely.
 You can check out the <a href="https://frankarobotics.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel">Franka Robotics guide on how to set up a RT-patch.</a>
-On newer ubuntu versions, you can use <a href="https://ubuntu.com/real-time">Ubuntu Pro</a> for an easy setup.</p>
+On newer Ubuntu versions, you can use <a href="https://ubuntu.com/real-time">Ubuntu Pro</a> for an easy setup.</p>
 <p>Then, check if your robot is part of our <a href="https://github.com/utiasDSL/crisp_controllers_demos">demos</a>.
-You can then follow the instructions there to start your robot(s) using a docker container.
-Some of them offer the possibility to run the demos with a simulated robots to test the setup.</p>
-<p>If your robot is not included in the demos, check out <a href="../new_robot_setup/">How to setup a robot that is not available in the demos</a>.
-If you get the controllers running, feel free to open a pull-request to add it to the demos!</p>
+You can then follow the instructions there to start your robot(s) using a Docker container.
+Some of them offer the possibility to run the demos with simulated robots to test the setup.</p>
+<p>If your robot is not included in the demos, check out <a href="../new_robot_setup/">How to set up a robot that is not available in the demos</a>.
+If you get the controllers running, feel free to open a pull request to add it to the demos!</p>
 <h2 id="2-use-crisp_py-to-control-the-robot">2. Use crisp_py to control the robot</h2>
 <h3 id="installation">Installation</h3>
 <p>To use <code>crisp_py</code>, we recommend using <a href="https://pixi.sh/latest/">pixi</a> as a package manager, a modern conda-like package manager.
-It can be used in combination of <a href="https://robostack.github.io/">robostack</a> to easily install ROS2 in any machine.
+It can be used in combination with <a href="https://robostack.github.io/">robostack</a> to easily install ROS2 in any machine.
 There are a few ways to get you started:</p>
 <p><em>... install from source:</em></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/utiasDSL/crisp_py
@@ -659,9 +659,9 @@ Double-check that everything is working by running:</p>
 <ol>
 <li>This should not log anything if everything is fine</li>
 </ol>
-<p>Now you can try to control the robot! Chech out the <a href="https://github.com/utiasDSL/crisp_py/blob/main/examples">examples</a> for inspiration.</p>
+<p>Now you can try to control the robot! Check out the <a href="https://github.com/utiasDSL/crisp_py/blob/main/examples">examples</a> for inspiration.</p>
 <h3 id="try-it-out-with-the-robot">Try it out with the robot</h3>
-<p>Make sure that the demo container is running in the background. We will need it to access it.
+<p>Make sure that the demo container is running in the background, as we will need it to access the robot.
 From now on, you can instantiate <code>Robot</code> objects to control the robot.</p>
 <details class="example">
 <summary>Example robot usage:</summary>
@@ -686,16 +686,16 @@ From now on, you can instantiate <code>Robot</code> objects to control the robot
 <ol>
 <li>This will get information from the robot asynchronously</li>
 <li>Make sure that we get information from the robot before trying to set targets or reading the pose of the robot.</li>
-<li>Set target 10 cm downwoards. Careful not to send poses that are too far away from the current one!</li>
+<li>Set target 10 cm downwards. Careful not to send poses that are too far away from the current one!</li>
 <li>This will request the controller manager to activate the cartesian impedance controller. You can use it with other controllers like the operational space controller!</li>
 </ol>
 </details>
 <h2 id="3-adding-cameras-grippers-and-further-sensors">3. Adding cameras, grippers, and further sensors</h2>
 <h3 id="cameras">Cameras</h3>
-<p>To add a camera, you will need to run it in a container of the separate container as well.
+<p>To add a camera, you will need to run it in a separate container as well.
 The cameras that we tried are:</p>
 <ul>
-<li><a href="https://github.com/IntelRealSense/realsense-ros/tree/ros2-master">Real Sense</a> which give an amazing ROS2 support,</li>
+<li><a href="https://github.com/IntelRealSense/realsense-ros/tree/ros2-master">Real Sense</a> which gives amazing ROS2 support,</li>
 <li>or <a href="https://github.com/orbbec/OrbbecSDK_ROS2">Orbbec</a>.</li>
 </ul>
 <p>But any camera should work with <a href="https://github.com/christianrauch/camera_ros">camera_ros</a>.</p>
@@ -726,11 +726,11 @@ The cameras that we tried are:</p>
 </ol>
 </details>
 <h3 id="grippers">Grippers</h3>
-<p>For the gripper control you need to make sure that a ROS2 node is running that accepts commands through a topic and publishes the state of the gripper.
-To use a ...</p>
+<p>For gripper control, you need to make sure that a ROS2 node is running that accepts commands through a topic and publishes the state of the gripper.
+To use a:</p>
 <ul>
-<li>Franka Hand you just need to start the demo. An adapter is already running to allow you to control the gripper this way,</li>
-<li>Dynamixel motor to control a gripper we used the well-mantained <a href="https://github.com/ROBOTIS-GIT/dynamixel_hardware_interface">dynamixel_hardware_interface</a> with a position controller for the gripper.</li>
+<li>Franka Hand, you just need to start the demo. An adapter is already running to allow you to control the gripper this way,</li>
+<li>Dynamixel motor to control a gripper, we used the well-maintained <a href="https://github.com/ROBOTIS-GIT/dynamixel_hardware_interface">dynamixel_hardware_interface</a> with a position controller for the gripper.</li>
 </ul>
 <details class="example">
 <summary>Example gripper usage:</summary>
@@ -771,12 +771,12 @@ Check the examples for more information.</p>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_gym&quot;</span>
 </span></code></pre></div>
 <h3 id="record-data-in-lerobotformat">Record data in LeRobotFormat</h3>
-<p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">lerobot</a> by runing:
+<p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">lerobot</a> by running:
 TODO: Add installation steps for lerobot.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_data.py
 </span></code></pre></div>
 <p>After recording the data, you can use the dataset to train a policy with <a href="https://github.com/huggingface/lerobot">lerobot</a>.
-They provided the latest implementations</p>
+They provide the latest implementations.</p>
 <h3 id="deploy-policy">Deploy policy</h3>
 <p>...with <code>lerobot</code>:
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/deploy_policy.py
