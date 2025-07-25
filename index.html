@@ -202,8 +202,6 @@
           
             
               
-                
-              
               <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
@@ -366,9 +364,7 @@
             
             
               
-                
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -426,14 +422,12 @@
               <article class="md-content__inner md-typeset">
                 
                   
-  
-
 
 
 
 <p><img src="media/crisp_logo.webp" alt="CRISP Controllers Logo"/></p>
 <h1 id="crisp-cartesian-impedance-and-operational-space-control-for-learning-based-policies">CRISP - <strong>C</strong>a<strong>R</strong>tesian <strong>I</strong>mpedance and Operational <strong>SP</strong>ace Control for Learning-based Policies</h1>
-<p><em>Authors: <a href="https://danielsanjosepro.github.io">Daniel San Jose Pro</a>, <a href="https://oliver.hausdoerfer.de/">Oliver Hausdörfer</a>, <a href="https://ralfroemer99.github.io">Ralf Römer</a>, <a href="https://amacati.github.io/">Martin Schuck</a> and Angela Schoellig.</em></p>
+<p><em>Authors: <a href="https://danielsanjosepro.github.io">Daniel San Jose Pro</a>, <a href="https://oliver.hausdoerfer.de/">Oliver Hausdörfer</a>, <a href="https://ralfroemer99.github.io">Ralf Römer</a>, Maximilian Dösch <a href="https://amacati.github.io/">Martin Schuck</a> and Angela Schöllig.</em></p>
 <blockquote>
 <p>Collection of C++ controllers for torque-based control for manipulators compatible with <code>ros2_control</code>, including Operational Space Control and Cartesian Impedance Control. Developed for deploying high-level learning-based policies (VLA, Diffusion, ...).</p>
 </blockquote>
@@ -483,6 +477,18 @@
 </tr>
 </tbody>
 </table>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><video src="media/teleoperation.mp4" controls="true" loop="true" autoplay="true" width="800"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">Teleoperation setup with feedback wrench available.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="why">Why?</h2>
 <p>Learning-based controllers, such as diffusion policies, deep reinforcement learning, and vision-action-models in general, typically output low-frequency or sporadic target poses, necessitating a low-level controller to track these references smoothly, especially in contact-rich environments.
 While <code>ROS2</code> frameworks like <code>MoveIt</code> offer comprehensive motion planning capabilities, they are often unnecessarily complex for tasks requiring simple, real-time pose or joint servoing.</p>
@@ -515,8 +521,6 @@ Our controllers incorporate friction compensation, joint limit avoidance, and er
 
 
 
-
-  
 
 
 
