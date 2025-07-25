@@ -41,8 +41,8 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,700,700i%7CSource+Code+Pro:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Poppins";--md-code-font:"Source Code Pro"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CSource+Code+Pro:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Source Code Pro"}</style>
       
     
     
@@ -65,7 +65,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="grey">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="deep-purple">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -122,7 +122,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="grey"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -132,7 +132,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="grey"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -402,6 +402,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Record data in LeRobotFormat">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#leader-follower" class="md-nav__link">
+    <span class="md-ellipsis">
+      Leader-follower
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-teleop-setups" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other teleop setups
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -596,6 +620,30 @@
       Record data in LeRobotFormat
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Record data in LeRobotFormat">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#leader-follower" class="md-nav__link">
+    <span class="md-ellipsis">
+      Leader-follower
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-teleop-setups" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other teleop setups
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -793,15 +841,30 @@ Check the examples for more information.</p>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_gym&quot;</span>
 </span></code></pre></div>
 <h3 id="record-data-in-lerobotformat">Record data in LeRobotFormat</h3>
-<p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">lerobot</a> by running:</p>
-<p>TODO: Add installation steps for lerobot.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_data.py
-</span></code></pre></div>
-<p>After recording the data, you can use the dataset to train a policy with <a href="https://github.com/huggingface/lerobot">lerobot</a>.
-They provide the latest implementations.</p>
+<p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">lerobot</a> by running.
+You will need to use teleoperation to record data and we highly recommend using a leader-follower setup to generate episodes. </p>
+<h4 id="leader-follower">Leader-follower</h4>
+<p>The leader can be controlled by a human operator and the follower will mimic its motion.
+Checkout <code>scripts/leader_follower_teleop.py</code> to get an idea on how the code works.
+For your specific setup you need to:</p>
+<ul>
+<li>Define your own <code>TeleopRobotConfig</code>, check <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/teleop/teleop_robot_config.py"><code>teleop_robot_config.py</code></a>.</li>
+<li>Define your own <code>ManipulatorEnvConfig</code>, check <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/manipulator_env_config.py"><code>manipulator_env_config.py</code></a>.</li>
+</ul>
+<p>Then to record data use:
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_data_leader_follower.py<span class="w"> </span>--leader-config<span class="w"> </span>&lt;your_leader_config&gt;<span class="w"> </span>--env-config<span class="w"> </span>&lt;your_env_config_name&gt;<span class="w">  </span><span class="c1"># (1)!</span>
+</span></code></pre></div></p>
+<ol>
+<li>Add <code>--help</code> to check other parameters to pass to the record function.</li>
+</ol>
+<h4 id="other-teleop-setups">Other teleop setups</h4>
+<p>You can add further teleop options to <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/teleop"><code>teleop/</code></a> and create 
+a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/scripts/record_data_leader_follower.py"><code>scripts/record_data_leader_follower.py</code></a></p>
 <h3 id="deploy-policy">Deploy policy</h3>
-<p>...with <code>lerobot</code>:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/deploy_policy.py
+<p>After recording the data, you can use the dataset to train a policy with <a href="https://github.com/huggingface/lerobot">lerobot</a>.
+They provide the latest implementations of most VLA.
+After training with LeRobot, you can deploy the policy with:
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/deploy_policy.py<span class="w"> </span>--path<span class="w"> </span>&lt;path_to_model&gt;
 </span></code></pre></div></p>
 
 
