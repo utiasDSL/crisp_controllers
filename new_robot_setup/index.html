@@ -12,6 +12,8 @@
         <link rel="prev" href="../getting_started/">
       
       
+        <link rel="next" href="../controllers/">
+      
       
       <link rel="icon" href="../images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
@@ -290,6 +292,28 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../controllers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Available Controllers and Broadcasters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -324,25 +348,43 @@
 
   <h1>Setting up a robot that is not available in the demos</h1>
 
+<p>For ROS2 users, adding our controllers to their stack should be straightforward as it works like any other ROS2 controller.
+For novice ROS2 users, we prepared a more detailed guide to make sure that you get your robot ready:</p>
 <ol>
 <li>
-<p>First make sure that your ROS2 drivers for the robot you want to use allow direct-torque control. If this is the case, you are good to go. 
+<p>First make sure that your ROS2 drivers for the robot you want to use allow <em>direct-torque control</em> i.e. the effort command interface is available.
+Usually, you should be able to find it in the Github repository. 
+If this is the case, you are good to go. 
 Otherwise, you might need to use <a href="https://github.com/fzi-forschungszentrum-informatik/cartesian_controllers">cartesian_controllers</a> for position controlled robots.</p>
 </li>
 <li>
-<p>Install the ROS2 drivers on your computer. We recommend creating a docker container or working in a devcontainer. You can check the <a href="https://github.com/utiasDLS/crisp_controllers_demos">demos</a> for inspiration.</p>
+<p>Install the ROS2 drivers on your computer. 
+We recommend to work in a devcontainer to avoid installing ROS2 directly in your machine.
+You can check the <a href="https://github.com/utiasDLS/crisp_controllers_demos">demos</a> for inspiration.</p>
 </li>
-<li>Add the <a href="https://github.com/utiasDSL/crisp_controllers">controllers</a> to your src folder:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>~/ros2_ws<span class="w">  </span><span class="c1"># or wherever you ws is...</span>
+<li>
+<p>Add the <a href="https://github.com/utiasDSL/crisp_controllers">controllers</a> to your src folder where the ROS2 drivers for your robot have been installed:
+    <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>~/ros2_ws<span class="w">  </span><span class="c1"># or wherever you ws is...</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/utiasDSL/crisp_controllers.git<span class="w"> </span>src/crisp_controllers
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">source</span><span class="w"> </span>/opt/ros/<span class="nv">$ROS_DISTRO</span>/setup.sh
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>rosdep<span class="w"> </span>update
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>rosdep<span class="w"> </span>install<span class="w"> </span>-q<span class="w"> </span>--from-paths<span class="w"> </span>src<span class="w"> </span>--ignore-src<span class="w"> </span>-y<span class="w">  </span><span class="c1"># Install missing dependencies</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>colcon<span class="w"> </span>build<span class="w"> </span>--packages-select<span class="w"> </span>crisp_controllers<span class="w">  </span><span class="c1"># Build the package</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>touch<span class="w"> </span>src/crisp_controllers/COLCON_IGNORE<span class="w">  </span><span class="c1"># Forget about it</span>
-</span></code></pre></div></li>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nb">source</span><span class="w"> </span>/install/setup.sh
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>rosdep<span class="w"> </span>update
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>rosdep<span class="w"> </span>install<span class="w"> </span>-q<span class="w"> </span>--from-paths<span class="w"> </span>src<span class="w"> </span>--ignore-src<span class="w"> </span>-y<span class="w">  </span><span class="c1"># (1)!</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>colcon<span class="w"> </span>build<span class="w"> </span>--packages-select<span class="w"> </span>crisp_controllers<span class="w"> </span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>touch<span class="w"> </span>src/crisp_controllers/COLCON_IGNORE<span class="w">  </span><span class="c1"># (2)! </span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nb">source</span><span class="w"> </span>/install/setup.sh<span class="w">  </span><span class="c1"># (3)!</span>
+</span></code></pre></div></p>
+<ol>
+<li>This line will make sure that all missing dependencies are installed</li>
+<li>By adding this file, the controller will not be built over and over</li>
+<li>Don't forget to source again to make sure that ROS2 can find the new package</li>
+</ol>
+</li>
 <li>
-<p>Add the controllers to the config file (check out the <a href="https://github.com/utiasDSL/crisp_controllers_demos/blob/main/crisp_controllers_robot_demos/config/fr3/controllers.yaml">FR3 config</a> for inspiration).</p>
+<p>Now, you will need to add the controller to the config file of the controller_manager.
+Usually, you will find this config file in the bringup package where the launch files are located (called <code>&lt;robotname&gt;_bringup</code>) and are saved as <code>controllers.yaml</code>.
+Check out the <a href="https://github.com/utiasDSL/crisp_controllers_demos/blob/main/crisp_controllers_robot_demos/config/fr3/controllers.yaml">FR3 config</a> to get an idea how the config file looks like.
+For more information on the controllers, check the <a href="../controllers/">available controllers and broadcaster</a> page.</p>
 <details class="example">
 <summary>How to add the configuration to the config file</summary>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">/**</span><span class="p">:</span>
@@ -455,7 +497,11 @@ Otherwise, you might need to use <a href="https://github.com/fzi-forschungszentr
 </details>
 </li>
 <li>
-<p>Finally add them to your launch file. (check out <a href="https://github.com/utiasDSL/crisp_controllers_demos/blob/main/crisp_controllers_robot_demos/launch/franka.launch.py">FR3 launch file</a> for inspiration).</p>
+<p>Finally add them to your launch file. 
+    You will need to use the controller_manager spawner to start the controllers at launch.
+    Usually, in the launch file you will find other controllers/broadcasters that are being launched.
+    Just duplicate the nodes and pass the correct names to activate the controllers.
+    Check out <a href="https://github.com/utiasDSL/crisp_controllers_demos/blob/main/crisp_controllers_robot_demos/launch/franka.launch.py">FR3 launch file</a> for inspiration.</p>
 <details class="example">
 <summary>How to add the controllers to the launch file</summary>
 <p>Add the following nodes to the launch description:</p>
@@ -487,6 +533,9 @@ Otherwise, you might need to use <a href="https://github.com/fzi-forschungszentr
 </span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="o">...</span>
 </span></code></pre></div>
 </details>
+</li>
+<li>
+<p>Voila! After launching your robot you should see that new controller are being loaded. If you get stuck somewhere in the process feel free to open an issue.</p>
 </li>
 </ol>
 
