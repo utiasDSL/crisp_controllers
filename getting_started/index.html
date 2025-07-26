@@ -302,22 +302,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-getting-the-low-level-controller-ready" class="md-nav__link">
+  <a href="#1-getting-the-low-level-c-crisp-controller-ready" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Getting the low-level controller ready
+      1. Getting the low-level C++ CRISP controller ready
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-use-crisp_py-to-control-the-robot" class="md-nav__link">
+  <a href="#2-use-the-python-interface-crisp_py-to-control-the-robot" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Use crisp_py to control the robot
+      2. Use the python interface CRISP_PY to control the robot
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Use crisp_py to control the robot">
+    <nav class="md-nav" aria-label="2. Use the python interface CRISP_PY to control the robot">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -396,13 +396,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#record-data-in-lerobotformat" class="md-nav__link">
+  <a href="#teleoperation-record-data-in-lerobotformat" class="md-nav__link">
     <span class="md-ellipsis">
-      Record data in LeRobotFormat
+      Teleoperation: Record data in LeRobotFormat
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Record data in LeRobotFormat">
+    <nav class="md-nav" aria-label="Teleoperation: Record data in LeRobotFormat">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -521,22 +521,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-getting-the-low-level-controller-ready" class="md-nav__link">
+  <a href="#1-getting-the-low-level-c-crisp-controller-ready" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Getting the low-level controller ready
+      1. Getting the low-level C++ CRISP controller ready
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-use-crisp_py-to-control-the-robot" class="md-nav__link">
+  <a href="#2-use-the-python-interface-crisp_py-to-control-the-robot" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Use crisp_py to control the robot
+      2. Use the python interface CRISP_PY to control the robot
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Use crisp_py to control the robot">
+    <nav class="md-nav" aria-label="2. Use the python interface CRISP_PY to control the robot">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -615,13 +615,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#record-data-in-lerobotformat" class="md-nav__link">
+  <a href="#teleoperation-record-data-in-lerobotformat" class="md-nav__link">
     <span class="md-ellipsis">
-      Record data in LeRobotFormat
+      Teleoperation: Record data in LeRobotFormat
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Record data in LeRobotFormat">
+    <nav class="md-nav" aria-label="Teleoperation: Record data in LeRobotFormat">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -681,25 +681,21 @@
 <p>Here is an overview of the framework.</p>
 <p><img alt="Stack overview" src="../media/crisp_overview.png#only-light" />
 <img alt="Stack overview" src="../media/crisp_overview_dark.png#only-dark" /></p>
-<p>In short, you have:</p>
+<p>Overview</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 1. The first part is the setup for the low-level controllers, i.e., <a href="https://github.com/utiasDSL/crisp_controllers">crisp_controllers</a>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 2. Then, we will try to move the robot around using <a href="https://github.com/utiasDSL/crisp_py">crisp_py</a>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 3. After that, we can include cameras in the setup or further sensors. </li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 4. Finally, we can set up <a href="https://github.com/utiasDSL/crisp_gym">crisp_gym</a> and start recording episodes.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 2. Then, you will try to move the robot using <a href="https://github.com/utiasDSL/crisp_py">CRISP_PY</a>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 3. After that, you can include cameras in the setup and other sensors. </li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 4. Finally, you can set up <a href="https://github.com/utiasDSL/crisp_gym">CRISP_GYM</a> - the Gymnasium interface - and start policy deployment or teleoperation.</li>
 </ul>
-<h2 id="1-getting-the-low-level-controller-ready">1. Getting the low-level controller ready</h2>
-<p>First, the computer running the controller needs a real-time patch for the controller to run smoothly and safely.
-You can check out the <a href="https://frankarobotics.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel">Franka Robotics guide on how to set up a RT-patch.</a>
+<h2 id="1-getting-the-low-level-c-crisp-controller-ready">1. Getting the low-level C++ CRISP controller ready</h2>
+<p>The computer running the CRISP controller needs a real-time patch for the controller to run smoothly and safely. You can check out the <a href="https://frankarobotics.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel">Franka Robotics guide on how to set up a RT-patch.</a>
 On newer Ubuntu versions, you can use <a href="https://ubuntu.com/real-time">Ubuntu Pro</a> for an easy setup.</p>
-<p>Then, check if your robot is part of our <a href="https://github.com/utiasDSL/crisp_controllers_demos">demos</a>.
-You can then follow the instructions there to start your robot(s) using a Docker container.
-Some of them offer the possibility to run the demos with simulated robots to test the setup.</p>
-<p>If your robot is not included in the demos, check out <a href="../new_robot_setup/">How to set up a robot that is not available in the demos</a>.
-If you get the controllers running, feel free to open a pull request to add it to the demos!</p>
-<h2 id="2-use-crisp_py-to-control-the-robot">2. Use crisp_py to control the robot</h2>
+<p>Then, check if your robot is already included in one of our <a href="https://github.com/utiasDSL/crisp_controllers_demos">demos</a>. You can then follow the instructions there to start your robot(s) using a Docker container. Some of them offer the possibility to run the demos with simulated robots to test the setup.</p>
+<p>If your robot is not included in the demos that is not problem. Check out <a href="../new_robot_setup/">How to set up a robot that is not available in the demos</a>. Once you get the controllers running, feel free to open a pull request on our repo to add it to the demos! We highly appreciate that!</p>
+<h2 id="2-use-the-python-interface-crisp_py-to-control-the-robot">2. Use the python <img alt="🐍" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f40d.svg" title=":snake:" /> interface CRISP_PY to control the robot</h2>
 <h3 id="installation">Installation</h3>
-<p>To use <code>crisp_py</code>, we recommend using <a href="https://pixi.sh/latest/">pixi</a> as a package manager, a modern conda-like package manager.
+<p>To use <code>CRISP_PY</code>, we recommend using <a href="https://pixi.sh/latest/">pixi</a> as a package manager, a modern conda-like package manager.
 It can be used in combination with <a href="https://robostack.github.io/">robostack</a> to easily install ROS2 in any machine.
 There are a few ways to get you started:</p>
 <p><em>... install from source:</em></p>
@@ -712,9 +708,9 @@ There are a few ways to get you started:</p>
 <li>This should not log anything if everything is fine</li>
 </ol>
 <p><em>... use in your already existing pixi project:</em></p>
-<p>To use <code>crisp_py</code> in an already existing pixi project, you need to make sure that <code>ROS2</code> is available.
-Check the <a href="https://github.com/utiasDSL/crisp_py/blob/main/pixi.toml">pixi.toml</a> of <code>crisp_py</code> to see how this looks like.
-Then you can add <code>crisp_py</code> as a pypi package:
+<p>To use <code>CRISP_PY</code> in an already existing pixi project, you need to make sure that <code>ROS2</code> is available.
+Check the <a href="https://github.com/utiasDSL/crisp_py/blob/main/pixi.toml">pixi.toml</a> of <code>CRISP_PY</code> to see how this looks like.
+Then you can add <code>CRISP_PY</code> as a pypi package:
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pixi<span class="w"> </span>add<span class="w"> </span>--pypi<span class="w"> </span>crisp-py
 </span></code></pre></div>
 or
@@ -763,12 +759,12 @@ From now on, you can instantiate <code>Robot</code> objects to control the robot
 <h2 id="3-adding-cameras-grippers-and-further-sensors">3. Adding cameras, grippers, and further sensors</h2>
 <h3 id="cameras">Cameras</h3>
 <p>To add a camera, you will need to run it in a separate container as well.
-The cameras that we tried are:</p>
+The cameras that we tested are:</p>
 <ul>
 <li><a href="https://github.com/IntelRealSense/realsense-ros/tree/ros2-master">Real Sense</a> which gives amazing ROS2 support,</li>
-<li>or <a href="https://github.com/orbbec/OrbbecSDK_ROS2">Orbbec</a>.</li>
+<li>and <a href="https://github.com/orbbec/OrbbecSDK_ROS2">Orbbec</a>.</li>
 </ul>
-<p>But any camera should work with <a href="https://github.com/christianrauch/camera_ros">camera_ros</a>.</p>
+<p>But any camera with <a href="https://github.com/christianrauch/camera_ros">camera_ros</a> should work.</p>
 <details class="example">
 <summary>Example camera usage:</summary>
 <div class="language-py highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
@@ -840,8 +836,8 @@ Check the examples for more information.</p>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>pixi<span class="w"> </span>shell<span class="w"> </span>-e<span class="w"> </span>humble
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_gym&quot;</span>
 </span></code></pre></div>
-<h3 id="record-data-in-lerobotformat">Record data in LeRobotFormat</h3>
-<p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">lerobot</a> by running.
+<h3 id="teleoperation-record-data-in-lerobotformat">Teleoperation: Record data in LeRobotFormat</h3>
+<p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">lerobot</a>.
 You will need to use teleoperation to record data and we highly recommend using a leader-follower setup to generate episodes. </p>
 <h4 id="leader-follower">Leader-follower</h4>
 <p>The leader can be controlled by a human operator and the follower will mimic its motion.
@@ -851,7 +847,7 @@ For your specific setup you need to:</p>
 <li>Define your own <code>TeleopRobotConfig</code>, check <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/teleop/teleop_robot_config.py"><code>teleop_robot_config.py</code></a>.</li>
 <li>Define your own <code>ManipulatorEnvConfig</code>, check <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/manipulator_env_config.py"><code>manipulator_env_config.py</code></a>.</li>
 </ul>
-<p>Then to record data use:
+<p>Then, to record data use:
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_data_leader_follower.py<span class="w"> </span>--leader-config<span class="w"> </span>&lt;your_leader_config&gt;<span class="w"> </span>--env-config<span class="w"> </span>&lt;your_env_config_name&gt;<span class="w">  </span><span class="c1"># (1)!</span>
 </span></code></pre></div></p>
 <ol>
