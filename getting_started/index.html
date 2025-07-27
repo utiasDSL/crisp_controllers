@@ -12,7 +12,7 @@
         <link rel="prev" href="..">
       
       
-        <link rel="next" href="../new_robot_setup/">
+        <link rel="next" href="../misc/new_robot_setup/">
       
       
       <link rel="icon" href="../images/favicon.png">
@@ -429,6 +429,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#train-a-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Train a policy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#deploy-policy" class="md-nav__link">
     <span class="md-ellipsis">
       Deploy policy
@@ -456,8 +465,46 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Misc
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Misc
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../new_robot_setup/" class="md-nav__link">
+      <a href="../misc/new_robot_setup/" class="md-nav__link">
         
   
   
@@ -471,15 +518,16 @@
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../controllers/" class="md-nav__link">
+      <a href="../misc/controllers/" class="md-nav__link">
         
   
   
@@ -490,6 +538,60 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../misc/multi_machine_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi-machine setup
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../misc/diagnostics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ROS2 Diagnostics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -648,6 +750,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#train-a-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Train a policy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#deploy-policy" class="md-nav__link">
     <span class="md-ellipsis">
       Deploy policy
@@ -692,7 +803,7 @@
 <p>The computer running the CRISP controller needs a real-time patch for the controller to run smoothly and safely. You can check out the <a href="https://frankarobotics.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel">Franka Robotics guide on how to set up a RT-patch.</a>
 On newer Ubuntu versions, you can use <a href="https://ubuntu.com/real-time">Ubuntu Pro</a> for an easy setup.</p>
 <p>Then, check if your robot is already included in one of our <a href="https://github.com/utiasDSL/crisp_controllers_demos">demos</a>. You can then follow the instructions there to start your robot(s) using a Docker container. Some of them offer the possibility to run the demos with simulated robots to test the setup.</p>
-<p>If your robot is not included in the demos that is not problem. Check out <a href="../new_robot_setup/">How to set up a robot that is not available in the demos</a>. Once you get the controllers running, feel free to open a pull request on our repo to add it to the demos! We highly appreciate that!</p>
+<p>If your robot is not included in the demos that is not problem. Check out <a href="../misc/new_robot_setup/">How to set up a robot that is not available in the demos</a>. Once you get the controllers running, feel free to open a pull request on our repo to add it to the demos! We highly appreciate that!</p>
 <h2 id="2-use-the-python-interface-crisp_py-to-control-the-robot">2. Use the python <img alt="🐍" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f40d.svg" title=":snake:" /> interface CRISP_PY to control the robot</h2>
 <h3 id="installation">Installation</h3>
 <p>To use <code>CRISP_PY</code>, we recommend using <a href="https://pixi.sh/latest/">pixi</a> as a package manager, a modern conda-like package manager.
@@ -837,7 +948,7 @@ Check the examples for more information.</p>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_gym&quot;</span>
 </span></code></pre></div>
 <h3 id="teleoperation-record-data-in-lerobotformat">Teleoperation: Record data in LeRobotFormat</h3>
-<p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">lerobot</a>.
+<p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">LeRobot</a>.
 You will need to use teleoperation to record data and we highly recommend using a leader-follower setup to generate episodes. </p>
 <h4 id="leader-follower">Leader-follower</h4>
 <p>The leader can be controlled by a human operator and the follower will mimic its motion.
@@ -848,20 +959,41 @@ For your specific setup you need to:</p>
 <li>Define your own <code>ManipulatorEnvConfig</code>, check <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/manipulator_env_config.py"><code>manipulator_env_config.py</code></a>.</li>
 </ul>
 <p>Then, to record data use:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_data_leader_follower.py<span class="w"> </span>--leader-config<span class="w"> </span>&lt;your_leader_config&gt;<span class="w"> </span>--env-config<span class="w"> </span>&lt;your_env_config_name&gt;<span class="w">  </span><span class="c1"># (1)!</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_data_leader_follower.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">   </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="c1"># (1)!</span>
 </span></code></pre></div></p>
 <ol>
 <li>Add <code>--help</code> to check other parameters to pass to the record function.</li>
 </ol>
+<p>The script is interactive. It will:
+- First ask to choose the desired configuration files for the recording
+- Allow you to record episodes interactively using the keyboard</p>
+<p>After this, you can visualize the episodes with rerun visualizer and LeRobot utils:
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.visualize_dataset<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">        </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">        </span>--episode-index<span class="w"> </span><span class="m">0</span>
+</span></code></pre></div></p>
 <h4 id="other-teleop-setups">Other teleop setups</h4>
 <p>You can add further teleop options to <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/teleop"><code>teleop/</code></a> and create 
 a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/scripts/record_data_leader_follower.py"><code>scripts/record_data_leader_follower.py</code></a></p>
-<h3 id="deploy-policy">Deploy policy</h3>
-<p>After recording the data, you can use the dataset to train a policy with <a href="https://github.com/huggingface/lerobot">lerobot</a>.
-They provide the latest implementations of most VLA.
-After training with LeRobot, you can deploy the policy with:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/deploy_policy.py<span class="w"> </span>--path<span class="w"> </span>&lt;path_to_model&gt;
+<h3 id="train-a-policy">Train a policy</h3>
+<p>You can use LeRobot train scripts to train a policy simply by running:
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.train<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">          </span>--dataset.repo_id<span class="o">=</span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">          </span>--policy.type<span class="o">=</span>diffusion<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">          </span>--policy.repo_id<span class="o">=</span>&lt;your_account&gt;/&lt;policy_repo_name&gt;
 </span></code></pre></div></p>
+<p>They provide the latest implementations of most VLA.
+Check <a href="https://github.com/huggingface/lerobot">LeRobot</a> for more information.</p>
+<h3 id="deploy-policy">Deploy policy</h3>
+<p>After training with LeRobot, you can deploy the policy with:
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/deploy_policy.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span>--path<span class="w"> </span>&lt;path_to_model&gt;<span class="w">  </span><span class="c1"># (1)!</span>
+</span></code></pre></div></p>
+<ol>
+<li>..or if you want to interactively choose a model you can simply leave the argument empty.</li>
+</ol>
+<p>Good job, now you can evaluate your model!</p>
 
 
 
@@ -885,6 +1017,46 @@ After training with LeRobot, you can deploy the policy with:
       </main>
       
         <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Home
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../misc/new_robot_setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Setting up a robot that is not available in the demos">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Setting up a robot that is not available in the demos
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -925,7 +1097,7 @@ After training with LeRobot, you can deploy the policy with:
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["header.autohide", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["header.autohide", "content.code.copy", "content.code.select", "content.code.annotate", "navigation.footer"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.56ea9cef.min.js"></script>
