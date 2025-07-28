@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../demos/">
+        <link rel="prev" href="../controllers/">
       
       
-        <link rel="next" href="../diagnostics/">
+        <link rel="next" href="../multi_machine_setup/">
       
       
       <link rel="icon" href="../../images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Multi-machine setup - CRISP Controllers - Learning Systems Lab</title>
+        <title>Demos - CRISP Controllers - Learning Systems Lab</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#using-cyclonedds-for-multi-machine-setups" class="md-skip">
+        <a href="#available-demos" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Multi-machine setup
+              Demos
             
           </span>
         </div>
@@ -334,29 +334,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../demos/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Demos
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -372,7 +349,7 @@
   
   
   <span class="md-ellipsis">
-    Multi-machine setup
+    Demos
     
   </span>
   
@@ -385,7 +362,7 @@
   
   
   <span class="md-ellipsis">
-    Multi-machine setup
+    Demos
     
   </span>
   
@@ -406,18 +383,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#using-cyclonedds-for-multi-machine-setups" class="md-nav__link">
+  <a href="#available-demos" class="md-nav__link">
     <span class="md-ellipsis">
-      Using CycloneDDS for multi-machine setups
+      Available demos
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-zenoh-for-multi-machine-setups" class="md-nav__link">
+  <a href="#running-a-demo" class="md-nav__link">
     <span class="md-ellipsis">
-      Using Zenoh for multi-machine setups
+      Running a demo
     </span>
   </a>
   
@@ -436,6 +413,29 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi_machine_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi-machine setup
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -519,18 +519,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#using-cyclonedds-for-multi-machine-setups" class="md-nav__link">
+  <a href="#available-demos" class="md-nav__link">
     <span class="md-ellipsis">
-      Using CycloneDDS for multi-machine setups
+      Available demos
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-zenoh-for-multi-machine-setups" class="md-nav__link">
+  <a href="#running-a-demo" class="md-nav__link">
     <span class="md-ellipsis">
-      Using Zenoh for multi-machine setups
+      Running a demo
     </span>
   </a>
   
@@ -561,66 +561,105 @@
 
 
 
-  <h1>Multi-machine setup</h1>
+  <h1>Demos</h1>
 
-<p>To setup multiple machines, we recommend using a different RMW. Either go with Zenoh or CycloneDDS.
-We prefer to use CycloneDDS.</p>
-<h2 id="using-cyclonedds-for-multi-machine-setups">Using CycloneDDS for multi-machine setups</h2>
+<h2 id="available-demos">Available demos</h2>
+<p>For now, these are the available demos in this repository. New demos are welcome, in particular if tested with real hardware.
+Some other manipulators that couldd be added to this list is the <img alt="Open Manipulator" src="https://github.com/ROBOTIS-GIT/open_manipulator" /> or other dual setups.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Robots</th>
+<th style="text-align: center;">Franka Robotics FR3</th>
+<th style="text-align: center;">FR Dual FR3</th>
+<th style="text-align: center;">IIWA 14</th>
+<th style="text-align: center;">Kinova Gen3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">MuJoCo simulated Hardware</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td style="text-align: left;">Real Hardware</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❔<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
+<td style="text-align: center;">❔<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
+</tr>
+</tbody>
+</table>
+<h2 id="running-a-demo">Running a demo</h2>
 <ol>
+<li>(TEMPORARY) Clone the crisp controllers to the repo (later it will be part of the Dockerfile)
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:utiasDSL/crisp_controllers_demos.git<span class="w"> </span>crisp_controllers_demos
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>crisp_controllers_demos
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:utiasDSL/crisp_controllers.git<span class="w"> </span>crisp_controllers
+</span></code></pre></div></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do NOT use <strong>Docker Desktop</strong>. Just go for the normal Docker CLI.</p>
+</div>
+<ol>
+<li>Build and start the provided container.
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>build
+</span></code></pre></div></li>
 <li>
-<p>Make sure that the Cyclone RMW is installed <code>ros-$ROS_DISTRO-rmw-cyclonedds-cpp</code>. If you use the <code>pixi.toml</code> provided
-    in this repo it should be the case. You can check it in the terminal by running<br />
-    <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ros2<span class="w"> </span>pkg<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>rmw_cyclonedds_cpp<span class="w">  </span><span class="c1"># (1)!</span>
+<p>Start your robot:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_iiwa
+</span></code></pre></div>
+or
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">LEFT_ROBOT_IP</span><span class="o">=</span><span class="m">172</span>.16.1.2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nv">RIGHT_ROBOT_IP</span><span class="o">=</span><span class="m">172</span>.16.0.2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nv">FRANKA_FAKE_HARDWARE</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_dual_franka
+</span></code></pre></div>
+or
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">ROBOT_IP</span><span class="o">=</span><span class="m">172</span>.16.0.2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">FRANKA_FAKE_HARDWARE</span><span class="o">=</span>true<span class="se">\</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_franka
+</span></code></pre></div>
+or
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_kinova
 </span></code></pre></div></p>
-<ol>
-<li>this should print the package name if installed.</li>
-</ol>
 </li>
 <li>
-<p>Now you can setup the required environment variables:
-    <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ROS_DOMAIN_ID</span><span class="o">=</span>XXX<span class="w">  </span><span class="c1"># (1)! </span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">RMW_IMPLEMENTATION</span><span class="o">=</span>rmw_cyclonedds_cpp
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CYCLONEDDS_URI</span><span class="o">=</span>file:///path/to/cyclone_config.xml<span class="w">  </span><span class="c1"># (2)!</span>
-</span></code></pre></div></p>
-<ol>
-<li>Same as the robot you want to communicate with</li>
-<li><strong>TODO</strong>: change this!</li>
-</ol>
-<p>You can put this in a script called <code>scripts/personal_ros_env.sh</code>, which will be called be <code>scripts/set_ros_env.sh</code> every 
-time you open the pixi shell. That script will automatically restart the <code>ros2 daemon</code> so that the config is set.</p>
-</li>
-<li>
-<p>Update the config for your setup:
-    <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&lt;CycloneDDS<span class="w"> </span><span class="nv">xmlns</span><span class="o">=</span><span class="s2">&quot;https://cdds.io/config&quot;</span>&gt;
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>&lt;Domain&gt;
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>&lt;General&gt;
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span>&lt;AllowMulticast&gt;true&lt;/AllowMulticast&gt;
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span>&lt;Interfaces&gt;
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="hll"><span class="w">            </span>&lt;NetworkInterface<span class="w"> </span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;enx607d0937fb24&quot;</span><span class="w"> </span>/&gt;<span class="w">   </span><span class="c1"># (1)!</span>
-</span></span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span>&lt;/Interfaces&gt;
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span>&lt;/General&gt;
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span>&lt;Discovery&gt;
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span>&lt;ParticipantIndex&gt;auto&lt;/ParticipantIndex&gt;
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span>&lt;MaxAutoParticipantIndex&gt;100&lt;/MaxAutoParticipantIndex&gt;
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span>&lt;/Discovery&gt;
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>&lt;/Domain&gt;
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>&lt;/CycloneDDS&gt;
-</span></code></pre></div></p>
-<ol>
-<li>Modify this with your network interface: check <code>ip addr</code> on your shell.</li>
-</ol>
-</li>
-<li>
-<p>Finally, check that everything is working. If your robot is active, run <code>ros2 topic list</code> and you should see some topics listed!</p>
+<p>Now you can publish to <code>/target_joint</code>, <code>/target_wrench</code> or <code>/target_pose</code>! Check <a href="https://github.com/utiasDSL/crisp_py">crisp_py</a> examples to see how to easily use it.</p>
 </li>
 </ol>
-<h2 id="using-zenoh-for-multi-machine-setups">Using Zenoh for multi-machine setups</h2>
-<p><img alt="🚧" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f6a7.svg" title=":construction:" /></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you work in different machines (using <a href="https://github.com/utiasDSL/crisp_py">crisp_py</a> or others) you might want to consider using a different RMW.
+Check <a href="../multi_machine_setup/">how to multi-machine setup</a>.
+To use the cyclone version you can call <code>launch_franka_cyclone</code> or <code>launch_dual_franka_cyclone</code> and setup the ip address of the router of your machine in the setup file.</p>
+</div>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<ul>
-<li>Run <code>env | grep RMW_IMPLEMENTATION</code>, if the variable is not set, you need to make sure that the script <code>scripts/set_ros_env.sh</code> is being executed and that your script <code>scripts/personal_ros_env.sh</code> is properly defined.</li>
-<li>Be sure that the name of the interface is correct!</li>
-</ul>
+<details>
+<summary>Rviz does not open when launch the robots. Why?</summary>
+<p>Simply run <code>xhost +</code> on a terminal to enable any host to use the X. You need this because we are running the demos in a container.</p>
+</details>
+<details>
+<summary>When executing <code>ros2 topic list</code> in a different terminal, I can not see any topics. However, the container is running. Why?</summary>
+<p>Probably you are using a different <code>ROS_DOMAIN_ID</code>. The default now is set to 100 but you can change it when running the container. To change it in your shell run <code>export ROS_DOMAIN_ID=100 &amp;&amp; ros2 daemon stop &amp;&amp; ros2 daemon start</code>.</p>
+</details>
+<details>
+<summary>How are the manipulors being simulated?</summary>
+<p>We implemeted a simple <code>MujocoHardwareInterface</code> to simulate the robots. This code is heavily inspired by the simulator in <a href="https://github.com/fzi-forschungszentrum-informatik/cartesian_controllers/tree/ros2/cartesian_controller_simulation">cartesian_controllers</a>, but probably better alternatives to use mujoco as a backend simulation would be <a href="https://github.com/moveit/mujoco_ros2_control">mujoco_ros2_control</a>. One could also use gazebo. 
+The mujoco files come from the mujoco menagerie and have been slightly modified to use torque based actuators + we added some friction to the joints (to increase realism).</p>
+</details>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Untested, but effort interface available.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 
@@ -650,7 +689,7 @@ time you open the pixi shell. That script will automatically restart the <code>r
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../demos/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Demos">
+          <a href="../controllers/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Available Controllers and Broadcasters">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -660,20 +699,20 @@ time you open the pixi shell. That script will automatically restart the <code>r
                 Previous
               </span>
               <div class="md-ellipsis">
-                Demos
+                Available Controllers and Broadcasters
               </div>
             </div>
           </a>
         
         
           
-          <a href="../diagnostics/" class="md-footer__link md-footer__link--next" aria-label="Next: ROS2 Diagnostics">
+          <a href="../multi_machine_setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Multi-machine setup">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                ROS2 Diagnostics
+                Multi-machine setup
               </div>
             </div>
             <div class="md-footer__button md-icon">

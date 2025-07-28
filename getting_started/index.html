@@ -12,7 +12,7 @@
         <link rel="prev" href="..">
       
       
-        <link rel="next" href="../misc/new_robot_setup/">
+        <link rel="next" href="../misc/controllers/">
       
       
       <link rel="icon" href="../images/favicon.png">
@@ -504,12 +504,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../misc/new_robot_setup/" class="md-nav__link">
+      <a href="../misc/controllers/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Setting up a robot that is not available in the demos
+    Available Controllers and Broadcasters
     
   </span>
   
@@ -527,12 +527,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../misc/controllers/" class="md-nav__link">
+      <a href="../misc/demos/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Available Controllers and Broadcasters
+    Demos
     
   </span>
   
@@ -579,6 +579,29 @@
   
   <span class="md-ellipsis">
     ROS2 Diagnostics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../misc/new_robot_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting up a robot that is not available in the demos
     
   </span>
   
@@ -802,7 +825,7 @@
 <h2 id="1-getting-the-low-level-c-crisp-controller-ready">1. Getting the low-level C++ CRISP controller ready</h2>
 <p>The computer running the CRISP controller needs a real-time patch for the controller to run smoothly and safely. You can check out the <a href="https://frankarobotics.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel">Franka Robotics guide on how to set up a RT-patch.</a>
 On newer Ubuntu versions, you can use <a href="https://ubuntu.com/real-time">Ubuntu Pro</a> for an easy setup.</p>
-<p>Then, check if your robot is already included in one of our <a href="https://github.com/utiasDSL/crisp_controllers_demos">demos</a>. You can then follow the instructions there to start your robot(s) using a Docker container. Some of them offer the possibility to run the demos with simulated robots to test the setup.</p>
+<p>Then, check if your robot is already included in one of our demos, check <a href="../misc/demos/">how to run a demo</a> from our <a href="https://github.com/utiasDSL/crisp_controllers_demos">demos repository</a>. You can then follow the instructions there to start your robot(s) using a Docker container. Some of them offer the possibility to run the demos with simulated robots to test the setup.</p>
 <p>If your robot is not included in the demos that is not problem. Check out <a href="../misc/new_robot_setup/">How to set up a robot that is not available in the demos</a>. Once you get the controllers running, feel free to open a pull request on our repo to add it to the demos! We highly appreciate that!</p>
 <h2 id="2-use-the-python-interface-crisp_py-to-control-the-robot">2. Use the python <img alt="🐍" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f40d.svg" title=":snake:" /> interface CRISP_PY to control the robot</h2>
 <h3 id="installation">Installation</h3>
@@ -906,7 +929,7 @@ The cameras that we tested are:</p>
 <p>For gripper control, you need to make sure that a ROS2 node is running that accepts commands through a topic and publishes the state of the gripper.
 To use a:</p>
 <ul>
-<li>Franka Hand, you just need to start the demo. An adapter is already running to allow you to control the gripper this way,</li>
+<li>Franka Hand, you just need to start the demo. An <a href="https://github.com/utiasDSL/crisp_controllers_demos/blob/main/crisp_controllers_robot_demos/crisp_controllers_robot_demos/crisp_py_franka_hand_adapter.py">adapter</a> is already running to allow you to control the gripper this way,</li>
 <li>Dynamixel motor to control a gripper, we used the well-maintained <a href="https://github.com/ROBOTIS-GIT/dynamixel_hardware_interface">dynamixel_hardware_interface</a> with a position controller for the gripper.</li>
 </ul>
 <details class="example">
@@ -973,6 +996,10 @@ For your specific setup you need to:</p>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">        </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">        </span>--episode-index<span class="w"> </span><span class="m">0</span>
 </span></code></pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>LeRobot is subjected to rapid changes. This command might change in future versions.</p>
+</div>
 <h4 id="other-teleop-setups">Other teleop setups</h4>
 <p>You can add further teleop options to <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/teleop"><code>teleop/</code></a> and create 
 a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/scripts/record_data_leader_follower.py"><code>scripts/record_data_leader_follower.py</code></a></p>
@@ -983,6 +1010,10 @@ a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/m
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">          </span>--policy.type<span class="o">=</span>diffusion<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">          </span>--policy.repo_id<span class="o">=</span>&lt;your_account&gt;/&lt;policy_repo_name&gt;
 </span></code></pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>LeRobot is subjected to rapid changes. This command might change in future versions.</p>
+</div>
 <p>They provide the latest implementations of most VLA.
 Check <a href="https://github.com/huggingface/lerobot">LeRobot</a> for more information.</p>
 <h3 id="deploy-policy">Deploy policy</h3>
@@ -993,6 +1024,10 @@ Check <a href="https://github.com/huggingface/lerobot">LeRobot</a> for more info
 <ol>
 <li>..or if you want to interactively choose a model you can simply leave the argument empty.</li>
 </ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>LeRobot is subjected to rapid changes. This command might change in future versions.</p>
+</div>
 <p>Good job, now you can evaluate your model!</p>
 
 
@@ -1040,13 +1075,13 @@ Check <a href="https://github.com/huggingface/lerobot">LeRobot</a> for more info
         
         
           
-          <a href="../misc/new_robot_setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Setting up a robot that is not available in the demos">
+          <a href="../misc/controllers/" class="md-footer__link md-footer__link--next" aria-label="Next: Available Controllers and Broadcasters">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Setting up a robot that is not available in the demos
+                Available Controllers and Broadcasters
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1097,7 +1132,7 @@ Check <a href="https://github.com/huggingface/lerobot">LeRobot</a> for more info
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["header.autohide", "content.code.copy", "content.code.select", "content.code.annotate", "navigation.footer"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["header.autohide", "content.code.copy", "content.code.select", "content.code.annotate", "content.footnote.tooltips", "content.tooltips", "navigation.footer"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.56ea9cef.min.js"></script>

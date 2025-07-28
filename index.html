@@ -379,12 +379,12 @@
   
   
     <li class="md-nav__item">
-      <a href="misc/new_robot_setup/" class="md-nav__link">
+      <a href="misc/controllers/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Setting up a robot that is not available in the demos
+    Available Controllers and Broadcasters
     
   </span>
   
@@ -402,12 +402,12 @@
   
   
     <li class="md-nav__item">
-      <a href="misc/controllers/" class="md-nav__link">
+      <a href="misc/demos/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Available Controllers and Broadcasters
+    Demos
     
   </span>
   
@@ -454,6 +454,29 @@
   
   <span class="md-ellipsis">
     ROS2 Diagnostics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="misc/new_robot_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting up a robot that is not available in the demos
     
   </span>
   
@@ -542,11 +565,11 @@
 
 <p><img src="media/crisp_logo.webp" alt="CRISP Controllers Logo"/></p>
 <h1 id="crisp-compliant-ros2-controllers-for-learning-based-manipulation-policies">CRISP - <strong>C</strong>ompliant <strong>R</strong>OS2 Controllers for Learn<strong>i</strong>ng-Ba<strong>s</strong>ed Manipulation <strong>P</strong>olicies</h1>
-<p><em>Authors: <a href="https://danielsanjosepro.github.io">Daniel San Jose Pro</a>, <a href="https://oliver.hausdoerfer.de/">Oliver Hausdörfer</a>, <a href="https://ralfroemer99.github.io">Ralf Römer</a>, Maximilian Dösch <a href="https://amacati.github.io/">Martin Schuck</a> and Angela Schöllig.</em></p>
+<p><em>Authors: <a href="https://danielsanjosepro.github.io">Daniel San Jose Pro</a>, <a href="https://oliver.hausdoerfer.de/">Oliver Hausdörfer</a>, <a href="https://ralfroemer99.github.io">Ralf Römer</a>, Maximilian Dösch, <a href="https://amacati.github.io/">Martin Schuck</a> and Angela Schöllig.</em></p>
 <blockquote>
 <p>A Collection of C++ controllers for compliant torque-based control for manipulators compatible with <code>ros2_control</code>, including Operational Space Control and Cartesian Impedance Control. Developed for deploying high-level learning-based policies (VLA, Diffusion, ...) on your manipulator.</p>
 </blockquote>
-<p><em>If you use this work, please cite it using the bibtex below.</em></p>
+<p><em>If you use this work, please cite it using the <a href="#citing">bibtex</a> below.</em></p>
 <p>Check the <a href="https://github.com/utiasDSL/crisp_controllers">controllers (CRISP controllers) <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span></a> , robot <a href="https://github.com/utiasDSL/crisp_controllers_demos">demos (CRISP controllers demos) <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span></a>, a simple <a href="https://github.com/utiasDSL/crisp_py">python interface (CRISP_PY) <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span></a>, and a <a href="https://github.com/utiasDSL/crisp_gym">Gymnasium wrapper (CRISP_GYM) <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span></a> for real-world experiments.</p>
 <table>
 <thead>
@@ -715,7 +738,7 @@ Our controllers incorporate friction compensation, joint limit avoidance, and er
     
     
       
-      <script id="__config" type="application/json">{"base": ".", "features": ["header.autohide", "content.code.copy", "content.code.select", "content.code.annotate", "navigation.footer"], "search": "assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": ".", "features": ["header.autohide", "content.code.copy", "content.code.select", "content.code.annotate", "content.footnote.tooltips", "content.tooltips", "navigation.footer"], "search": "assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="assets/javascripts/bundle.56ea9cef.min.js"></script>
