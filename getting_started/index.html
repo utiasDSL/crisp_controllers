@@ -1029,7 +1029,7 @@ For your specific setup you need to:</p>
 <li>Define your own <code>ManipulatorEnvConfig</code>, check <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/manipulator_env_config.py"><code>manipulator_env_config.py</code></a>.</li>
 </ul>
 <p>Then, to record data use:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_data_leader_follower.py<span class="w"> </span><span class="se">\</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_lerobot_format_leader_follower.py<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">   </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="c1"># (1)!</span>
 </span></code></pre></div></p>
 <ol>
@@ -1049,7 +1049,7 @@ For your specific setup you need to:</p>
 </div>
 <h4 id="other-teleop-setups">Other teleop setups</h4>
 <p>You can add further teleop options to <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/teleop"><code>teleop/</code></a> and create 
-a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/scripts/record_data_leader_follower.py"><code>scripts/record_data_leader_follower.py</code></a></p>
+a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/scripts/record_lerobot_format_leader_follower.py"><code>scripts/record_lerobot_format_leader_follower.py</code></a></p>
 <h3 id="train-a-policy">Train a policy</h3>
 <p>You can use LeRobot train scripts to train a policy simply by running:
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.train<span class="w"> </span><span class="se">\</span>
