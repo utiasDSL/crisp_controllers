@@ -344,13 +344,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-adding-cameras-grippers-and-further-sensors" class="md-nav__link">
+  <a href="#3-adding-cameras-grippers-and-further-sensors-to-crisp_py" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Adding cameras, grippers, and further sensors
+      3. Adding cameras, grippers, and further sensors to CRISP_PY
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Adding cameras, grippers, and further sensors">
+    <nav class="md-nav" aria-label="3. Adding cameras, grippers, and further sensors to CRISP_PY">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -386,13 +386,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-using-the-gym" class="md-nav__link">
+  <a href="#4-getting-started-with-crisp_gym" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Using the Gym
+      4. Getting started with CRISP_GYM
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. Using the Gym">
+    <nav class="md-nav" aria-label="4. Getting started with CRISP_GYM">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -550,6 +550,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../misc/calibrate_gripper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to calibrate a gripper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../misc/multi_machine_setup/" class="md-nav__link">
         
   
@@ -688,13 +711,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-adding-cameras-grippers-and-further-sensors" class="md-nav__link">
+  <a href="#3-adding-cameras-grippers-and-further-sensors-to-crisp_py" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Adding cameras, grippers, and further sensors
+      3. Adding cameras, grippers, and further sensors to CRISP_PY
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Adding cameras, grippers, and further sensors">
+    <nav class="md-nav" aria-label="3. Adding cameras, grippers, and further sensors to CRISP_PY">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -730,13 +753,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-using-the-gym" class="md-nav__link">
+  <a href="#4-getting-started-with-crisp_gym" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Using the Gym
+      4. Getting started with CRISP_GYM
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. Using the Gym">
+    <nav class="md-nav" aria-label="4. Getting started with CRISP_GYM">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -834,9 +857,10 @@ It can be used in combination with <a href="https://robostack.github.io/">robost
 There are a few ways to get you started:</p>
 <p><em>... install from source:</em></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/utiasDSL/crisp_py
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pixi<span class="w"> </span>install
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pixi<span class="w"> </span>shell<span class="w"> </span>-e<span class="w"> </span>humble
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_py&quot;</span><span class="w">  </span><span class="c1"># (1)!</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>crisp_py
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pixi<span class="w"> </span>install
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>pixi<span class="w"> </span>shell<span class="w"> </span>-e<span class="w"> </span>humble
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_py&quot;</span><span class="w">  </span><span class="c1"># (1)!</span>
 </span></code></pre></div>
 <ol>
 <li>This should not log anything if everything is fine</li>
@@ -890,7 +914,7 @@ From now on, you can instantiate <code>Robot</code> objects to control the robot
 <li>This will request the controller manager to activate the cartesian impedance controller. You can use it with other controllers like the operational space controller!</li>
 </ol>
 </details>
-<h2 id="3-adding-cameras-grippers-and-further-sensors">3. Adding cameras, grippers, and further sensors</h2>
+<h2 id="3-adding-cameras-grippers-and-further-sensors-to-crisp_py">3. Adding cameras, grippers, and further sensors to CRISP_PY</h2>
 <h3 id="cameras">Cameras</h3>
 <p>To add a camera, you will need to run it in a separate container as well.
 The cameras that we tested are:</p>
@@ -963,13 +987,36 @@ To use a:</p>
 <h3 id="sensors">Sensors</h3>
 <p>You can add further sensors (Force Torque Sensor, Tactile Sensor...) by adding a custom <code>Sensor</code> that subscribes to a topic.
 Check the examples for more information.</p>
-<h2 id="4-using-the-gym">4. Using the Gym</h2>
-<p>Similar to <code>crisp_py</code>, we recommend using <code>pixi</code> to install <code>crisp_gym</code>.</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/utiasDSL/crisp_gym
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>pixi<span class="w"> </span>install
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>pixi<span class="w"> </span>shell<span class="w"> </span>-e<span class="w"> </span>humble
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_gym&quot;</span>
+<h2 id="4-getting-started-with-crisp_gym">4. Getting started with CRISP_GYM</h2>
+<p>Similar to <code>CRISP_PY</code>, we recommend using <code>pixi</code> to install <code>CRISP_GYM</code>.</p>
+<p><div class="language-sh highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/utiasDSL/crisp_gym
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">cd</span><span class="w"> </span>crisp_gym
 </span></code></pre></div>
+Now, you should set a few things before installing everything.
+Create a file <code>scripts/set_env.sh</code> which will be sourced every time that you run a command in your environment.
+The script will not be tracked by git.
+In this script you need to add a environment variables:</p>
+<ul>
+<li><code>ROS_DOMAIN_ID</code>: which is used to define nodes that should be able to see each other. In our <a href="../misc/demos/">demos</a> they are set to 100 as default.</li>
+<li><code>CRISP_CONFIG_PATH</code>: which should be the path to a config folder similar to <a href="https://github.com/utiasDSL/crisp_py/tree/main/config">config path of CRISP_PY</a>. The easiest way to do this is to clone CRISP_PY somewhere
+and set this environment variable to point to it.</li>
+</ul>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ROS_DOMAIN_ID</span><span class="o">=</span><span class="m">100</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CRISP_CONFIG_PATH</span><span class="o">=</span>/path/to/crisp_py/config<span class="w">  </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>Modify this!</li>
+</ol>
+<p>If you want to work in a multi-machine setup (e.g. policy runs in a different machine as controllers), then check <a href="../misc/multi_machine_setup/">how to setup multi-machine in ROS2</a>.</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">source</span><span class="w"> </span>scripts/configure.sh<span class="w">  </span><span class="c1"># (1)!</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>pixi<span class="w"> </span>install
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>pixi<span class="w"> </span>shell<span class="w"> </span>-e<span class="w"> </span>humble-lerobot
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_gym&quot;</span>
+</span></code></pre></div>
+<ol>
+<li>This will set some environment variable pre-installation as well as checking that you defined the previous script properly.</li>
+</ol>
+<p>If the previous steps worked, then you are good to go.</p>
 <h3 id="teleoperation-record-data-in-lerobotformat">Teleoperation: Record data in LeRobotFormat</h3>
 <p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">LeRobot</a>.
 You will need to use teleoperation to record data and we highly recommend using a leader-follower setup to generate episodes. </p>
@@ -982,8 +1029,8 @@ For your specific setup you need to:</p>
 <li>Define your own <code>ManipulatorEnvConfig</code>, check <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/manipulator_env_config.py"><code>manipulator_env_config.py</code></a>.</li>
 </ul>
 <p>Then, to record data use:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_data_leader_follower.py<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">   </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="c1"># (1)!</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/record_data_leader_follower.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">   </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="c1"># (1)!</span>
 </span></code></pre></div></p>
 <ol>
 <li>Add <code>--help</code> to check other parameters to pass to the record function.</li>
@@ -992,9 +1039,9 @@ For your specific setup you need to:</p>
 - First ask to choose the desired configuration files for the recording
 - Allow you to record episodes interactively using the keyboard</p>
 <p>After this, you can visualize the episodes with rerun visualizer and LeRobot utils:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.visualize_dataset<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">        </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">        </span>--episode-index<span class="w"> </span><span class="m">0</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.visualize_dataset<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">        </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">        </span>--episode-index<span class="w"> </span><span class="m">0</span>
 </span></code></pre></div></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1005,10 +1052,10 @@ For your specific setup you need to:</p>
 a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/scripts/record_data_leader_follower.py"><code>scripts/record_data_leader_follower.py</code></a></p>
 <h3 id="train-a-policy">Train a policy</h3>
 <p>You can use LeRobot train scripts to train a policy simply by running:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.train<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">          </span>--dataset.repo_id<span class="o">=</span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">          </span>--policy.type<span class="o">=</span>diffusion<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">          </span>--policy.repo_id<span class="o">=</span>&lt;your_account&gt;/&lt;policy_repo_name&gt;
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.train<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">          </span>--dataset.repo_id<span class="o">=</span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">          </span>--policy.type<span class="o">=</span>diffusion<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">          </span>--policy.push_to_hub<span class="o">=</span><span class="nb">false</span>
 </span></code></pre></div></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1018,11 +1065,10 @@ a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/m
 Check <a href="https://github.com/huggingface/lerobot">LeRobot</a> for more information.</p>
 <h3 id="deploy-policy">Deploy policy</h3>
 <p>After training with LeRobot, you can deploy the policy with:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/deploy_policy.py<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span>--path<span class="w"> </span>&lt;path_to_model&gt;<span class="w">  </span><span class="c1"># (1)!</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/deploy_policy.py<span class="w"> </span><span class="c1"># (1)!</span>
 </span></code></pre></div></p>
 <ol>
-<li>..or if you want to interactively choose a model you can simply leave the argument empty.</li>
+<li>The script will interactively allow you to choose a model inside <code>outputs/train</code>. If you want to explicitly pass a path you can override it with <code>--path</code></li>
 </ol>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>

@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../calibrate_gripper/">
+        <link rel="prev" href="../demos/">
       
       
-        <link rel="next" href="../diagnostics/">
+        <link rel="next" href="../multi_machine_setup/">
       
       
       <link rel="icon" href="../../images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Multi-machine setup - CRISP Controllers - Learning Systems Lab</title>
+        <title>How to calibrate a gripper - CRISP Controllers - Learning Systems Lab</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#using-cyclonedds-for-multi-machine-setups" class="md-skip">
+        <a href="#how-to-calibrate-a-gripper" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Multi-machine setup
+              How to calibrate a gripper
             
           </span>
         </div>
@@ -357,29 +357,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../calibrate_gripper/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    How to calibrate a gripper
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -395,7 +372,7 @@
   
   
   <span class="md-ellipsis">
-    Multi-machine setup
+    How to calibrate a gripper
     
   </span>
   
@@ -408,7 +385,7 @@
   
   
   <span class="md-ellipsis">
-    Multi-machine setup
+    How to calibrate a gripper
     
   </span>
   
@@ -429,27 +406,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#using-cyclonedds-for-multi-machine-setups" class="md-nav__link">
+  <a href="#how-to-calibrate-a-gripper" class="md-nav__link">
     <span class="md-ellipsis">
-      Using CycloneDDS for multi-machine setups
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-zenoh-for-multi-machine-setups" class="md-nav__link">
-    <span class="md-ellipsis">
-      Using Zenoh for multi-machine setups
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      Troubleshooting
+      How to calibrate a gripper
     </span>
   </a>
   
@@ -459,6 +418,29 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi_machine_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multi-machine setup
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -542,27 +524,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#using-cyclonedds-for-multi-machine-setups" class="md-nav__link">
+  <a href="#how-to-calibrate-a-gripper" class="md-nav__link">
     <span class="md-ellipsis">
-      Using CycloneDDS for multi-machine setups
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-zenoh-for-multi-machine-setups" class="md-nav__link">
-    <span class="md-ellipsis">
-      Using Zenoh for multi-machine setups
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      Troubleshooting
+      How to calibrate a gripper
     </span>
   </a>
   
@@ -584,66 +548,28 @@
 
 
 
-  <h1>Multi-machine setup</h1>
+  <h1>How to calibrate a gripper</h1>
 
-<p>To setup multiple machines, we recommend using a different RMW. Either go with Zenoh or CycloneDDS.
-We prefer to use CycloneDDS.</p>
-<h2 id="using-cyclonedds-for-multi-machine-setups">Using CycloneDDS for multi-machine setups</h2>
-<ol>
-<li>
-<p>Make sure that the Cyclone RMW is installed <code>ros-$ROS_DISTRO-rmw-cyclonedds-cpp</code>. If you use the <code>pixi.toml</code> provided
-    in this repo it should be the case. You can check it in the terminal by running<br />
-    <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ros2<span class="w"> </span>pkg<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>rmw_cyclonedds_cpp<span class="w">  </span><span class="c1"># (1)!</span>
+<h2 id="how-to-calibrate-a-gripper">How to calibrate a gripper</h2>
+<p>To grasp, make sure that you set the proper <code>min_value</code> and <code>max_value</code> in the config for the range in which the gripper joint moves.
+All joint values are normalized between 0 (closed) and 1 (open) and the joint values vary from <code>min_value</code> and <code>max_value</code>.</p>
+<p>To calibrate a gripper, use the <a href="https://github.com/utiasDSL/crisp_py/blob/main/scripts/gripper_manual_calibration.py">script</a> provided in <code>crisp_py</code>:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>scripts/gripper_manual_calibration.py<span class="w"> </span>--help
+</span></code></pre></div>
+The script will guide you in calibration procedure:
+<img alt="../media/gripper_calibration_output.png" src="../../media/gripper_calibration_output.png" /></p>
+<p>After this, control the gripper as follows:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">crisp_py.gripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gripper</span><span class="p">,</span> <span class="n">GripperConfig</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">gripper_config</span> <span class="o">=</span> <span class="n">GripperConfig</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s2">&quot;path/to/yaml&quot;</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># or gripper_config = GripperConfig(min_value=x.x, max_value=x.x)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">gripper</span> <span class="o">=</span> <span class="n">Gripper</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">gripper_config</span><span class="p">)</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">gripper</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>  <span class="c1"># equivalent to gripper.set_target(1.0)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">gripper</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># equivalent to gripper.set_target(0.0)</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">gripper</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">gripper</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 </span></code></pre></div></p>
-<ol>
-<li>this should print the package name if installed.</li>
-</ol>
-</li>
-<li>
-<p>Now you can setup the required environment variables:
-    <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ROS_DOMAIN_ID</span><span class="o">=</span>XXX<span class="w">  </span><span class="c1"># (1)! </span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">RMW_IMPLEMENTATION</span><span class="o">=</span>rmw_cyclonedds_cpp
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CYCLONEDDS_URI</span><span class="o">=</span>file:///path/to/cyclone_config.xml<span class="w">  </span><span class="c1"># (2)!</span>
-</span></code></pre></div></p>
-<ol>
-<li>Same as the robot you want to communicate with</li>
-<li><strong>TODO</strong>: change this!</li>
-</ol>
-<p>You can put this in a script called <code>scripts/personal_ros_env.sh</code>, which will be called be <code>scripts/set_ros_env.sh</code> every 
-time you open the pixi shell. That script will automatically restart the <code>ros2 daemon</code> so that the config is set.</p>
-</li>
-<li>
-<p>Update the config for your setup:
-    <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&lt;CycloneDDS<span class="w"> </span><span class="nv">xmlns</span><span class="o">=</span><span class="s2">&quot;https://cdds.io/config&quot;</span>&gt;
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>&lt;Domain&gt;
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>&lt;General&gt;
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span>&lt;AllowMulticast&gt;true&lt;/AllowMulticast&gt;
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span>&lt;Interfaces&gt;
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="hll"><span class="w">            </span>&lt;NetworkInterface<span class="w"> </span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;enx607d0937fb24&quot;</span><span class="w"> </span>/&gt;<span class="w">   </span><span class="c1"># (1)!</span>
-</span></span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span>&lt;/Interfaces&gt;
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span>&lt;/General&gt;
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span>&lt;Discovery&gt;
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span>&lt;ParticipantIndex&gt;auto&lt;/ParticipantIndex&gt;
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span>&lt;MaxAutoParticipantIndex&gt;100&lt;/MaxAutoParticipantIndex&gt;
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span>&lt;/Discovery&gt;
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>&lt;/Domain&gt;
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>&lt;/CycloneDDS&gt;
-</span></code></pre></div></p>
-<ol>
-<li>Modify this with your network interface: check <code>ip addr</code> on your shell.</li>
-</ol>
-</li>
-<li>
-<p>Finally, check that everything is working. If your robot is active, run <code>ros2 topic list</code> and you should see some topics listed!</p>
-</li>
-</ol>
-<h2 id="using-zenoh-for-multi-machine-setups">Using Zenoh for multi-machine setups</h2>
-<p><img alt="🚧" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f6a7.svg" title=":construction:" /></p>
-<h2 id="troubleshooting">Troubleshooting</h2>
-<ul>
-<li>Run <code>env | grep RMW_IMPLEMENTATION</code>, if the variable is not set, you need to make sure that the script <code>scripts/set_ros_env.sh</code> is being executed and that your script <code>scripts/personal_ros_env.sh</code> is properly defined.</li>
-<li>Be sure that the name of the interface is correct!</li>
-</ul>
 
 
 
@@ -673,7 +599,7 @@ time you open the pixi shell. That script will automatically restart the <code>r
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../calibrate_gripper/" class="md-footer__link md-footer__link--prev" aria-label="Previous: How to calibrate a gripper">
+          <a href="../demos/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Demos">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -683,20 +609,20 @@ time you open the pixi shell. That script will automatically restart the <code>r
                 Previous
               </span>
               <div class="md-ellipsis">
-                How to calibrate a gripper
+                Demos
               </div>
             </div>
           </a>
         
         
           
-          <a href="../diagnostics/" class="md-footer__link md-footer__link--next" aria-label="Next: ROS2 Diagnostics">
+          <a href="../multi_machine_setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Multi-machine setup">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                ROS2 Diagnostics
+                Multi-machine setup
               </div>
             </div>
             <div class="md-footer__button md-icon">
