@@ -1069,13 +1069,32 @@ For your specific setup you need to:</p>
 <ol>
 <li>Add <code>--help</code> to check other parameters to pass to the record function.</li>
 </ol>
-<p>The script is interactive. It will:
-- First ask to choose the desired configuration files for the recording
-- Allow you to record episodes interactively using the keyboard</p>
+<p>The script is interactive. It will first ask to choose the desired configuration files for the recording and then allow you to record episodes interactively.
+There are two recording methods currently available:</p>
+<ul>
+<li><code>keyboard</code> (default): It allows you to record episodes using the keyboard with the keys <ul>
+<li><strong>r</strong>(ecord start/stop) an episode,</li>
+<li><strong>d</strong>(elete episode) after recording a failed episode,</li>
+<li><strong>s</strong>(ave episode) after recording a succesful episode,</li>
+<li><strong>q</strong>(uit) after finishing.</li>
+</ul>
+</li>
+<li>
+<p><code>ros</code>: It uses the topic <code>recording_state</code> to catch <code>String</code> ROS2 messages to follow the same recording workflow as the keyboard. 
+    With this you can implement custom recording devices to control the recording workflow</p>
+<details class="example">
+<summary>Using the FR3 pilot buttons of Franka Robotics as a recording device</summary>
+<p>In our lab, we use the buttons of the leader robot as a recording device with the <a href="https://github.com/nakama-lab/franka-buttons">franka-buttons</a> repository.
+The following script uses the circle, cross, check and up buttons as a record, delete, save and quit commands respectively:
+<div class="language-py highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">TODO</span>
+</span></code></pre></div></p>
+</details>
+</li>
+</ul>
 <p>After this, you can visualize the episodes with rerun visualizer and LeRobot utils:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.visualize_dataset<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">        </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">        </span>--episode-index<span class="w"> </span><span class="m">0</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.visualize_dataset<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">        </span>--repo-id<span class="w"> </span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">        </span>--episode-index<span class="w"> </span><span class="m">0</span>
 </span></code></pre></div></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1086,10 +1105,10 @@ For your specific setup you need to:</p>
 a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/main/crisp_gym/scripts/record_lerobot_format_leader_follower.py"><code>scripts/record_lerobot_format_leader_follower.py</code></a></p>
 <h3 id="train-a-policy">Train a policy</h3>
 <p>You can use LeRobot train scripts to train a policy simply by running:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.train<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">          </span>--dataset.repo_id<span class="o">=</span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">          </span>--policy.type<span class="o">=</span>diffusion<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">          </span>--policy.push_to_hub<span class="o">=</span><span class="nb">false</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>lerobot<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>lerobot.scripts.train<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">          </span>--dataset.repo_id<span class="o">=</span>&lt;your_account&gt;/&lt;repo_name&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">          </span>--policy.type<span class="o">=</span>diffusion<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">          </span>--policy.push_to_hub<span class="o">=</span><span class="nb">false</span>
 </span></code></pre></div></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1099,7 +1118,7 @@ a similar record script as <a href="https://github.com/utiasDSL/crisp_gym/blob/m
 Check <a href="https://github.com/huggingface/lerobot">LeRobot</a> for more information.</p>
 <h3 id="deploy-policy">Deploy policy</h3>
 <p>After training with LeRobot, you can deploy the policy with:
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/deploy_policy.py<span class="w"> </span><span class="c1"># (1)!</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>humble-lerobot<span class="w"> </span>python<span class="w"> </span>scripts/deploy_policy.py<span class="w"> </span><span class="c1"># (1)!</span>
 </span></code></pre></div></p>
 <ol>
 <li>The script will interactively allow you to choose a model inside <code>outputs/train</code>. If you want to explicitly pass a path you can override it with <code>--path</code></li>
