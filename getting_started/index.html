@@ -881,6 +881,11 @@ On newer Ubuntu versions, you can use <a href="https://ubuntu.com/real-time">Ubu
 <p>If your robot is not included in the demos that is not problem. Check out <a href="../misc/new_robot_setup/">How to set up a robot that is not available in the demos</a>. Once you get the controllers running, feel free to open a pull request on our repo to add it to the demos! We highly appreciate that!</p>
 <h2 id="2-use-the-python-interface-crisp_py-to-control-the-robot">2. Use the python <img alt="🐍" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f40d.svg" title=":snake:" /> interface CRISP_PY to control the robot</h2>
 <h3 id="installation">Installation</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to use the gymnasium interface, CRISP_PY will be autonmatically installed in the gym. You can therefore check the installation of <a href="#4-getting-started-with-crisp_gym">CRISP_GYM</a>.
+However, this section still gives you an idea on how to use CRISP_PY with your robot. We do not recommend to skip it.</p>
+</div>
 <p>To use <code>CRISP_PY</code>, we recommend using <a href="https://pixi.sh/latest/">pixi</a> as a package manager, a modern conda-like package manager.
 It can be used in combination with <a href="https://robostack.github.io/">robostack</a> to easily install ROS2 in any machine.
 There are a few ways to get you started:</p>
@@ -951,8 +956,7 @@ The cameras that we tested are:</p>
 <li><a href="https://github.com/IntelRealSense/realsense-ros/tree/ros2-master">Real Sense</a> which gives amazing ROS2 support,</li>
 <li>and <a href="https://github.com/orbbec/OrbbecSDK_ROS2">Orbbec</a>.</li>
 </ul>
-<p>But any camera with <a href="https://github.com/christianrauch/camera_ros">camera_ros</a> should work.
-Check the <a href="../misc/demos/">demos</a> to see some examples with cameras</p>
+<p>But any camera with <a href="https://github.com/christianrauch/camera_ros">camera_ros</a> should work.</p>
 <details class="example">
 <summary>Example camera usage:</summary>
 <div class="language-py highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
