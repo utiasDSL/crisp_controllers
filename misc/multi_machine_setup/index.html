@@ -468,6 +468,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Using Zenoh for multi-machine setups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-host-machine-where-controllers-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      In the host machine - where controllers run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-the-remote-machine-where-the-learning-policy-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      In the remote machine - where the learning policy runs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -590,6 +614,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Using Zenoh for multi-machine setups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-host-machine-where-controllers-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      In the host machine - where controllers run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-the-remote-machine-where-the-learning-policy-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      In the remote machine - where the learning policy runs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -647,7 +695,7 @@ We prefer to use CycloneDDS.</p>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="hll"><span class="nb">export</span><span class="w"> </span><span class="nv">RMW_IMPLEMENTATION</span><span class="o">=</span>rmw_cyclonedds_cpp
 </span></span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="hll"><span class="nb">export</span><span class="w"> </span><span class="nv">CYCLONEDDS_URI</span><span class="o">=</span>file:///path/to/crisp_gym/scripts/cyclone_config.xml<span class="w">  </span><span class="c1"># (2)!</span>
 </span></span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="hll">
-</span></span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="hll">ros2<span class="w"> </span>daemon<span class="w"> </span>stop<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>ros2<span class="w"> </span>daemon<span class="w"> </span>start<span class="w">  </span><span class="c1"># (3)!</span>
+</span></span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="hll">ros2<span class="w"> </span>daemon<span class="w"> </span>stop<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ros2<span class="w"> </span>daemon<span class="w"> </span>start<span class="w">  </span><span class="c1"># (3)!</span>
 </span></span></code></pre></div></p>
 <ol>
 <li>Check the <a href="../../getting_started/">getting started</a> to see why we set this.</li>
@@ -682,27 +730,73 @@ Enter in the humble shell with <code>pixi shell -e humble</code> and if your rob
 </li>
 </ol>
 <h2 id="using-zenoh-for-multi-machine-setups">Using Zenoh for multi-machine setups</h2>
-<p><img alt="🚧" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f6a7.svg" title=":construction:" /></p>
+<blockquote>
+<p>Zenoh /zeno/ is a pub/sub/query protocol unifying data in motion, data at rest and computations. </p>
+</blockquote>
+<p>From <a href="https://zenoh.io/">Zenoh's website</a>.</p>
+<p>On the other-hand <a href="https://github.com/ros2/rmw_zenoh">rmw_zenoh</a> is a ROS middleware to use Zenoh as a the pub/sub communication instead of DDS developed by Intrinsic.
+To learn more about Zenoh, check their website and learn abour the Zenoh middleware in their repository.</p>
+<p>What is important for us to know about Zenoh is that a router is required for discovery similar to how roscore worked in ROS1.
+It can be configured with multicast and the avoid using the router but we will avoid a multicast setup since it might cause problems in some networks for example in universities.</p>
+<h3 id="in-the-host-machine-where-controllers-run">In the host machine - where controllers run</h3>
+<p>In the machine running the controllers, make sure that you start one Zenoh router.
+In the demos, we provide a service to start the router:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_zenoh_router
+</span></code></pre></div></p>
+<p>This will start a Zenoh router, then all other can be initialized.
+The zenoh versions of the docker services end with <code>_zenoh</code> and launch the same nodes with Zenoh instead of the default ROS middleware.</p>
+<h3 id="in-the-remote-machine-where-the-learning-policy-runs">In the remote machine - where the learning policy runs</h3>
+<p>In this part, we assume that you already installed the <a href="../../getting_started/#4-getting-started-with-crisp_gym">gym or python interface</a></p>
+<ol>
+<li>
+<p>Make sure that the Zenoh RMW is installed <code>ros-$ROS_DISTRO-rmw-zenoh-cpp</code>. If you use the <code>pixi.toml</code> provided 
+    in this repo it should be the case.</p>
+</li>
+<li>
+<p>Now you can modify your<code>scripts/set_env.sh</code> to include further configuration lines: 
+    <div class="language-bash highlight"><span class="filename">scripts/set_env.sh</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ROS_DOMAIN_ID</span><span class="o">=</span><span class="m">100</span><span class="w">  </span><span class="c1"># (1)! </span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CRISP_CONFIG_PATH</span><span class="o">=</span>/path/to/crisp_py/config<span class="w">  </span><span class="c1"># (1)!</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="hll"><span class="nb">export</span><span class="w"> </span><span class="nv">RMW_IMPLEMENTATION</span><span class="o">=</span>rmw_zenoh_cpp
+</span></span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="hll"><span class="nb">export</span><span class="w"> </span><span class="nv">ZENOH_CONFIG_OVERRIDE</span><span class="o">=</span><span class="s1">&#39;mode=&quot;client&quot;;\</span>
+</span></span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="hll"><span class="s1">  connect/endpoints=[&quot;tcp/YOUR_HOST_IP:7447&quot;]&#39;</span><span class="w">  </span><span class="c1"># (2)!</span>
+</span></span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="hll">
+</span></span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="hll">ros2<span class="w"> </span>daemon<span class="w"> </span>stop<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ros2<span class="w"> </span>daemon<span class="w"> </span>start<span class="w">  </span><span class="c1"># (3)!</span>
+</span></span></code></pre></div></p>
+<ol>
+<li>Check the <a href="../../getting_started/">getting started</a> to see why we set this.</li>
+<li><strong>TODO</strong>: modify this to use the IP address </li>
+<li>
+<p>The communication daemon needs to be restarted to account for the changes.</p>
+</li>
+<li>
+<p>Finally, check that everything is working. 
+Enter in the humble shell with <code>pixi shell -e humble</code> and if your robot is active, run <code>ros2 topic list</code> and you should see some topics listed!</p>
+</li>
+</ol>
+</li>
+</ol>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <ul>
+<li>Make sure that the Zenoh versions are the same across all the machines!</li>
 <li>Run <code>env | grep RMW_IMPLEMENTATION</code>, if the variable is not set, you need to make sure that the script <code>scripts/set_env.sh</code> is being executed!</li>
 <li>Be sure that the name of the interface is correct!</li>
 </ul>
 <h2 id="references">References</h2>
 <ul>
-<li>iRobot Middleware Config: https://iroboteducation.github.io/create3_docs/setup/xml-config/</li>
+<li>iRobot Middleware Config: <a href="https://iroboteducation.github.io/create3_docs/setup/xml-config/">https://iroboteducation.github.io/create3_docs/setup/xml-config/</a></li>
 <li>
-<p>MoveitPro customize DDS: https://docs.picknik.ai/how_to/configuration_tutorials/customize_dds_configuration/</p>
+<p>MoveitPro customize DDS: <a href="https://docs.picknik.ai/how_to/configuration_tutorials/customize_dds_configuration/">https://docs.picknik.ai/how_to/configuration_tutorials/customize_dds_configuration/</a></p>
 </li>
 <li>
-<p>Cyclone Run-Time-Configuration: https://github.com/eclipse-cyclonedds/cyclonedds/tree/a10ced3c81cc009e7176912190f710331a4d6caf#run-time-configuration</p>
+<p>Cyclone Run-Time-Configuration: <a href="https://github.com/eclipse-cyclonedds/cyclonedds/tree/a10ced3c81cc009e7176912190f710331a4d6caf#run-time-configuration">https://github.com/eclipse-cyclonedds/cyclonedds/tree/a10ced3c81cc009e7176912190f710331a4d6caf#run-time-configuration</a></p>
 </li>
-<li>StereoLabs improve performance: https://www.stereolabs.com/docs/ros2/dds_and_network_tuning#change-dds-middleware</li>
+<li>StereoLabs improve performance: <a href="https://www.stereolabs.com/docs/ros2/dds_and_network_tuning#change-dds-middleware">https://www.stereolabs.com/docs/ros2/dds_and_network_tuning#change-dds-middleware</a></li>
 <li>
-<p>Husarion DDS setup: https://husarion.com/tutorials/other-tutorials/husarnet-cyclone-dds/</p>
+<p>Husarion DDS setup: <a href="https://husarion.com/tutorials/other-tutorials/husarnet-cyclone-dds/">https://husarion.com/tutorials/other-tutorials/husarnet-cyclone-dds/</a></p>
 </li>
 <li>
-<p>ROS2 Doctor: https://docs.ros.org/en/kilted/Tutorials/Beginner-Client-Libraries/Getting-Started-With-Ros2doctor.html</p>
+<p>ROS2 Doctor: <a href="https://docs.ros.org/en/kilted/Tutorials/Beginner-Client-Libraries/Getting-Started-With-Ros2doctor.html">https://docs.ros.org/en/kilted/Tutorials/Beginner-Client-Libraries/Getting-Started-With-Ros2doctor.html</a></p>
 </li>
 </ul>
 
