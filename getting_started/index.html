@@ -956,7 +956,8 @@ The cameras that we tested are:</p>
 <li><a href="https://github.com/IntelRealSense/realsense-ros/tree/ros2-master">Real Sense</a> which gives amazing ROS2 support,</li>
 <li>and <a href="https://github.com/orbbec/OrbbecSDK_ROS2">Orbbec</a>.</li>
 </ul>
-<p>But any camera with <a href="https://github.com/christianrauch/camera_ros">camera_ros</a> should work.</p>
+<p>But any camera with <a href="https://github.com/christianrauch/camera_ros">camera_ros</a> should work.
+Check the <a href="../misc/demos/">demos</a> to see some examples with cameras</p>
 <details class="example">
 <summary>Example camera usage:</summary>
 <div class="language-py highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
@@ -1036,8 +1037,8 @@ In this script you need to add a environment variables:</p>
 and set this environment variable to point to it.</li>
 </ul>
 <div class="language-sh highlight"><span class="filename">scripts/set_env.sh</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ROS_DOMAIN_ID</span><span class="o">=</span><span class="m">100</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CRISP_CONFIG_PATH</span><span class="o">=</span>/path/to/crisp_py/config<span class="w">  </span><span class="c1"># (1)!</span>
-</span></code></pre></div>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="hll"><span class="nb">export</span><span class="w"> </span><span class="nv">CRISP_CONFIG_PATH</span><span class="o">=</span>/path/to/crisp_py/config<span class="w">  </span><span class="c1"># (1)!</span>
+</span></span></code></pre></div>
 <ol>
 <li>Modify this!</li>
 </ol>

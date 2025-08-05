@@ -643,6 +643,25 @@ Some other manipulators that couldd be added to this list is the <img alt="Open 
 </tr>
 </tbody>
 </table>
+<p>We also have some examples with cameras</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Robots</th>
+<th style="text-align: center;">Real Sense</th>
+<th style="text-align: center;">Orbecc</th>
+<th style="text-align: center;">Any webcam</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Camera demo</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❔<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+<td style="text-align: center;">❔<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+</tr>
+</tbody>
+</table>
 <h2 id="running-a-demo">Running a demo</h2>
 <ol>
 <li>(TEMPORARY) Clone the crisp controllers to the repo (later it will be part of the Dockerfile)
@@ -688,6 +707,10 @@ or
 Check <a href="../multi_machine_setup/">how to multi-machine setup</a>.
 To use the cyclone version you can call <code>launch_franka_cyclone</code> or <code>launch_dual_franka_cyclone</code> and setup the ip address of the router of your machine in the setup file.</p>
 </div>
+<p>For the cameras, you can run:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_realsense
+</span></code></pre></div></p>
+<p>Check the <code>docker-compose.yaml</code> to see how to define your own services.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <details>
 <summary>Rviz does not open when launch the robots. Why?</summary>
@@ -707,6 +730,9 @@ The mujoco files come from the mujoco menagerie and have been slightly modified 
 <ol>
 <li id="fn:1">
 <p>Untested, but effort interface available.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>TODO, still not available in the demos&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
