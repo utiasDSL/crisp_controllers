@@ -864,26 +864,25 @@
 
 
 <h1 id="getting-started">Getting started</h1>
-<p>Here is an overview of the framework.</p>
+<p>Here is an overview of the CRISP framework (please check our paper for details).</p>
 <p><img alt="Stack overview" src="../media/crisp_overview.png#only-light" />
 <img alt="Stack overview" src="../media/crisp_overview_dark.png#only-dark" /></p>
-<p>Overview</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 1. The first part is the setup for the low-level controllers, i.e., <a href="https://github.com/utiasDSL/crisp_controllers">crisp_controllers</a>.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 2. Then, you will try to move the robot using <a href="https://github.com/utiasDSL/crisp_py">CRISP_PY</a>.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 3. After that, you can include cameras in the setup and other sensors. </li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 4. Finally, you can set up <a href="https://github.com/utiasDSL/crisp_gym">CRISP_GYM</a> - the Gymnasium interface - and start policy deployment or teleoperation.</li>
 </ul>
-<h2 id="1-getting-the-low-level-c-crisp-controller-ready">1. Getting the low-level C++ CRISP controller ready</h2>
+<h2 id="1-getting-the-low-level-c-crisp-controller-ready">1. Getting the low-level C++ <a href="https://github.com/utiasDSL/crisp_controllers">CRISP</a> controller ready</h2>
 <p>The computer running the CRISP controller needs a real-time patch for the controller to run smoothly and safely. You can check out the <a href="https://frankarobotics.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel">Franka Robotics guide on how to set up a RT-patch.</a>
 On newer Ubuntu versions, you can use <a href="https://ubuntu.com/real-time">Ubuntu Pro</a> for an easy setup.</p>
 <p>Then, check if your robot is already included in one of our demos, check <a href="../misc/demos/">how to run a demo</a> from our <a href="https://github.com/utiasDSL/crisp_controllers_demos">demos repository</a>. You can then follow the instructions there to start your robot(s) using a Docker container. Some of them offer the possibility to run the demos with simulated robots to test the setup.</p>
 <p>If your robot is not included in the demos that is not problem. Check out <a href="../misc/new_robot_setup/">How to set up a robot that is not available in the demos</a>. Once you get the controllers running, feel free to open a pull request on our repo to add it to the demos! We highly appreciate that!</p>
-<h2 id="2-use-the-python-interface-crisp_py-to-control-the-robot">2. Use the python <img alt="🐍" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f40d.svg" title=":snake:" /> interface CRISP_PY to control the robot</h2>
+<h2 id="2-use-the-python-interface-crisp_py-to-control-the-robot">2. <img alt="🐍" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f40d.svg" title=":snake:" /> Use the python interface <a href="https://github.com/utiasDSL/crisp_py">CRISP_PY</a> to control the robot</h2>
 <h3 id="installation">Installation</h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you want to use the gymnasium interface, CRISP_PY will be autonmatically installed in the gym. You can therefore check the installation of <a href="#4-getting-started-with-crisp_gym">CRISP_GYM</a>.
+<p>If you want to use the gymnasium interface, CRISP_PY will be autonmatically installed in the gym. You can therefore check the installation of <a href="#4-getting-started-with-crisp_gym">CRISP_GYM</a> directly.
 However, this section still gives you an idea on how to use CRISP_PY with your robot. We do not recommend to skip it.</p>
 </div>
 <p>To use <code>CRISP_PY</code>, we recommend using <a href="https://pixi.sh/latest/">pixi</a> as a package manager, a modern conda-like package manager.
@@ -1022,7 +1021,7 @@ To use a:</p>
 <h3 id="sensors">Sensors</h3>
 <p>You can add further sensors (Force Torque Sensor, Tactile Sensor...) by adding a custom <code>Sensor</code> that subscribes to a topic.
 Check the examples for more information.</p>
-<h2 id="4-getting-started-with-crisp_gym">4. Getting started with CRISP_GYM</h2>
+<h2 id="4-getting-started-with-crisp_gym">4. Getting started with <a href="https://github.com/utiasDSL/crisp_gym">CRISP_GYM</a></h2>
 <p>Similar to <code>CRISP_PY</code>, we recommend using <code>pixi</code> to install <code>CRISP_GYM</code>.</p>
 <p><div class="language-sh highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/utiasDSL/crisp_gym
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">cd</span><span class="w"> </span>crisp_gym
