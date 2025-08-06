@@ -704,7 +704,7 @@ For more information on the controllers, check the <a href="../controllers/">ava
 <p>After launching your robot you should see that new controller are being loaded. If you get stuck somewhere in the process feel free to open an issue.</p>
 </li>
 <li>
-<p>Finally, to use the robots in CRISP_PY, add a configuration file for the new robot and gym environments that use it.</p>
+<p>Finally, to use the robots in CRISP_PY, add a configuration file for the new robot and Gymnasium environments that use it.</p>
 <details class="example">
 <summary>New robot config example</summary>
 <p><div class="language-py highlight"><span class="filename">my_new_robot/robot_config.py</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">crisp_py.robot_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">RobotConfig</span>
@@ -741,7 +741,7 @@ You can now use this config for your robot:
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="n">my_new_robot</span><span class="o">.</span><span class="n">home</span><span class="p">()</span>
 </span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="o">...</span>
 </span></code></pre></div>
-In a similar manner, you can add this config to an gym environment to create a gym env with this config!</p>
+In a similar manner, you can add this config to an Gymnasium environment to create a Gymnasium env with this config!</p>
 </details>
 </li>
 <li>
