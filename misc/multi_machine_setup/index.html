@@ -463,18 +463,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#in-the-host-machine-where-controllers-run" class="md-nav__link">
+  <a href="#in-the-host-machine-where-the-controllers-run" class="md-nav__link">
     <span class="md-ellipsis">
-      In the host machine - where controllers run
+      In the host machine (where the controllers run)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#in-the-remote-machine-where-the-learning-policy-runs" class="md-nav__link">
+  <a href="#in-the-remote-machine-where-the-learning-based-policy-runs" class="md-nav__link">
     <span class="md-ellipsis">
-      In the remote machine - where the learning policy runs
+      In the remote machine (where the learning-based policy runs)
     </span>
   </a>
   
@@ -496,18 +496,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#in-the-host-machine-where-controllers-run_1" class="md-nav__link">
+  <a href="#in-the-host-machine-where-controllers-run" class="md-nav__link">
     <span class="md-ellipsis">
-      In the host machine - where controllers run
+      In the host machine (where controllers run)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#in-the-remote-machine-where-the-learning-policy-runs_1" class="md-nav__link">
+  <a href="#in-the-remote-machine-where-the-learning-policy-runs" class="md-nav__link">
     <span class="md-ellipsis">
-      In the remote machine - where the learning policy runs
+      In the remote machine (where the learning policy runs)
     </span>
   </a>
   
@@ -633,18 +633,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#in-the-host-machine-where-controllers-run" class="md-nav__link">
+  <a href="#in-the-host-machine-where-the-controllers-run" class="md-nav__link">
     <span class="md-ellipsis">
-      In the host machine - where controllers run
+      In the host machine (where the controllers run)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#in-the-remote-machine-where-the-learning-policy-runs" class="md-nav__link">
+  <a href="#in-the-remote-machine-where-the-learning-based-policy-runs" class="md-nav__link">
     <span class="md-ellipsis">
-      In the remote machine - where the learning policy runs
+      In the remote machine (where the learning-based policy runs)
     </span>
   </a>
   
@@ -666,18 +666,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#in-the-host-machine-where-controllers-run_1" class="md-nav__link">
+  <a href="#in-the-host-machine-where-controllers-run" class="md-nav__link">
     <span class="md-ellipsis">
-      In the host machine - where controllers run
+      In the host machine (where controllers run)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#in-the-remote-machine-where-the-learning-policy-runs_1" class="md-nav__link">
+  <a href="#in-the-remote-machine-where-the-learning-policy-runs" class="md-nav__link">
     <span class="md-ellipsis">
-      In the remote machine - where the learning policy runs
+      In the remote machine (where the learning policy runs)
     </span>
   </a>
   
@@ -733,14 +733,13 @@ The setup with CycloneDDS uses multicast and might be a problem for your univers
 You might want to try Zenoh in that case, which uses a router for node discovery.</p>
 <h2 id="using-zenoh-for-multi-machine-setups">Using Zenoh for multi-machine setups</h2>
 <blockquote>
-<p>Zenoh /zeno/ is a pub/sub/query protocol unifying data in motion, data at rest and computations. </p>
+<p>Zenoh /zeno/ is a pub/sub/query protocol unifying data in motion, data at rest and computations - from <a href="https://zenoh.io/">Zenoh's website</a>.</p>
 </blockquote>
-<p>From <a href="https://zenoh.io/">Zenoh's website</a>.</p>
-<p>On the other-hand <a href="https://github.com/ros2/rmw_zenoh">rmw_zenoh</a> is a ROS middleware to use Zenoh as a the pub/sub communication instead of DDS developed by Intrinsic.
-To learn more about Zenoh, check their website and learn abour the Zenoh middleware in their repository.</p>
-<p>What is important for us to know about Zenoh is that a router is required for discovery similar to how roscore worked in ROS1.
+<p><a href="https://github.com/ros2/rmw_zenoh">rmw_zenoh</a> is a ROS middleware to use Zenoh as a the pub/sub communication instead of DDS developed by Intrinsic.
+To learn more about Zenoh, check their website and learn about the Zenoh middleware in their repository.</p>
+<p>What's important for us to know is that a router is required for discovery similar to how roscore worked in ROS1.
 It can be configured with multicast and the avoid using the router but we will avoid a multicast setup since it might cause problems in some networks for example in universities.</p>
-<h3 id="in-the-host-machine-where-controllers-run">In the host machine - where controllers run</h3>
+<h3 id="in-the-host-machine-where-the-controllers-run">In the host machine (where the controllers run)</h3>
 <p>In the machine running the controllers, make sure that you start one Zenoh router.
 In the <a href="https://github.com/utiasDSL/crisp_controllers_demos">demos repository</a>, we provide a service to start the router:
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_zenoh_router
@@ -750,8 +749,8 @@ To use the demos with <code>zenoh</code> as a middleware, pass the following env
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">RMW</span><span class="o">=</span>zenoh<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>...
 </span></code></pre></div>
 The setup in the host machine is done!</p>
-<h3 id="in-the-remote-machine-where-the-learning-policy-runs">In the remote machine - where the learning policy runs</h3>
-<p>In this part, we assume that you already installed the <a href="../../getting_started/#4-getting-started-with-crisp_gym">gym or python interface</a></p>
+<h3 id="in-the-remote-machine-where-the-learning-based-policy-runs">In the remote machine (where the learning-based policy runs)</h3>
+<p>In this part, we assume that you already installed the <a href="../../getting_started/#4-getting-started-with-crisp_gym">CRISP_PY or CRISP_GYM</a>.</p>
 <ol>
 <li>
 <p>Make sure that the Zenoh RMW is installed <code>ros-$ROS_DISTRO-rmw-zenoh-cpp</code>. If you use the <code>pixi.toml</code> provided 
@@ -782,7 +781,7 @@ Enter in the humble shell with <code>pixi shell -e humble</code> and if your rob
 </li>
 </ol>
 <h2 id="using-cyclonedds-for-multi-machine-setups">Using CycloneDDS for multi-machine setups</h2>
-<h3 id="in-the-host-machine-where-controllers-run_1">In the host machine - where controllers run</h3>
+<h3 id="in-the-host-machine-where-controllers-run">In the host machine (where controllers run)</h3>
 <p>To use the demos with <code>cyclone</code> as a middleware, pass the following environment variable to the services:
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">RMW</span><span class="o">=</span>cyclone<span class="w"> </span><span class="nv">ROS_NETWORK_INTERFACE</span><span class="o">=</span>enpXXXXXX<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>...<span class="w">  </span><span class="c1"># (1)!</span>
 </span></code></pre></div></p>
@@ -790,7 +789,7 @@ Enter in the humble shell with <code>pixi shell -e humble</code> and if your rob
 <li>Modify this with your network interface: check <code>ip addr</code> on your shell. Otherwise it will just use <code>lo</code> as default.</li>
 </ol>
 <p>If you are using a custom robot, check the <code>setup_cyclone.sh</code> script to see how it is being configured.</p>
-<h3 id="in-the-remote-machine-where-the-learning-policy-runs_1">In the remote machine - where the learning policy runs</h3>
+<h3 id="in-the-remote-machine-where-the-learning-policy-runs">In the remote machine (where the learning policy runs)</h3>
 <ol>
 <li>
 <p>Make sure that the Cyclone RMW is installed <code>ros-$ROS_DISTRO-rmw-cyclonedds-cpp</code>. If you use the <code>pixi.toml</code> provided

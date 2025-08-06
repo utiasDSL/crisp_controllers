@@ -868,9 +868,9 @@
 <p><img alt="Stack overview" src="../media/crisp_overview.png#only-light" />
 <img alt="Stack overview" src="../media/crisp_overview_dark.png#only-dark" /></p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 1. The first part is the setup for the low-level controllers, i.e., <a href="https://github.com/utiasDSL/crisp_controllers">crisp_controllers</a>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 2. Then, you will try to move the robot using <a href="https://github.com/utiasDSL/crisp_py">CRISP_PY</a>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 3. After that, you can include cameras in the setup and other sensors. </li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 1. The first part is the setup for the low-level <a href="https://github.com/utiasDSL/crisp_controllers">crisp_controllers</a>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 2. Then, you will try moving the robot using <a href="https://github.com/utiasDSL/crisp_py">CRISP_PY</a> python interface.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 3. Then, you can optionally include additional cameras and other sensors in your setup. </li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> 4. Finally, you can set up <a href="https://github.com/utiasDSL/crisp_gym">CRISP_GYM</a> - the Gymnasium interface - and start policy deployment or teleoperation.</li>
 </ul>
 <h2 id="1-getting-the-low-level-c-crisp-controller-ready">1. Getting the low-level C++ <a href="https://github.com/utiasDSL/crisp_controllers">CRISP</a> controller ready</h2>
@@ -1051,7 +1051,7 @@ and set this environment variable to point to it.</li>
 <li>This will set some environment variable pre-installation as well as checking that you defined the previous script properly.</li>
 </ol>
 <p>If the previous steps worked, then you are good to go.</p>
-<h3 id="teleoperation-record-data-in-lerobotformat">Teleoperation: Record data in LeRobotFormat</h3>
+<h3 id="teleoperation-record-data-in-lerobotformat">Teleoperation: Record data in <a href="https://github.com/huggingface/lerobot">LeRobotFormat</a></h3>
 <p>You can record data in <code>LeRobotFormat</code> to train a policy directly in <a href="https://github.com/huggingface/lerobot">LeRobot</a>.
 You will need to use teleoperation to record data and we highly recommend using a leader-follower setup to generate episodes. </p>
 <h4 id="leader-follower">Leader-follower</h4>
