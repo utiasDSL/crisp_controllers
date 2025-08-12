@@ -613,9 +613,27 @@
 
   <h1>Demos</h1>
 
+<p>You can use the demos to start robots and cameras in simulation or real and command them using CRISP_PY and CRISP_GYM.
+For instance, you could run in one terminal shell the container for your robot and different shells the containers for
+the cameras.</p>
+<details class="example">
+<summary>Example setup in our lab</summary>
+<p>First we start our robots (FR3s):
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_dual_franka
+</span></code></pre></div>
+Then we start the cameras:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">CAMERA_NAMESPACE</span><span class="o">=</span>right<span class="w"> </span><span class="nv">SERIAL_NO</span><span class="o">=</span>xxxxxxxx<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_realsense
+</span></code></pre></div>
+...and another camera:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">CAMERA_NAMESPACE</span><span class="o">=</span>right<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_camera
+</span></code></pre></div>
+We have a zellij/tmux session which starts all of these commands in individual panes, to be able to stop and restart them easily.
+Then, we are able interact with these containers directly using CRISP_PY or CRISP_GYM.</p>
+<p>Check "Running a demo" for more information on how to launch the demos.</p>
+</details>
 <h2 id="available-demos">Available demos</h2>
 <p>For now, these are the available demos in this repository. New demos are welcome, in particular if tested with real hardware.
-Some other manipulators that could be added to this list is the <a href="https://github.com/ROBOTIS-GIT/open_manipulator">Open Manipulator</a> or other dual setups.</p>
+Some other manipulators that could be added to this list is <a href="https://github.com/Duatic/dynaarm_driver">Duatic</a> or other dual setups.</p>
 <table>
 <thead>
 <tr>
@@ -649,25 +667,25 @@ Some other manipulators that could be added to this list is the <a href="https:/
 <tr>
 <th style="text-align: left;">Robots</th>
 <th style="text-align: center;">Real Sense</th>
+<th style="text-align: center;">Any Camera / Webcam</th>
 <th style="text-align: center;">Orbecc</th>
-<th style="text-align: center;">Any webcam</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">Camera demo</td>
 <td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
 <td style="text-align: center;">❔<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
-<td style="text-align: center;">❔<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
 </tr>
 </tbody>
 </table>
 <h2 id="running-a-demo">Running a demo</h2>
 <ol>
 <li>(TEMPORARY) Clone the crisp controllers to the repo (later it will be part of the Dockerfile)
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:utiasDSL/crisp_controllers_demos.git<span class="w"> </span>crisp_controllers_demos
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>crisp_controllers_demos
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:utiasDSL/crisp_controllers.git<span class="w"> </span>crisp_controllers
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:utiasDSL/crisp_controllers_demos.git<span class="w"> </span>crisp_controllers_demos
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">cd</span><span class="w"> </span>crisp_controllers_demos
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:utiasDSL/crisp_controllers.git<span class="w"> </span>crisp_controllers
 </span></code></pre></div></li>
 </ol>
 <div class="admonition warning">
@@ -676,25 +694,25 @@ Some other manipulators that could be added to this list is the <a href="https:/
 </div>
 <ol>
 <li>Build and start the provided container.
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>build
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>build
 </span></code></pre></div></li>
 <li>
 <p>Start your robot:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_iiwa
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_iiwa
 </span></code></pre></div>
 or
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">LEFT_ROBOT_IP</span><span class="o">=</span><span class="m">172</span>.16.1.2<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nv">RIGHT_ROBOT_IP</span><span class="o">=</span><span class="m">172</span>.16.0.2<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nv">FRANKA_FAKE_HARDWARE</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_dual_franka
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">LEFT_ROBOT_IP</span><span class="o">=</span><span class="m">172</span>.16.1.2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">RIGHT_ROBOT_IP</span><span class="o">=</span><span class="m">172</span>.16.0.2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nv">FRANKA_FAKE_HARDWARE</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_dual_franka
 </span></code></pre></div>
 or
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">ROBOT_IP</span><span class="o">=</span><span class="m">172</span>.16.0.2<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">FRANKA_FAKE_HARDWARE</span><span class="o">=</span>true<span class="se">\</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_franka
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">ROBOT_IP</span><span class="o">=</span><span class="m">172</span>.16.0.2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">FRANKA_FAKE_HARDWARE</span><span class="o">=</span>true<span class="se">\</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_franka
 </span></code></pre></div>
 or
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_kinova
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_kinova
 </span></code></pre></div></p>
 </li>
 <li>
@@ -706,12 +724,15 @@ or
 <p>If you work in different machines (using <a href="https://github.com/utiasDSL/crisp_py">crisp_py</a> or others) you might want to consider using a different RMW.
 Check <a href="../multi_machine_setup/">how to multi-machine setup</a>.
 To use a different middleware just pass an extra environment variable:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">RMW</span><span class="o">=</span>&lt;zenoh<span class="p">|</span>cyclone&gt;<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>...
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">RMW</span><span class="o">=</span>&lt;zenoh<span class="p">|</span>cyclone&gt;<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>...
 </span></code></pre></div></p>
 </div>
-<p>For the cameras, you can run:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_realsense
-</span></code></pre></div></p>
+<p>For the cameras, you can run:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_camera
+</span></code></pre></div>
+<p>...and in case you are running a realsense:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>launch_realsense
+</span></code></pre></div>
 <p>Check the <code>docker-compose.yaml</code> to see how to define your own services.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <details>
@@ -734,7 +755,7 @@ The mujoco files come from the mujoco menagerie and have been slightly modified 
 <p>Untested, but effort interface available.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>TODO, still not available in the demos&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>TODO, still not available in the demos&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
