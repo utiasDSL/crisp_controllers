@@ -864,6 +864,11 @@
 
 
 <h1 id="getting-started">Getting started</h1>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If anything in the guide seems unclear to you, do not hesitate to open an issue or start discussion in our repositories.
+Our goal is to make demistify robotics, not make it harder.</p>
+</div>
 <p>Here is an overview of the CRISP framework (please check our paper for details).</p>
 <p><img alt="Stack overview" src="../media/crisp_overview.png#only-light" />
 <img alt="Stack overview" src="../media/crisp_overview_dark.png#only-dark" /></p>
@@ -889,30 +894,30 @@ However, this section still gives you an idea on how to use CRISP_PY with your r
 <p>To use <code>CRISP_PY</code>, we recommend using <a href="https://pixi.sh/latest/">pixi</a> as a package manager, a modern conda-like package manager.
 It can be used in combination with <a href="https://robostack.github.io/">robostack</a> to easily install ROS2 in any machine.
 There are a few ways to get you started:</p>
-<p><em>... install from source:</em></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/utiasDSL/crisp_py
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>crisp_py
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pixi<span class="w"> </span>install
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>pixi<span class="w"> </span>shell<span class="w"> </span>-e<span class="w"> </span>humble
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_py&quot;</span><span class="w">  </span><span class="c1"># (1)!</span>
-</span></code></pre></div>
-<ol>
-<li>This should not log anything if everything is fine</li>
-</ol>
 <p><em>... use in your already existing pixi project:</em></p>
 <p>To use <code>CRISP_PY</code> in an already existing pixi project, you need to make sure that <code>ROS2</code> is available.
 Check the <a href="https://github.com/utiasDSL/crisp_py/blob/main/pixi.toml">pixi.toml</a> of <code>CRISP_PY</code> to see how this looks like.
 Then you can add <code>CRISP_PY</code> as a pypi package:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pixi<span class="w"> </span>add<span class="w"> </span>--pypi<span class="w"> </span>crisp-python
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pixi<span class="w"> </span>add<span class="w"> </span>--pypi<span class="w"> </span>crisp-python
 </span></code></pre></div>
 or
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>add<span class="w"> </span>crisp-python
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>add<span class="w"> </span>crisp-python
 </span></code></pre></div>
 or
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip<span class="w"> </span>install<span class="w"> </span>crisp-python
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>crisp-python
 </span></code></pre></div>
 Double-check that everything is working by running:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_py&quot;</span><span class="w">  </span><span class="c1"># (1)!</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_py&quot;</span><span class="w">  </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>This should not log anything if everything is fine</li>
+</ol>
+<p><em>... install from source:</em></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/utiasDSL/crisp_py
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">cd</span><span class="w"> </span>crisp_py
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>pixi<span class="w"> </span>install
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>pixi<span class="w"> </span>shell<span class="w"> </span>-e<span class="w"> </span>humble
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import crisp_py&quot;</span><span class="w">  </span><span class="c1"># (1)!</span>
 </span></code></pre></div>
 <ol>
 <li>This should not log anything if everything is fine</li>
@@ -953,11 +958,11 @@ From now on, you can instantiate <code>Robot</code> objects to control the robot
 <p>To add a camera, you will need to run it in a separate container as well.
 The cameras that we tested are:</p>
 <ul>
+<li>Any usb camera or webcam using the <a href="https://github.com/ros-drivers/usb_cam">ROS2 usb-cam</a> package,</li>
 <li><a href="https://github.com/IntelRealSense/realsense-ros/tree/ros2-master">Real Sense</a> which gives amazing ROS2 support,</li>
 <li>and <a href="https://github.com/orbbec/OrbbecSDK_ROS2">Orbbec</a>.</li>
 </ul>
-<p>But any camera with <a href="https://github.com/christianrauch/camera_ros">camera_ros</a> should work.
-Check the <a href="../misc/demos/">demos</a> to see some examples with cameras</p>
+<p>Check the <a href="../misc/demos/">demos</a> to see some examples with cameras</p>
 <details class="example">
 <summary>Example camera usage:</summary>
 <div class="language-py highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
@@ -966,8 +971,8 @@ Check the <a href="../misc/demos/">demos</a> to see some examples with cameras</
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">camera_config</span> <span class="o">=</span> <span class="n">CameraConfig</span><span class="p">(</span>
 </span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">camera_name</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">,</span>
 </span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">resolution</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>  <span class="c1"># (1)!</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">camera_color_image_topic</span><span class="o">=</span><span class="s2">&quot;camera_name/color/image_raw&quot;</span><span class="p">,</span>  <span class="c1"># (2)!</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="n">camera_color_info_topic</span><span class="o">=</span><span class="s2">&quot;camera_name/color/camera_info&quot;</span><span class="p">,</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">camera_color_image_topic</span><span class="o">=</span><span class="s2">&quot;image_raw&quot;</span><span class="p">,</span>  <span class="c1"># (2)!</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="n">camera_color_info_topic</span><span class="o">=</span><span class="s2">&quot;camera_info&quot;</span><span class="p">,</span>
 </span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">)</span>
 </span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
 </span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="n">camera</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">camera_config</span><span class="p">)</span>  <span class="c1"># (3)!</span>
@@ -978,7 +983,7 @@ Check the <a href="../misc/demos/">demos</a> to see some examples with cameras</
 </span></code></pre></div>
 <ol>
 <li>You can define a custom resolution, independently of the resolution of the published image.</li>
-<li>Set here the topic of your custom camera name</li>
+<li>Set here the topic of your custom camera name. crisp_py uses compressed images, so make sure that this topic is available as well.</li>
 <li>You can also pass <code>namespace="..."</code> to give the camera a namespace. This is required for a bimanual setup.</li>
 <li>Make sure that we received an image. This will fail with a timeout if the topic is wrong or the camera is not publishing.</li>
 <li>This will show you the latest received image!</li>
@@ -1032,15 +1037,17 @@ Create a file <code>scripts/set_env.sh</code> which will be sourced every time t
 The script will not be tracked by git.
 In this script you need to add a environment variables:</p>
 <ul>
-<li><code>ROS_DOMAIN_ID</code>: which is used to define nodes that should be able to see each other. In our <a href="../misc/demos/">demos</a> they are set to 100 as default.</li>
-<li><code>CRISP_CONFIG_PATH</code>: which should be the path to a config folder similar to <a href="https://github.com/utiasDSL/crisp_py/tree/main/config">config path of CRISP_PY</a>. The easiest way to do this is to clone CRISP_PY somewhere
-and set this environment variable to point to it.</li>
+<li><code>ROS_DOMAIN_ID</code> <strong>(Required)</strong>: which is used to define nodes that should be able to see each other. In our <a href="../misc/demos/">demos</a> they are set to 100 as default.</li>
+<li><code>CRISP_CONFIG_PATH</code> <strong>(Optional)</strong>: which should be the path to a config folder similar to <a href="https://github.com/utiasDSL/crisp_py/tree/main/config">config path of CRISP_PY</a>. 
+    If this environment variable is unset, the default configurations will be used.
+    If the user wants to add configurations, simply create a folder with your own configs and make this environment variable point to that config folder.</li>
 </ul>
-<div class="language-sh highlight"><span class="filename">scripts/set_env.sh</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ROS_DOMAIN_ID</span><span class="o">=</span><span class="m">100</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="hll"><span class="nb">export</span><span class="w"> </span><span class="nv">CRISP_CONFIG_PATH</span><span class="o">=</span>/path/to/crisp_py/config<span class="w">  </span><span class="c1"># (1)!</span>
-</span></span></code></pre></div>
+<div class="language-sh highlight"><span class="filename">scripts/set_env.sh</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GIT_LFS_SKIP_SMUDGE</span><span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="c1"># (1)!</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="hll"><span class="nb">export</span><span class="w"> </span><span class="nv">ROS_DOMAIN_ID</span><span class="o">=</span><span class="m">100</span>
+</span></span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CRISP_CONFIG_PATH</span><span class="o">=</span>/path/to/config/folder<span class="w">  </span><span class="c1"># optional</span>
+</span></code></pre></div>
 <ol>
-<li>Modify this!</li>
+<li>Required for now to install LeRobot</li>
 </ol>
 <p>If you want to work in a multi-machine setup (e.g. policy runs in a different machine as controllers), then check <a href="../misc/multi_machine_setup/">how to setup multi-machine in ROS2</a>.</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">source</span><span class="w"> </span>scripts/configure.sh<span class="w">  </span><span class="c1"># (1)!</span>
