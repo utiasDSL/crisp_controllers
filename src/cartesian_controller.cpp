@@ -97,21 +97,17 @@ CartesianController::update(const rclcpp::Time &time,
   /*target_pose_ = pinocchio::SE3(target_orientation_.toRotationMatrix(),
    * target_position_);*/
   end_effector_pose = data_.oMf[end_effector_frame_id];
+  const pinocchio::SE3 base_frame_pose = data_.oMf[base_frame_id];
+
+  end_effector_pose_b = base_frame_pose.inverse() * end_effector_pose;
+  // target_pose_b = base_frame_pose.inverse() * target_pose_;
+  // pinocchio::SE3 new_target_pose_b = base_frame_pose.inverse() * new_target_pose;
 
   // We consider translation and rotation separately to avoid unatural screw
   // motions
-  if (params_.use_local_jacobian) {
-    error.head(3) =
-        end_effector_pose.rotation().transpose() *
-        (target_pose_.translation() - end_effector_pose.translation());
-    error.tail(3) = pinocchio::log3(end_effector_pose.rotation().transpose() *
-                                    target_pose_.rotation());
-  } else {
-    error.head(3) =
-        target_pose_.translation() - end_effector_pose.translation();
-    error.tail(3) = pinocchio::log3(target_pose_.rotation() *
-                                    end_effector_pose.rotation().transpose());
-  }
+  error.head(3) = target_pose_.translation() - end_effector_pose_b.translation();
+  error.tail(3) = pinocchio::log3(target_pose_.rotation() * end_effector_pose_b.rotation().transpose());
+
 
   if (params_.limit_error) {
     max_delta_ << params_.task.error_clip.x, params_.task.error_clip.y, params_.task.error_clip.z, 
@@ -120,11 +116,19 @@ CartesianController::update(const rclcpp::Time &time,
   }
 
   J.setZero();
-  auto reference_frame = params_.use_local_jacobian
-                             ? pinocchio::ReferenceFrame::LOCAL
-                             : pinocchio::ReferenceFrame::WORLD;
-  pinocchio::computeFrameJacobian(model_, data_, q_pin, end_effector_frame_id,
-                                  reference_frame, J);
+  if (params_.use_local_jacobian) {
+    Eigen::MatrixXd J_local(6, model_.nv);
+    pinocchio::computeFrameJacobian(model_, data_, q_pin, end_effector_frame_id,
+                                    pinocchio::ReferenceFrame::LOCAL, J_local);
+    const Eigen::Matrix<double,6,6> Ad_be = end_effector_pose_b.toActionMatrix();
+    J.noalias() = Ad_be * J_local;
+  } else {
+    Eigen::MatrixXd J_world(6, model_.nv);
+    pinocchio::computeFrameJacobian(model_, data_, q_pin, end_effector_frame_id,
+                                    pinocchio::ReferenceFrame::WORLD, J_world);
+    const Eigen::Matrix<double,6,6> Ad_bw = base_frame_pose.inverse().toActionMatrix();
+    J.noalias() = Ad_bw * J_world;
+  }
 
   Eigen::MatrixXd J_pinv(model_.nv, 6);
   J_pinv = pseudo_inverse(J, params_.nullspace.regularization);
@@ -308,6 +312,7 @@ CallbackReturn CartesianController::on_configure(
   }
 
   end_effector_frame_id = model_.getFrameId(params_.end_effector_frame);
+  base_frame_id = model_.getFrameId(params_.base_frame);
   q = Eigen::VectorXd::Zero(model_.nv);
   q_pin = Eigen::VectorXd::Zero(model_.nq);
   dq = Eigen::VectorXd::Zero(model_.nv);
@@ -477,8 +482,13 @@ CallbackReturn CartesianController::on_activate(
 
   end_effector_pose = data_.oMf[end_effector_frame_id];
 
-  target_position_ = end_effector_pose.translation();
-  target_orientation_ = Eigen::Quaterniond(end_effector_pose.rotation());
+  const pinocchio::SE3 T_wb = data_.oMf[base_frame_id];
+  const pinocchio::SE3 T_bw = T_wb.inverse();
+
+  end_effector_pose_b = T_bw * end_effector_pose;
+
+  target_position_ = end_effector_pose_b.translation();
+  target_orientation_ = Eigen::Quaterniond(end_effector_pose_b.rotation());
   target_pose_ =
       pinocchio::SE3(target_orientation_.toRotationMatrix(), target_position_);
 

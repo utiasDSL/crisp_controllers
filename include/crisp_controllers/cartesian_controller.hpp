@@ -258,6 +258,9 @@ private:
    * @return true if publisher count is safe (<=1), false otherwise
    */
   bool check_topic_publisher_count(const std::string& topic_name);
+
+  pinocchio::SE3 end_effector_pose_b;
+  int base_frame_id;
 };
 
 } // namespace crisp_controllers
