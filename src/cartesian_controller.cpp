@@ -63,20 +63,15 @@ CartesianController::update(const rclcpp::Time &time,
         model_.getJointId(joint_name); // pinocchio joind id might be different
     auto joint = model_.joints[joint_id];
 
-    /*q[i] = exponential_moving_average(q[i], state_interfaces_[i].get_value(),*/
-    /*                                  params_.filter.q);*/
     q[i] = state_interfaces_[i].get_value();
-    if (continous_joint_types.count(
-                   joint.shortname())) { // Then we are handling a continous
-                                         // joint that is SO(2)
+    if (continous_joint_types.count(joint.shortname())) { 
+      // Then we are handling a continous joint that is SO(2)
       q_pin[joint.idx_q()] = std::cos(q[i]);
       q_pin[joint.idx_q() + 1] = std::sin(q[i]);
-    } else {  // simple revolute joint case
+    } else {  
+    // simple revolute joint case
       q_pin[joint.idx_q()] = q[i];
     }
-    /*dq[i] = exponential_moving_average(*/
-    /*    dq[i], state_interfaces_[num_joints + i].get_value(),*/
-    /*    params_.filter.dq);*/
     dq[i] = state_interfaces_[num_joints + i].get_value();
   }
 
@@ -94,14 +89,10 @@ CartesianController::update(const rclcpp::Time &time,
       pinocchio::log6(target_pose_), pinocchio::log6(new_target_pose),
       params_.filter.target_pose));
 
-  /*target_pose_ = pinocchio::SE3(target_orientation_.toRotationMatrix(),
-   * target_position_);*/
   end_effector_pose = data_.oMf[end_effector_frame_id];
   const pinocchio::SE3 base_frame_pose = data_.oMf[base_frame_id];
 
   end_effector_pose_b = base_frame_pose.inverse() * end_effector_pose;
-  // target_pose_b = base_frame_pose.inverse() * target_pose_;
-  // pinocchio::SE3 new_target_pose_b = base_frame_pose.inverse() * new_target_pose;
 
   // We consider translation and rotation separately to avoid unatural screw
   // motions
@@ -163,7 +154,7 @@ CartesianController::update(const rclcpp::Time &time,
   }
 
   if (model_.nq != model_.nv) {
-    // TODO: Then we have some continouts joints, not being handled for now
+    // TODO: Joint liimits for continous joints not implemented yet
     tau_joint_limits = Eigen::VectorXd::Zero(model_.nv);
   } else {
     tau_joint_limits = get_joint_limit_torque(q, model_.lowerPositionLimit,
@@ -201,8 +192,6 @@ CartesianController::update(const rclcpp::Time &time,
   if (params_.limit_torques) {
     tau_d = saturateTorqueRate(tau_d, tau_previous, params_.max_delta_tau);
   }
-  /*tau_d = exponential_moving_average(tau_d, tau_previous,*/
-  /*                                   params_.filter.output_torque);*/
 
   if (not params_.stop_commands) {
     for (size_t i = 0; i < num_joints; ++i) {
