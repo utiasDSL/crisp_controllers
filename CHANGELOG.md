@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/utiasDSL/crisp_controllers/compare/v1.2.0...v1.2.1) (2025-10-21)
+
+
+### Bug Fixes
+
+* Rollback jittery controller ([5d78af9](https://github.com/utiasDSL/crisp_controllers/commit/5d78af9f9f1b2b2aa3bfe089eb6b33a03ce33858))
+
 ## [1.2.0](https://github.com/utiasDSL/crisp_controllers/compare/v1.1.0...v1.2.0) (2025-10-18)
 
 
