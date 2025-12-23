@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.2](https://github.com/utiasDSL/crisp_controllers/compare/v1.2.1...v1.2.2) (2025-12-23)
+
+
+### Bug Fixes
+
+* Bug in broadcasting frequency of pose/twist broadcasters ([98dda54](https://github.com/utiasDSL/crisp_controllers/commit/98dda5441f55dd8557d2e123b7f15f2e6de6ab9e))
+* Bug in broadcasting frequency of pose/twist broadcasters ([c1ca95f](https://github.com/utiasDSL/crisp_controllers/commit/c1ca95f765f79e8adec91c52502467620ad5b671))
+
 ## [1.2.1](https://github.com/utiasDSL/crisp_controllers/compare/v1.2.0...v1.2.1) (2025-10-21)
 
 
