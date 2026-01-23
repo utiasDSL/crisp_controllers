@@ -1,0 +1,29 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+
+AccessModifierOffset: -2
+AlignAfterOpenBracket: AlwaysBreak
+AllowAllParametersOfDeclarationOnNextLine: true
+# Do NOT force it always
+AlwaysBreakAfterReturnType: None
+AlignOperands: DontAlign
+BraceWrapping:
+  AfterClass: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+BreakBeforeBraces: Custom
+BreakBeforeTernaryOperators: true
+BinPackArguments: false
+BinPackParameters: false
+ColumnLimit: 100
+ConstructorInitializerIndentWidth: 0
+ContinuationIndentWidth: 2
+DerivePointerAlignment: false
+PointerAlignment: Middle
+# Make it "cheap" to put the return type on its own line when needed
+PenaltyReturnTypeOnItsOwnLine: 50   # try 10–50
+ReflowComments: false
+IncludeBlocks: Preserve
+...

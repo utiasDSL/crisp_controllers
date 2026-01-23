@@ -1,6 +1,7 @@
-#include "crisp_controllers/utils/torque_rate_saturation.hpp"
-#include <gtest/gtest.h>
+// "Copyright [2026] <Analog Devices, Inc.>"
 
+#include <gtest/gtest.h>
+#include "crisp_controllers/utils/torque_rate_saturation.hpp"
 
 TEST(SaturateTorqueRateTest, ScalarDeltaTauMax) {
   Eigen::VectorXd tau_d(3), tau_J(3);
@@ -30,8 +31,7 @@ TEST(SaturateTorqueRateTest, VectorDeltaTauMax) {
   EXPECT_TRUE(result.isApprox(expected));
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char ** argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

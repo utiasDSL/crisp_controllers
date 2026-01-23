@@ -1,15 +1,20 @@
+// "Copyright [2026] <Analog Devices, Inc.>"
 #pragma once
-#include <Eigen/Dense>
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <Eigen/Dense>  // NOLINT(build/include_order)
 
 #include <controller_interface/controller_interface.hpp>
 #include <crisp_controllers/torque_feedback_controller_parameters.hpp>
-#include <sensor_msgs/msg/joint_state.hpp>
 #include <geometry_msgs/msg/wrench_stamped.hpp>
-#include <pinocchio/multibody/model.hpp>
 #include <pinocchio/multibody/data.hpp>
+#include <pinocchio/multibody/model.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 
-using CallbackReturn =
-    rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
+using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
 namespace crisp_controllers {
 
@@ -34,8 +39,7 @@ namespace crisp_controllers {
  * - tau_friction: Friction compensation torques
  * - tau_nullspace: Nullspace control torques to maintain initial joint positions
  */
-class TorqueFeedbackController
-    : public controller_interface::ControllerInterface {
+class TorqueFeedbackController : public controller_interface::ControllerInterface {
 public:
   /**
    * @brief Configure command interfaces for the controller
@@ -43,14 +47,14 @@ public:
    */
   [[nodiscard]] controller_interface::InterfaceConfiguration
   command_interface_configuration() const override;
-  
+
   /**
    * @brief Configure state interfaces for the controller
    * @return Configuration specifying joint position, velocity, and effort interfaces
    */
   [[nodiscard]] controller_interface::InterfaceConfiguration
   state_interface_configuration() const override;
-  
+
   /**
    * @brief Main control update loop
    * 
@@ -63,37 +67,34 @@ public:
    * @return Control execution status
    */
   controller_interface::return_type
-  update(const rclcpp::Time &time, const rclcpp::Duration &period) override;
-  
+  update(const rclcpp::Time & time, const rclcpp::Duration & period) override;
+
   /**
    * @brief Initialize controller parameters and subscribers
    * @return Initialization status
    */
   CallbackReturn on_init() override;
-  
+
   /**
    * @brief Configure controller (set collision behavior if using real hardware)
    * @param previous_state Previous lifecycle state
    * @return Configuration status
    */
-  CallbackReturn
-  on_configure(const rclcpp_lifecycle::State &previous_state) override;
-  
+  CallbackReturn on_configure(const rclcpp_lifecycle::State & previous_state) override;
+
   /**
    * @brief Activate controller and initialize joint states
    * @param previous_state Previous lifecycle state
    * @return Activation status
    */
-  CallbackReturn
-  on_activate(const rclcpp_lifecycle::State &previous_state) override;
-  
+  CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
+
   /**
    * @brief Deactivate controller
    * @param previous_state Previous lifecycle state
    * @return Deactivation status
    */
-  CallbackReturn
-  on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
+  CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
 private:
   /// Parameter listener for dynamic parameter updates
@@ -103,10 +104,10 @@ private:
 
   /// Subscriber for external torque commands
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_sub_;
-  
+
   /// Publisher for commanded wrench
   rclcpp::Publisher<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_pub_;
-  
+
   /// Timer for 200Hz wrench publishing
   rclcpp::TimerBase::SharedPtr wrench_timer_;
 
@@ -117,9 +118,8 @@ private:
    * Only effort values are used from the incoming message.
    * @param msg Joint state message containing external torques in effort field
    */
-  void
-  target_joint_callback_(const sensor_msgs::msg::JointState::SharedPtr msg);
-  
+  void target_joint_callback_(const sensor_msgs::msg::JointState::SharedPtr msg);
+
   /**
    * @brief Callback for wrench publishing timer
    *
@@ -142,30 +142,30 @@ private:
 
   /// External torques received from subscriber
   Eigen::VectorXd tau_ext_;
-  
+
   /// Initial joint positions recorded on activation (nullspace target)
   Eigen::VectorXd q_init_;
-  
+
   /// Nullspace weights (computed from parameters)
   Eigen::VectorXd nullspace_weights_;
-  
+
   /// Friction parameters as Eigen vectors
   Eigen::VectorXd friction_fp1_;
   Eigen::VectorXd friction_fp2_;
   Eigen::VectorXd friction_fp3_;
-  
+
   /// Nullspace projection matrix
   Eigen::MatrixXd nullspace_projection_;
-  
+
   /// Pinocchio model and data for dynamics computations
   pinocchio::Model model_;
   pinocchio::Data data_;
-  
+
   /// End-effector frame ID for jacobian computation
   pinocchio::FrameIndex end_effector_frame_id_;
-  
+
   /// Jacobian matrix for nullspace projection
   Eigen::MatrixXd J_;
 };
 
-} // namespace crisp_controllers
+}  // namespace crisp_controllers
