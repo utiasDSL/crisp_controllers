@@ -1,0 +1,123 @@
+
+[project]
+site_name = "CRISP Controllers - Learning Systems Lab"
+nav = [
+    {"Home" = "index.md"},
+    {"Design Philosophy"= "design_philosophy.md"},
+    {"Getting Started" = [
+        {"Getting Started" = "getting_started.md"},
+        {"Getting Started ROS2" = "getting_started_controllers.md"},
+        {"Getting Started Python" = "getting_started_py.md"},
+        {"Getting Started Gym" = "getting_started_gym.md"},
+        {"Custom Configs" = "getting_started_config.md"},
+        {"Multi-Machine Setup" = "getting_started_multiple_machines.md"},
+        {"Low-Level Controller Details" = "getting_started_controller_details.md"},
+        {"How to setup a new robot"= "new_robot_setup.md"}
+    ]},
+    {"Examples" = [
+       {"Examples Robot"= "examples_robot.md"},
+       {"Examples Camera"= "examples_camera.md"},
+       {"Examples Gripper"= "examples_gripper.md"},
+       {"Examples Sensor"= "examples_sensor.md"},
+       {"Example Full Environment"= "examples_full_environment.md"},
+    ]},
+    # { "Deprecated" = [
+    #   {"Available Controllers and Broadcasters" = "deprecated/controllers.md"},
+    #   {"Demos" = "deprecated/demos.md"},
+    #   {"How to calibrate a gripper" = "deprecated/calibrate_gripper.md"},
+    #   {"Multi-machine setup" = "deprecated/multi_machine_setup.md"},
+    #   {"ROS2 Diagnostics" = "deprecated/diagnostics.md"},
+    #   {"Setting up a robot that is not available in the demos" = "deprecated/new_robot_setup.md"},
+    #   {"How to bring your own config" = "deprecated/create_own_config.md"},
+    # ]},
+]
+repo_url = "https://github.com/utiasDSL/crisp_controllers"
+extra_css = [
+  "stylesheets/extra.css",
+]
+extra_javascript = [
+  "javascripts/carousel.js",
+  # "javascripts/katex.js",
+  # "https://unpkg.com/katex@0/dist/katex.min.js",
+  # "https://unpkg.com/katex@0/dist/contrib/auto-render.min.js",
+  # "https://unpkg.com/katex@0/dist/katex.min.css",
+ "javascripts/mathjax.js",
+ "https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"
+]
+
+[project.theme]
+name = "material"
+logo = "images/logo.png"
+favicon = "images/favicon.png"
+features = [
+  "header.autohide",
+  "content.code.copy",
+  "content.code.select",
+  "content.code.annotate",
+  "content.footnote.tooltips",
+  "content.tabs.link",
+  "content.tooltips",
+  "navigation.footer",
+  "navigation.instant",
+  "navigation.instant.progress",
+  "navigation.top",
+  # "navigation.sections",
+  "navigation.expand",
+]
+# font.text = "Montserrat"
+font.code = "Geist Mono"
+icon.repo = "fontawesome/brands/github"
+
+# Palette toggle for light mode
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "teal"
+accent = "deep purple"
+toggle = { icon = "material/brightness-7", name = "Switch to dark mode" }
+
+# Palette toggle for dark mode
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "teal"
+accent = "deep purple"
+toggle = { icon = "material/brightness-4", name = "Switch to light mode" }
+
+plugins = [
+  "search",
+  # "mkdoxy",
+]
+
+[extra]
+[[extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/utiasDSL/crisp_controllers"
+
+markdown_extensions = [
+  "abbr",
+  "admonition",
+  "attr_list",
+  "def_list",
+  "footnotes",
+  "md_in_html",
+  "pymdownx.details",
+  "pymdownx.inlinehilite",
+  "pymdownx.snippets",
+  "pymdownx.superfences",
+]
+
+[[markdown_extensions]]
+"pymdownx.tabbed" = { alternate_style = true }
+
+[[markdown_extensions]]
+"pymdownx.emoji" = { emoji_index = "material.extensions.emoji.twemoji", emoji_generator = "material.extensions.emoji.to_svg" }
+
+[[markdown_extensions]]
+"pymdownx.highlight" = { anchor_linenums = true, line_spans = "__span", pygments_lang_class = true }
+
+[[markdown_extensions]]
+"pymdownx.tasklist" = { custom_checkbox = true, clickable_checkbox = true }
+
+[[markdown_extensions]]
+"pydownx.arithmatex" = { generic = true }

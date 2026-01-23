@@ -8,13 +8,13 @@ hide:
 <img src="media/crisp_logo_light.webp#only-light" alt="CRISP Controllers Logo"/>
 
 
+
 # CRISP - **C**ompliant **R**OS2 Controllers for Learn**i**ng-Ba**s**ed Manipulation **P**olicies
 
 *Authors: [Daniel San Jose Pro](https://danielsanjosepro.github.io)[^1], [Oliver Hausdörfer](https://oliver.hausdoerfer.de/)[^1], [Ralf Römer](https://ralfroemer99.github.io)[^1], Maximilian Dösch[^1], [Martin Schuck](https://amacati.github.io/) [^1] and Angela Schoellig [^1]*.
-
 [^1]: The authors are with Technical University of Munich, Germany; TUM School of Computation, Information and Technology, Department of Computer Engineering, Learning Systems and Robotics Lab; Munich Institute of Robotics and Machine Intelligence.
 
-> A collection of real-time, C++ controllers for compliant torque-based control for manipulators compatible with `ros2_control`. Developed for deploying high-level learning-based policies (VLA, Diffusion, ...) and teleoperation on your manipulator. It is compatible with any manipulator offering and effort interface.
+> A collection of real-time, C++ controllers for compliant torque-based control for manipulators compatible with `ros2_control`. Developed for deploying high-level learning-based policies (VLA, Diffusion, ...) and teleoperation on your manipulator. It is compatible with any manipulator offering an effort interface.
 
 _If you use this work, please cite it using the [bibtex](#citing) below._
 
@@ -23,24 +23,71 @@ Check the [controllers (CRISP controllers) :simple-github:](https://github.com/u
 !!! info "Aloha gripper for Manipulators"
     Check out [aloha4franka](https://tum-lsy.github.io/aloha4franka/) for the gripper used in the videos.
 
+<!-- <div> -->
+<!--   <video src="../media/videos_concatenaded.mp4" width="800" playsinline muted controls loop autoplay  alt="Robot Collection"> -->
+<!--   <div>Pick and Place demo</div> -->
+<!-- </div> -->
+<!---->
 
-| <video src="media/pap_demo.mp4" playsinline muted controls loop autoplay width="800"/> | <video src="media/policy.mp4" playsinline controls="true" loop="true" autoplay="true" width="800"/> |
-|:--:|:--:|
-| Robot teleoperated using a Follower-Leader system in [CRISP_GYM :simple-github:](https://github.com/utiasDSL/crisp_gym) | Diffusion Policy trained and deployed from the same demonstrations | 
+<div class="carousel-container">
+  <div class="carousel">
+    <div class="carousel-slide active">
+      <video src="media/videos_concatenaded.mp4" playsinline muted loop autoplay  alt="Robot Collection"></video>
+      <div class="carousel-caption">End-to-end policies in action performing different contact-rich tasks.</div>
+    </div>
+    <div class="carousel-slide">
+      <video src="media/wrist_cam.mp4" playsinline muted loop autoplay  alt="Data visualized"></video>
+      <div class="carousel-caption">Recorded Trajectories in LeRobot format for different tasks using CRISP.</div>
+    </div>
+    <div class="carousel-slide">
+      <video src="media/viser_visualization.mp4" playsinline muted loop autoplay  alt="Viser"></video>
+      <div class="carousel-caption">Provided example with 1x video of the tracking capabilities of the controller.</div>
+    </div>
+    <div class="carousel-slide">
+      <video src="media/pap_demo.mp4" playsinline muted loop autoplay  alt="Teleoperation PaP"></video>
+      <div class="carousel-caption">Leader-follower teleoperation for a pick and place task.</div>
+    </div>
+    <div class="carousel-slide">
+      <img src="media/franka.gif" alt="Franka Robot Demo">
+      <div class="carousel-caption">Controllers: Franka Robot - Following a moving target while base joint follows a sine curve</div>
+    </div>
+    <div class="carousel-slide">
+      <img src="media/kinova.gif" alt="Kinova Robot Demo">
+      <div class="carousel-caption">Controllers: Kinova Robot - Simulated robot with continuous joints and nullspace control</div>
+    </div>
+    <div class="carousel-slide">
+      <img src="media/iiwa.gif" alt="IIWA Robot Demo">
+      <div class="carousel-caption">Controllers: IIWA Robot - Impedance control in simulation</div>
+    </div>
+  </div>
 
+  <button class="carousel-btn carousel-btn-prev" aria-label="Previous slide">&lt;</button>
+  <button class="carousel-btn carousel-btn-next" aria-label="Next slide">&gt;</button>
 
-| ![Franka](media/franka.gif) | ![kinova](media/kinova.gif) | ![iiwa](media/iiwa.gif) |
-|:--:|:--:|:--:|
-| *Robot following a moving target, while base joint follows a sine curve* | *Simulated kinova robot with continous joints and nullspace control* | *Simulated iiwa robot* |
+  <div class="carousel-indicators"></div>
+</div>
 
-| ![franka_eight_reduced](media/franka_eight_reduced.gif)![franka_ns_reduced](media/franka_ns_reduced.gif) | ![vicon](media/franka_teleop.gif)|
-|:--:|:--:|
-| *Real robot following a target and being disturbed (contact) + null space control demonstration*  | *Demonstration using a cartesian controller teleoperated using Vicon tracking system (Speed x4)*| 
-
-| <video src="media/teleoperation.mp4" controls="true" loop="true" autoplay="true" playsinline width="800"> |
-|:--:|
-| Teleoperation setup with activated force-torque feedback |
-
+<div class="carousel-controls-info">
+  <p><strong>Navigation:</strong> Use arrow keys ← → or click the buttons to navigate through the gallery.</p>
+</div>
+<!---->
+<!-- | <video src="media/pap_demo.mp4" playsinline muted controls loop autoplay width="800"/> | <video src="media/policy.mp4" playsinline controls="true" loop="true" autoplay="true" width="800"/> | -->
+<!-- |:--:|:--:| -->
+<!-- | Robot teleoperated using a Follower-Leader system in [CRISP_GYM :simple-github:](https://github.com/utiasDSL/crisp_gym) | Diffusion Policy trained and deployed from the same demonstrations |  -->
+<!---->
+<!---->
+<!-- | ![Franka](media/franka.gif) | ![kinova](media/kinova.gif) | ![iiwa](media/iiwa.gif) | -->
+<!-- |:--:|:--:|:--:| -->
+<!-- | *Robot following a moving target, while base joint follows a sine curve* | *Simulated kinova robot with continous joints and nullspace control* | *Simulated iiwa robot* | -->
+<!---->
+<!-- | ![franka_eight_reduced](media/franka_eight_reduced.gif)![franka_ns_reduced](media/franka_ns_reduced.gif) | ![vicon](media/franka_teleop.gif)| -->
+<!-- |:--:|:--:| -->
+<!-- | *Real robot following a target and being disturbed (contact) + null space control demonstration*  | *Demonstration using a cartesian controller teleoperated using Vicon tracking system (Speed x4)*|  -->
+<!---->
+<!-- | <video src="media/teleoperation.mp4" controls="true" loop="true" autoplay="true" playsinline width="800"> | -->
+<!-- |:--:| -->
+<!-- | Teleoperation setup with activated force-torque feedback | -->
+<!---->
 
 
 ## Why?
@@ -56,7 +103,7 @@ Designed for fast integration and real-time control, our implementation lowers t
 **Why the name "CRISP"**? "CRISP" reflects our design philosophy behind the package: a concise, to-the-point implementation for easy deployment and integration in other software stacks.
 
 ## Features
-- 🐍 **Python interface** to move your ROS2 robot around without having to think about topics, spinning, and more ROS2 concepts but without loosing the powerful ROS2 API. Check [CRISP_PY](https://github.com/utiasDSL/crisp_py) for more information and examples.
+- 🐍 **Python interface** to move your ROS2 robot around without having to think about topics, spinning, and more ROS2 concepts but without losing the powerful ROS2 API. Check [CRISP_PY](https://github.com/utiasDSL/crisp_py) for more information and examples.
 - 🔁 **Gymnasium environment** with utilities to deploy learning-based policies and record trajectories in LeRobotFormat. Check [CRISP_GYM](https://github.com/utiasDSL/crisp_gym).
 - ❓ **Demos** showcasing how to use the controller with FR3 of Franka Emika in single and bimanual setup. Check the [crisp_controller_demos](https://github.com/utiasDSL/crisp_controllers_demos).
 - ⚙️ Dynamically and highly parametrizable: powered by the [`generate_parameter_library`](https://github.com/PickNikRobotics/generate_parameter_library) you can modify stiffness and more during operation.  
@@ -65,6 +112,8 @@ Designed for fast integration and real-time control, our implementation lowers t
 
 
 ## Citing
+
+You can check our preprint on arXiv: [2509.06819](https://arxiv.org/abs/2509.06819)
 
 ```bibtex
 @misc{pro2025crispcompliantros2,

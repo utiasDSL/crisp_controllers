@@ -8,4 +8,6 @@ dependencies = [
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.6.15",
     "mkdoxy>=1.2.7",
+    "python-dateutil>=2.9.0.post0",
+    "zensical>=0.0.15",
 ]
