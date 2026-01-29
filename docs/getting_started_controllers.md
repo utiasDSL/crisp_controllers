@@ -45,7 +45,7 @@ Cameras that we tested are:
 Sensors that we tested are:
 
 - **Anyskin** tactile sensor: https://github.com/danielsanjosepro/anyskin_ros2
-- **Force/Torque** sensors: work in progress...
+- **Force/Torque** sensors: https://github.com/utiasDSL/botasys_ft_sensor_ros2
 
 ## Start ROS2 nodes with docker containers
 

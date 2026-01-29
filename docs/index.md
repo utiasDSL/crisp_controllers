@@ -174,6 +174,7 @@ Many thanks community contributions:
 
 - Lev Kozlov [@lvjonok](https://github.com/lvjonok) for testing and providing interfaces for the Panda/FER.
 - Vincenzo Orlando [@VinsOrl09](https://github.com/lvjonok) for testing and providing interfaces for the UR robots.
+- Linus Schwarz [@Linus-Schwarz](https://github.com/Linus-Schwarz) for testing and providing interfaces for the BOTA force-torque sensors.
 
 Check the robots in action:
 
