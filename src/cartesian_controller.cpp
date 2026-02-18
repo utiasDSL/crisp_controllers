@@ -428,20 +428,29 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
   nullspace_projection = Eigen::MatrixXd::Identity(model_.nv, model_.nv);
 
 #if HAS_ROS2_CONTROL_INTROSPECTION
-  this->enable_introspection(true);
-  for (int i = 0; i < tau_task.size(); ++i) {
-    REGISTER_ROS2_CONTROL_INTROSPECTION("tau_task_" + std::to_string(i), &tau_task[i]);
-    REGISTER_ROS2_CONTROL_INTROSPECTION("tau_desired_" + std::to_string(i), &tau_d[i]);
-  }
-  for (int i = 0; i < error.size(); ++i) {
-    REGISTER_ROS2_CONTROL_INTROSPECTION("error_" + std::to_string(i), &error[i]);
-  }
-  REGISTER_ROS2_CONTROL_INTROSPECTION("target_position_x", &target_position_[0]);
-  REGISTER_ROS2_CONTROL_INTROSPECTION("target_position_y", &target_position_[1]);
-  REGISTER_ROS2_CONTROL_INTROSPECTION("target_position_z", &target_position_[2]);
-  for (int i = 0; i < target_orientation_.coeffs().size(); ++i) {
-    REGISTER_ROS2_CONTROL_INTROSPECTION(
-      "target_orientation_" + std::to_string(i), &target_orientation_.coeffs()[i]);
+  if (params_.enable_introspection) {
+    RCLCPP_INFO(get_node()->get_logger(), "Enabling ROS2 Control Introspection for debugging.");
+    this->enable_introspection(true);
+    for (int i = 0; i < tau_task.size(); ++i) {
+      REGISTER_ROS2_CONTROL_INTROSPECTION("tau_task_" + std::to_string(i), &tau_task[i]);
+      REGISTER_ROS2_CONTROL_INTROSPECTION("tau_desired_" + std::to_string(i), &tau_d[i]);
+    }
+    for (int i = 0; i < error.size(); ++i) {
+      REGISTER_ROS2_CONTROL_INTROSPECTION("error_" + std::to_string(i), &error[i]);
+    }
+    REGISTER_ROS2_CONTROL_INTROSPECTION("target_position_x", &target_position_[0]);
+    REGISTER_ROS2_CONTROL_INTROSPECTION("target_position_y", &target_position_[1]);
+    REGISTER_ROS2_CONTROL_INTROSPECTION("target_position_z", &target_position_[2]);
+    for (int i = 0; i < target_orientation_.coeffs().size(); ++i) {
+      REGISTER_ROS2_CONTROL_INTROSPECTION(
+        "target_orientation_" + std::to_string(i), &target_orientation_.coeffs()[i]);
+    }
+    for (int i = 0; i < q_target.size(); ++i) {
+      REGISTER_ROS2_CONTROL_INTROSPECTION("q_target_" + std::to_string(i), &q_target[i]);
+      REGISTER_ROS2_CONTROL_INTROSPECTION("q_ref_" + std::to_string(i), &q_ref[i]);
+    }
+  } else {
+    RCLCPP_INFO(get_node()->get_logger(), "ROS2 Control Introspection is disabled.");
   }
 #endif
 

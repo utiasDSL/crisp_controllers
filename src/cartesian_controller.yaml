@@ -237,26 +237,26 @@ cartesian_controller:
         bounds<>: [0.1, 1.0]
     q:
       type: double
-      default_value: 1.0
+      default_value: 0.5
       description: "Amount of smoothing for the target pose when using the EMA."
       validation:
         bounds<>: [0.0, 1.0]
     dq:
       type: double
-      default_value: 1.0
+      default_value: 0.5
       description: "Amount of smoothing for the target pose when using the EMA."
       validation:
         bounds<>: [0.0, 1.0]
     q_ref:
       type: double
-      default_value: 1.0
+      default_value: 0.5
       description: "Amount of smoothing for the target pose when using the EMA."
       validation:
         bounds<>: [0.0, 1.0]
 
     output_torque:
       type: double
-      default_value: 1.0
+      default_value: 0.5
       description: "Amount of smoothing for the output torque when using the EMA."
       validation:
         bounds<>: [0.0, 1.0]
@@ -312,3 +312,8 @@ cartesian_controller:
       type: double_array
       default_value: [ 0.039533, 0.025882, -0.04607, 0.036194, 0.026226, -0.021047, 0.0035526]
       description: "Friction parameters part 3"
+
+  enable_introspection:
+    type: bool
+    default_value: false
+    description: "Whether or not to enable introspection for this controller. This will allow us to visualize the internal state of the controller in plotjuggler using the introspection topics."
