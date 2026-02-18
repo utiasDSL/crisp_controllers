@@ -8,10 +8,10 @@ cd crisp_gym
 Now, you should set a few things before installing everything.
 Create a file `scripts/set_env.sh` which will be sourced every time that you run a command in your environment.
 The script will not be tracked by git.
-In this script you need to add a environment variables:
+In this script you need to add the following environment variables:
 
 - `ROS_DOMAIN_ID` **(Required)**: which is used to define nodes that should be able to see each other. In our [ROS2 nodes](getting_started_controllers.md) they are set to 100 as default.
-- `CRISP_CONFIG_PATH` **(Optional)**: which should be the path to a config folder similar to [config path of CRISP_PY](https://github.com/utiasDSL/crisp_py/tree/main/config) or [config path of CRISP_GYM](https://github.com/utiasDSL/crisp_gym/tree/main/crisp_gym/config) but with your own custom configurations.
+- `CRISP_CONFIG_PATH` **(Optional)**: which should be the path to a config folder similar to [config path of crisp_py](https://github.com/utiasDSL/crisp_py/tree/main/config) or [config path of crisp_gym](https://github.com/utiasDSL/crisp_gym/tree/main/crisp_gym/config) but with your own custom configurations.
     If this environment variable is unset, the default configurations will be used.
     Check [how to create your own config](getting_started_config.md) guide for more information.
 
@@ -26,9 +26,23 @@ export CRISP_CONFIG_PATH=/path/to/config1/folder:/path/to/config2/folder  # opti
 1. This will avoid downloading large files when cloning the repository. You can always download them later with `git lfs pull`.
 2. This will remove logging from SVT codecs, which are used to create data in LeRobot format. The logs can be quite verbose.
 
-If you want to work in a *multi-machine setup* (e.g. policy runs in a different machine as controllers/cameras), then check [how to setup multi-machine in ROS2](getting_started_multiple_machines.md).
+If you want to work in a *multi-machine setup* (e.g. policy runs on a different machine than controllers/cameras), then check [how to set up multi-machine in ROS2](getting_started_multiple_machines.md).
 
----
+!!! WARNING "Note on LeRobotDataset version"
+    Take a look at the `pixi.toml`. You can define your `lerobot` version there.
+    If you want to use later LeRobotDataset v3.0, you need to remove the `rerun` dependency/downgrade it in the `lerobot` like it is done [here](https://github.com/danielsanjosepro/lerobot/commit/b7aea681cda32eee21fa2b368af2119596f4e3ea) since it requires `numpy>=2.0` which is not compatible with the ROS2 versions of `numpy`.
+    This will require a small change in the `pixi.toml`:
+    ```toml title="pixi.toml" hl_lines="11-12"
+    [feature.lerobot.pypi-dependencies]
+    # Comment this line:
+    # lerobot = { git = "https://github.com/huggingface/lerobot", rev = "dacd1d7f5c719c3e56d7b7154a751bef6d5bd23c", extras = ["smolvla"]}
+    # Add your fixed fork:
+    lerobot = { git = "https://github.com/your-fork/lerobot" }
+    # Or if present locally:
+    # lerobot = { path = "../lerobot/", editable = true }
+    ```
+    The `crisp_gym` supports both dataset versions [since this PR](https://github.com/utiasDSL/crisp_gym/pull/46).
+
 Now we can install the environment:
 
 ```sh
@@ -189,4 +203,22 @@ pixi run -e humble-lerobot crisp-deploy-policy  --policy # (1)!
     LeRobot is subject to frequent changes. This command might change in future versions.
 
 Good job, now you can evaluate your model!
+
+### [Extra] Using a different `crisp_py` version
+
+If you have your own for of `crisp_py` or want to use a different version than the one available at [PyPi](https://pypi.org/project/crisp-python/), you can change the `pixi.toml` to point to your version.
+`crisp_py` should be independent of the ROS2 version.
+
+```toml title="pixi.toml" hl_lines="6" 
+...
+
+[pypi-dependencies]
+crisp_gym = { path = ".", editable = true }
+# Uncomment this line to use your own fork of crisp_py (if cloned locally)
+crisp_python = { path = "../crisp_py", editable = true }
+
+...
+```
+
+and then run `pixi install` again to update the dependencies.
 

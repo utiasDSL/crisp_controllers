@@ -189,7 +189,7 @@ For more information on the controllers, check the [controllers details](getting
         ```
 
 6. After launching your robot you should see that new controller are being loaded. If you get stuck somewhere in the process feel free to open an issue.
-7. Finally, to use the robots in CRISP_PY, add a configuration file for the new robot and Gymnasium environments that use it.
+7. Finally, to use the robots in crisp_py, add a configuration file for the new robot and Gymnasium environments that use it.
 
     ??? example "New robot config example"
 

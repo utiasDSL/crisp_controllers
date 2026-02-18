@@ -69,7 +69,7 @@ The setup in the host machine is done!
 
 ### In the remote machine (where the learning-based policy runs)
 
-In this part, we assume that you already installed the [CRISP_PY or CRISP_GYM](../getting_started.md#4-getting-started-with-crisp_gym).
+In this part, we assume that you already installed the [crisp_py or crisp_gym](../getting_started.md#4-getting-started-with-crisp_gym).
 
 1. Make sure that the Zenoh RMW is installed `ros-$ROS_DISTRO-rmw-zenoh-cpp`. If you use the `pixi.toml` provided 
     in this repo it should be the case.
