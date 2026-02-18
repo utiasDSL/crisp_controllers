@@ -22,6 +22,7 @@ Robots that we tested are:
 
 - **FR3** (real and simulated): https://github.com/danielsanjosepro/pixi_franka_ros2
 - **FER/Panda** (real): https://github.com/lvjonok/pixi_panda_ros2
+- **UR** (real): https://github.com/lvjonok/pixi_ur_ros2
 - **IIWA** (simulated): https://github.com/danielsanjosepro/pixi_iiwa_ros2
 
 ### Grippers
