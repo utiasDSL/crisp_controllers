@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/utiasDSL/crisp_controllers/compare/v1.3.0...v2.0.0) (2026-02-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* major controller improvements + ros version ahndled with macros ([#36](https://github.com/utiasDSL/crisp_controllers/issues/36))
+
+### Features
+
+* major controller improvements + ros version ahndled with macros ([#36](https://github.com/utiasDSL/crisp_controllers/issues/36)) ([abcddb0](https://github.com/utiasDSL/crisp_controllers/commit/abcddb05ffdf5c9a471ad964cce5d14f602cb59c))
+
 ## [1.3.0](https://github.com/utiasDSL/crisp_controllers/compare/v1.2.3...v1.3.0) (2026-02-09)
 
 
