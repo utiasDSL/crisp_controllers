@@ -7,20 +7,6 @@ repos:
         args:
           - --maxkb=2048
       - id: check-merge-conflict
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
-    rev: v0.12.7
-    hooks:
-      # Run the linter.
-      - id: ruff-check
-        args: [ --fix, --exit-non-zero-on-fix ]
-      # Run the formatter.
-      - id: ruff-format
-  - repo: https://github.com/python-poetry/poetry
-    rev: 2.1.3
-    hooks:
-      - id: poetry-check
-      - id: poetry-lock
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.28.0
     hooks:

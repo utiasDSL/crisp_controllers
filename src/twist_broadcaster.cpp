@@ -5,6 +5,7 @@
 
 #include <Eigen/src/Core/Matrix.h>  // NOLINT(build/include_order)
 #include <crisp_controllers/twist_broadcaster.hpp>
+#include "crisp_controllers/utils/ros2_version.hpp"
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <pinocchio/algorithm/frames.hpp>
@@ -46,8 +47,13 @@ TwistBroadcaster::update(const rclcpp::Time & time, const rclcpp::Duration & per
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
+#if ROS2_VERSION_ABOVE_HUMBLE
+    q[i] = state_interfaces_[i * 2].get_optional().value_or(q[i]);
+    q_dot[i] = state_interfaces_[i * 2 + 1].get_optional().value_or(q_dot[i]);
+#else
     q[i] = state_interfaces_[i * 2].get_value();
     q_dot[i] = state_interfaces_[i * 2 + 1].get_value();
+#endif
 
     if (continous_joint_types.count(
           joint.shortname())) {  // Then we are handling a continous joint that is SO(2)

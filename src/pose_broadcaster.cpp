@@ -5,6 +5,7 @@
 
 #include <Eigen/src/Core/Matrix.h>  // NOLINT(build/include_order)
 #include <crisp_controllers/pose_broadcaster.hpp>
+#include "crisp_controllers/utils/ros2_version.hpp"
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <pinocchio/algorithm/frames.hpp>
@@ -44,7 +45,11 @@ PoseBroadcaster::update(const rclcpp::Time & time, const rclcpp::Duration & peri
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
+#if ROS2_VERSION_ABOVE_HUMBLE
+    q[i] = state_interfaces_[i].get_optional().value_or(q[i]);
+#else
     q[i] = state_interfaces_[i].get_value();
+#endif
     if (continous_joint_types.count(
           joint.shortname())) {  // Then we are handling a continous joint that is SO(2)
       q_pin[joint.idx_q()] = std::cos(q[i]);

@@ -1,17 +1,11 @@
-#include <fmt/format.h>
+
 #include <cmath>
 #include <cstddef>
 
 #include <Eigen/src/Core/Matrix.h>  // NOLINT(build/include_order)
-
+#include <fmt/format.h>
 #include <controller_interface/controller_interface_base.hpp>
-#include <crisp_controllers/cartesian_controller.hpp>
-#include <crisp_controllers/pch.hpp>
-#include <crisp_controllers/utils/friction_model.hpp>
-#include <crisp_controllers/utils/joint_limits.hpp>
-#include <crisp_controllers/utils/pseudo_inverse.hpp>
-#include "crisp_controllers/utils/fiters.hpp"
-#include "crisp_controllers/utils/torque_rate_saturation.hpp"
+#include <rclcpp/logging.hpp>
 
 #include <pinocchio/algorithm/aba.hpp>
 #include <pinocchio/algorithm/compute-all-terms.hpp>
@@ -21,8 +15,24 @@
 #include <pinocchio/parsers/urdf.hpp>
 #include <pinocchio/spatial/explog.hpp>
 #include <pinocchio/spatial/fwd.hpp>
-#include <rclcpp/logging.hpp>
+
 #include "pinocchio/algorithm/model.hpp"
+
+#include <crisp_controllers/cartesian_controller.hpp>
+#include <crisp_controllers/pch.hpp>
+#include <crisp_controllers/utils/friction_model.hpp>
+#include <crisp_controllers/utils/joint_limits.hpp>
+#include <crisp_controllers/utils/pseudo_inverse.hpp>
+#include "crisp_controllers/utils/fiters.hpp"
+#include "crisp_controllers/utils/torque_rate_saturation.hpp"
+
+#include "crisp_controllers/utils/fiters.hpp"
+#include "crisp_controllers/utils/ros2_version.hpp"
+#include "crisp_controllers/utils/torque_rate_saturation.hpp"
+
+#if HAS_ROS2_CONTROL_INTROSPECTION
+#include <hardware_interface/introspection.hpp>
+#endif
 
 namespace crisp_controllers {
 
@@ -62,8 +72,15 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
 
     q_ref[i] = exponential_moving_average(q_ref[i], q_target[i], params_.filter.q_ref);
 
-    // Filtering joint position measurement 1 uses previous q, 0 uses new q from measurement.
+// Filtering joint position measurement 1 uses previous q, 0 uses new q from measurement.
+// q[i] = exponential_moving_average(q[i], state_interfaces_[i].get_value(), params_.filter.q);
+#if ROS2_VERSION_ABOVE_HUMBLE
+    q[i] = exponential_moving_average(
+      q[i], state_interfaces_[i].get_optional().value_or(q[i]), params_.filter.q);
+#else
     q[i] = exponential_moving_average(q[i], state_interfaces_[i].get_value(), params_.filter.q);
+#endif
+
     if (continous_joint_types.count(joint.shortname())) {  // Then we are handling a continous
                                                            // joint that is SO(2)
       q_pin[joint.idx_q()] = std::cos(q[i]);
@@ -71,8 +88,13 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
     } else {  // simple revolute joint case
       q_pin[joint.idx_q()] = q[i];
     }
+#if ROS2_VERSION_ABOVE_HUMBLE
+    dq[i] = exponential_moving_average(
+      dq[i], state_interfaces_[num_joints + i].get_optional().value_or(dq[i]), params_.filter.dq);
+#else
     dq[i] = exponential_moving_average(
       dq[i], state_interfaces_[num_joints + i].get_value(), params_.filter.dq);
+#endif
   }
 
   if (new_target_pose_) {
@@ -120,8 +142,9 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   }
 
   J.setZero();
-  auto reference_frame = params_.use_local_jacobian ? pinocchio::ReferenceFrame::LOCAL
-                                                    : pinocchio::ReferenceFrame::WORLD;
+  auto reference_frame = params_.use_local_jacobian
+    ? pinocchio::ReferenceFrame::LOCAL
+    : pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED;
   pinocchio::computeFrameJacobian(model_, data_, q_pin, end_effector_frame_id, reference_frame, J);
 
   Eigen::MatrixXd J_pinv(model_.nv, 6);
@@ -159,8 +182,12 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
     // TODO(placeholder): Then we have some continouts joints, not being handled for now
     tau_joint_limits = Eigen::VectorXd::Zero(model_.nv);
   } else {
-    tau_joint_limits =
-      get_joint_limit_torque(q, model_.lowerPositionLimit, model_.upperPositionLimit);
+    tau_joint_limits = get_joint_limit_torque(
+      q,
+      model_.lowerPositionLimit,
+      model_.upperPositionLimit,
+      params_.joint_limit_repulsion.safe_range,
+      params_.joint_limit_repulsion.max_torque);
   }
 
   tau_secondary << nullspace_stiffness * (q_ref - q) + nullspace_damping * (dq_ref - dq);
@@ -191,12 +218,15 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   if (params_.limit_torques) {
     tau_d = saturateTorqueRate(tau_d, tau_previous, params_.max_delta_tau);
   }
-  /*tau_d = exponential_moving_average(tau_d, tau_previous,*/
-  /*                                   params_.filter.output_torque);*/
+  tau_d = exponential_moving_average(tau_d, tau_previous, params_.filter.output_torque);
 
   if (!params_.stop_commands) {
     for (size_t i = 0; i < num_joints; ++i) {
+#if ROS2_VERSION_ABOVE_HUMBLE
+      (void)command_interfaces_[i].set_value(tau_d[i]);
+#else
       command_interfaces_[i].set_value(tau_d[i]);
+#endif
     }
   }
 
@@ -206,51 +236,7 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   params_ = params_listener_->get_params();
   setStiffnessAndDamping();
 
-  // TODO(placeholder): log_debug_info function has glitches which results in different number of
-  // data points logged same frequence. For instance, q, dq are logged with same frequency,
-  // but the number of data points can be different. Turning off the logging by assigning false
-  // to params_.log.enabled. This can be done in controllers yaml file.
   log_debug_info(time);
-
-  // TODO(placeholder): The following debug output is supposed to be wrapped within
-  // #ifndef NDEBUG
-  // ...
-  // #endif
-  // So that the debug build can enable the output. However, debug build causes significant
-  // performance drop in the controller which reults in "communication_constraint_violation" errors
-  // for Franka robot.
-
-  static int read_counter = 0;
-  // Change the number that `read_counter` doing mode operation with to control the output frequency
-  // 1 is for every cycle, 2 is for every other cycle, etc. Increase the number to reduce output
-  // frequency, to avoid causing "communication_constraint_violation" errors for Franka robot.
-  if (read_counter % 1 == 0) {
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "q: " << q.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "q target: " << q_target.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "q ref: " << q_ref.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "dq: " << dq.transpose());
-    RCLCPP_INFO_STREAM(
-      get_node()->get_logger(),
-      "current eef:" << end_effector_pose.translation().transpose() << " "
-                     << end_effector_pose.rotation().eulerAngles(2, 1, 0).transpose() << " "
-                     << Eigen::Quaterniond(end_effector_pose.rotation()).coeffs().transpose());
-    RCLCPP_INFO_STREAM(
-      get_node()->get_logger(),
-      "desired eef:" << desired_position_.transpose() << " "
-                     << desired_orientation_.toRotationMatrix().eulerAngles(2, 1, 0).transpose()
-                     << " " << desired_orientation_.coeffs().transpose());
-
-    RCLCPP_INFO_STREAM(
-      get_node()->get_logger(),
-      "target eef:" << target_position_.transpose() << " "
-                    << target_orientation_.toRotationMatrix().eulerAngles(2, 1, 0).transpose()
-                    << " " << target_orientation_.coeffs().transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "error: " << error.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "task tau: " << tau_task.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "nullspace tau: " << tau_nullspace.transpose());
-    read_counter = 0;  // Optional: prevents overflow, but not necessary
-  }
-  read_counter++;
 
   return controller_interface::return_type::OK;
 }
@@ -441,6 +427,24 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
   // Initialize nullspace projection matrix
   nullspace_projection = Eigen::MatrixXd::Identity(model_.nv, model_.nv);
 
+#if HAS_ROS2_CONTROL_INTROSPECTION
+  this->enable_introspection(true);
+  for (int i = 0; i < tau_task.size(); ++i) {
+    REGISTER_ROS2_CONTROL_INTROSPECTION("tau_task_" + std::to_string(i), &tau_task[i]);
+    REGISTER_ROS2_CONTROL_INTROSPECTION("tau_desired_" + std::to_string(i), &tau_d[i]);
+  }
+  for (int i = 0; i < error.size(); ++i) {
+    REGISTER_ROS2_CONTROL_INTROSPECTION("error_" + std::to_string(i), &error[i]);
+  }
+  REGISTER_ROS2_CONTROL_INTROSPECTION("target_position_x", &target_position_[0]);
+  REGISTER_ROS2_CONTROL_INTROSPECTION("target_position_y", &target_position_[1]);
+  REGISTER_ROS2_CONTROL_INTROSPECTION("target_position_z", &target_position_[2]);
+  for (int i = 0; i < target_orientation_.coeffs().size(); ++i) {
+    REGISTER_ROS2_CONTROL_INTROSPECTION(
+      "target_orientation_" + std::to_string(i), &target_orientation_.coeffs()[i]);
+  }
+#endif
+
   RCLCPP_INFO(get_node()->get_logger(), "State interfaces and control vectors initialized.");
 
   return CallbackReturn::SUCCESS;
@@ -488,7 +492,11 @@ CartesianController::on_activate(const rclcpp_lifecycle::State & /*previous_stat
     auto joint_id = model_.getJointId(joint_name);  // pinocchio joind id might be different
     auto joint = model_.joints[joint_id];
 
+    #if ROS2_VERSION_ABOVE_HUMBLE
+    q[i] = state_interfaces_[i].get_optional().value_or(q[i]);
+    #else
     q[i] = state_interfaces_[i].get_value();
+    #endif
     if (joint.shortname() == "JointModelRZ") {  // simple revolute joint case
       q_pin[joint.idx_q()] = q[i];
     } else if (continous_joint_types.count(
@@ -498,11 +506,16 @@ CartesianController::on_activate(const rclcpp_lifecycle::State & /*previous_stat
       q_pin[joint.idx_q() + 1] = std::sin(q[i]);
     }
 
-    q_ref[i] = state_interfaces_[i].get_value();
-    q_target[i] = q_ref[i];
+    q_ref[i] = q[i];
+    q_target[i] = q[i];
 
+    #if ROS2_VERSION_ABOVE_HUMBLE
+    dq[i] = state_interfaces_[num_joints + i].get_optional().value_or(dq[i]);
+    dq_ref[i] = dq[i];
+    #else
     dq[i] = state_interfaces_[num_joints + i].get_value();
     dq_ref[i] = state_interfaces_[num_joints + i].get_value();
+    #endif
   }
 
   pinocchio::forwardKinematics(model_, data_, q_pin, dq);

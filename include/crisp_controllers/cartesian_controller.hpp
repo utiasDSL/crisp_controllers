@@ -3,7 +3,6 @@
 /**
  * @file cartesian_controller.hpp
  * @brief Cartesian controller implementation for robot manipulation (supports impedance and OSC)
- * @author Your Organization
  */
 
 #include <memory>
