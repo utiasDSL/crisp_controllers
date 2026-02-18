@@ -123,7 +123,7 @@ Our controllers have been tested in real hardware on the following robots:
   </div>
 
   <div class="robot-card">
-    <a href="https://github.com/danielsanjosepro/crisp_ur_demo">
+    <a href="https://github.com/lvjonok/pixi_ur_ros2">
         <img src="media/ur10_visual.png" alt="UR5">
         <div class="robot-name">UR5</div>
     </a>
@@ -172,8 +172,8 @@ Grippers tested in real hardware:
 
 Many thanks community contributions:
 
-- Lev Kozlov [@lvjonok](https://github.com/lvjonok) for testing and providing interfaces for the Panda/FER.
-- Vincenzo Orlando [@VinsOrl09](https://github.com/lvjonok) for testing and providing interfaces for the UR robots.
+- Lev Kozlov [@lvjonok](https://github.com/lvjonok) for testing and providing interfaces for the Panda/FER and UR with pixi.
+- Vincenzo Orlando [@VinsOrl09](https://github.com/lvjonok) for testing and providing interfaces for the UR robots in docker containers.
 - Linus Schwarz [@Linus-Schwarz](https://github.com/Linus-Schwarz) for testing and providing interfaces for the BOTA force-torque sensors.
 - Niklas Schlueter [@niklasschlueter](https://github.com/niklasschlueter) for testing and providing interfaces for the DynaArm robot.
 
