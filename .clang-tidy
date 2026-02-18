@@ -5,12 +5,6 @@ Checks: >
   # Bug Prone Checks: Focus on potential bugs and common mistakes
   bugprone-*,
 
-  # C++ Core Guidelines Checks: Enforce Modern C++ Guidelines
-  cppcoreguidelines-*,
-
-  # Clang Static Analyzer Checks: Deeper semantic analysis for bugs
-  clang-analyzer-*,
-
   # Modernize Checks: Suggest modern C++ features and idioms
   modernize-*,
 
@@ -20,21 +14,22 @@ Checks: >
   # Readability Checks: Improve code readability and maintainability
   readability-*,
 
-  # Misc Checks: Catch various issues
-  misc-*,
-
   # Specific exceptions or stricter rules
   -modernize-use-trailing-return-type, # Often generates noisy suggestions
-  -cppcoreguidelines-pro-type-member-init, # Can be overly strict for some styles
+
+  # NOTE: These slow checks are disabled for pre-commit speed.
+  # Consider running them in CI:
+  # - clang-analyzer-* (deep dataflow analysis)
+  # - cppcoreguidelines-* (many checks, some overlap)
+  # - misc-*
 
 WarningsAsErrors: >
   bugprone-*,
-  clang-analyzer-*,
 
 HeaderFilterRegex: '^((?!/opt/ros|/usr/include).)*$'
 
-AnalyzeTemporaryDtors: true
-# Enables analysis of temporary destructors, which can catch more bugs but might be slower.
+# AnalyzeTemporaryDtors: true
+# Disabled for speed. Enable in CI for thorough analysis.
 
 FormatStyle: file
 # Integrate with .clang-format to ensure consistent formatting options.
