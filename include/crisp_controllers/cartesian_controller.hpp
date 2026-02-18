@@ -18,7 +18,14 @@
 #include <pinocchio/multibody/fwd.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-#include <cartesian_impedance_controller_parameters.hpp>
+#include <crisp_controllers/utils/ros2_version.hpp>
+
+#if ROS2_VERSION_ABOVE_HUMBLE
+#include <crisp_controllers/cartesian_controller_parameters.hpp>
+#else
+#include <cartesian_controller_parameters.hpp>
+#endif
+
 #include <sensor_msgs/msg/joint_state.hpp>
 #include "realtime_tools/realtime_buffer.hpp"
 
@@ -147,9 +154,9 @@ private:
   Eigen::Quaterniond desired_orientation_;
 
   /** @brief Parameter listener for dynamic parameter updates */
-  std::shared_ptr<cartesian_impedance_controller::ParamListener> params_listener_;
+  std::shared_ptr<cartesian_controller::ParamListener> params_listener_;
   /** @brief Current parameter values */
-  cartesian_impedance_controller::Params params_;
+  cartesian_controller::Params params_;
 
   /** @brief Frame ID of the end effector in the robot model */
   int end_effector_frame_id;

@@ -7,7 +7,13 @@
 #include <Eigen/Dense>  // NOLINT(build/include_order)
 
 #include <controller_interface/controller_interface.hpp>
+#include <crisp_controllers/utils/ros2_version.hpp>
+
+#if ROS2_VERSION_ABOVE_HUMBLE
 #include <crisp_controllers/torque_feedback_controller_parameters.hpp>
+#else
+#include <torque_feedback_controller_parameters.hpp>
+#endif
 #include <geometry_msgs/msg/wrench_stamped.hpp>
 #include <pinocchio/multibody/data.hpp>
 #include <pinocchio/multibody/model.hpp>

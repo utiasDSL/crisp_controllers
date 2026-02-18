@@ -17,9 +17,14 @@ cmake = "*"
 pkg-config = "*"
 make = "*"
 ninja = "*"
+pinocchio = ">=3.7.0,<4"
 # pinocchio = ">=3.7.0,<4"
 
 [tasks]
+clean = "rm -rf build install log"
+build = "colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+clean-build = [{ task = "clean" }, { task = "build" }]
+source = "source install/setup.sh"
 
 [target.linux.dependencies]
 libgl-devel = "*"
@@ -63,3 +68,4 @@ fmt = ">=11.2.0,<12"
 
 [pypi-dependencies]
 crisp-controllers = { path = ".", editable = false }
+pre-commit = ">=4.5.1, <5"

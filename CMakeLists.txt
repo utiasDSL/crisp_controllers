@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 project(crisp_controllers)
 
 find_program(CCACHE_PROGRAM ccache)
@@ -63,8 +63,8 @@ find_package(realtime_tools REQUIRED)
 find_package(generate_parameter_library REQUIRED)
 
 generate_parameter_library(
-  cartesian_impedance_controller_parameters
-  src/cartesian_impedance_controller.yaml
+  cartesian_controller_parameters
+  src/cartesian_controller.yaml
 )
 
 generate_parameter_library(
@@ -112,7 +112,7 @@ endif()
 # Link parameter libraries to the main library
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
-    cartesian_impedance_controller_parameters
+    cartesian_controller_parameters
     pose_broadcaster_parameters
     torque_feedback_controller_parameters
     twist_broadcaster_parameters

@@ -1,4 +1,4 @@
-cartesian_impedance_controller:
+cartesian_controller:
   joints:
     type: string_array
     description: "Names of the joints"
@@ -16,6 +16,13 @@ cartesian_impedance_controller:
     type: bool
     default_value: False
     description: "Whether we use operational space control or cartesian impedance control"
+
+  operational_space_regularization:
+    type: double
+    default_value: 0.1
+    description: "Regularization (damping) for Mx pseudo-inverse. Higher values improve stability near singularities but reduce accuracy. Valid range is 0.001-1.0; typical useful values are in the 0.01-0.5 range."
+    validation:
+      bounds<>: [0.001, 1.0]
 
   task:
     k_pos_x:
@@ -243,7 +250,7 @@ cartesian_impedance_controller:
     q_ref:
       type: double
       default_value: 1.0
-      description: "Amount of smoothing for the target joint when using the EMA."
+      description: "Amount of smoothing for the target pose when using the EMA."
       validation:
         bounds<>: [0.0, 1.0]
 
@@ -263,6 +270,24 @@ cartesian_impedance_controller:
     type: bool
     default_value: true
     description: "Limit torques"
+
+  joint_limit_repulsion:
+    enabled:
+      type: bool
+      default_value: true
+      description: "Enable joint limit repulsion torques that push joints away from their limits"
+    safe_range:
+      type: double
+      default_value: 0.1
+      description: "Distance from joint limit where repulsion starts [rad]"
+      validation:
+        bounds<>: [0.01, 1.0]
+    max_torque:
+      type: double
+      default_value: 5.0
+      description: "Maximum repulsion torque at joint limit [Nm]"
+      validation:
+        bounds<>: [0.0, 50.0]
 
   max_delta_tau:
     type: double

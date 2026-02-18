@@ -242,7 +242,7 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
 }
 
 CallbackReturn CartesianController::on_init() {
-  params_listener_ = std::make_shared<cartesian_impedance_controller::ParamListener>(get_node());
+  params_listener_ = std::make_shared<cartesian_controller::ParamListener>(get_node());
   params_listener_->refresh_dynamic_parameters();
   params_ = params_listener_->get_params();
 
@@ -492,11 +492,11 @@ CartesianController::on_activate(const rclcpp_lifecycle::State & /*previous_stat
     auto joint_id = model_.getJointId(joint_name);  // pinocchio joind id might be different
     auto joint = model_.joints[joint_id];
 
-    #if ROS2_VERSION_ABOVE_HUMBLE
+#if ROS2_VERSION_ABOVE_HUMBLE
     q[i] = state_interfaces_[i].get_optional().value_or(q[i]);
-    #else
+#else
     q[i] = state_interfaces_[i].get_value();
-    #endif
+#endif
     if (joint.shortname() == "JointModelRZ") {  // simple revolute joint case
       q_pin[joint.idx_q()] = q[i];
     } else if (continous_joint_types.count(
@@ -509,13 +509,13 @@ CartesianController::on_activate(const rclcpp_lifecycle::State & /*previous_stat
     q_ref[i] = q[i];
     q_target[i] = q[i];
 
-    #if ROS2_VERSION_ABOVE_HUMBLE
+#if ROS2_VERSION_ABOVE_HUMBLE
     dq[i] = state_interfaces_[num_joints + i].get_optional().value_or(dq[i]);
     dq_ref[i] = dq[i];
-    #else
+#else
     dq[i] = state_interfaces_[num_joints + i].get_value();
     dq_ref[i] = state_interfaces_[num_joints + i].get_value();
-    #endif
+#endif
   }
 
   pinocchio::forwardKinematics(model_, data_, q_pin, dq);
