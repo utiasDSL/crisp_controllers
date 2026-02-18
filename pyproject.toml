@@ -1,7 +1,7 @@
 [project]
 name = "crisp-controllers"
 version = "0.1.0"
-description = "Add your description here"
+description = "A collection of ROS2 controllers for the CRISP project."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

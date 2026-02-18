@@ -24,10 +24,9 @@ ______
 
 ##### Updating the website
 
-We use [mkdocs](https://www.mkdocs.org/) to generate the website from markdown. You can modify it within `docs/` in particular the `index.md`.
-Then you can serve it locally or update the github pages with:
+We use [zensical](https://www.zensical.org/) to generate the website from markdown. You can modify it within `docs/` in particular the `index.md`.
+You can run the website locally with:
 ```bash
-uv run mkdocs serve
-uv run mkdocs gh-deploy
+pixi run zensical serve
 ```
-
+The website is automatically generated and deployed on GitHub pages with the CI. You can check the [project website](https://utiasdsl.github.io/crisp_controllers/) for guides, getting started, demos and more!
