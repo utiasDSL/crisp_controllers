@@ -70,19 +70,24 @@ PoseBroadcaster::update(const rclcpp::Time & time, const rclcpp::Duration & peri
   bool should_publish =
     (publish_elapsed_ >= publish_interval_) || (publish_interval_.nanoseconds() == 0);
   if (should_publish && realtime_pose_publisher_) {
-    if (realtime_pose_publisher_->trylock()) {
-      auto & pose_msg = realtime_pose_publisher_->msg_;
-      pose_msg.header.stamp = time;
-      pose_msg.header.frame_id = params_.base_frame;
-      pose_msg.pose.position.x = current_pose.translation()[0];
-      pose_msg.pose.position.y = current_pose.translation()[1];
-      pose_msg.pose.position.z = current_pose.translation()[2];
-      pose_msg.pose.orientation.x = current_quaternion.x();
-      pose_msg.pose.orientation.y = current_quaternion.y();
-      pose_msg.pose.orientation.z = current_quaternion.z();
-      pose_msg.pose.orientation.w = current_quaternion.w();
-      realtime_pose_publisher_->unlockAndPublish();
+    geometry_msgs::msg::PoseStamped pose_msg;
+    pose_msg.header.stamp = time;
+    pose_msg.header.frame_id = params_.base_frame;
+    pose_msg.pose.position.x = current_pose.translation()[0];
+    pose_msg.pose.position.y = current_pose.translation()[1];
+    pose_msg.pose.position.z = current_pose.translation()[2];
+    pose_msg.pose.orientation.x = current_quaternion.x();
+    pose_msg.pose.orientation.y = current_quaternion.y();
+    pose_msg.pose.orientation.z = current_quaternion.z();
+    pose_msg.pose.orientation.w = current_quaternion.w();
 
+#if REALTIME_TOOLS_NEW_API
+    if (realtime_pose_publisher_->try_publish(pose_msg)) {
+#else
+    if (realtime_pose_publisher_->trylock()) {
+      realtime_pose_publisher_->msg_ = pose_msg;
+      realtime_pose_publisher_->unlockAndPublish();
+#endif
       publish_elapsed_ = publish_elapsed_ - publish_interval_;
       // clamp to publish only 1 time even if missed multiple intervals
       publish_elapsed_ = std::min(publish_elapsed_, publish_interval_);
