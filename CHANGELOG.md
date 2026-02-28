@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/utiasDSL/crisp_controllers/compare/v2.0.0...v2.1.0) (2026-02-28)
+
+
+### Features
+
+* refactor controller state update + add regularization configurable parameter for inverse mass matrix computation  ([#40](https://github.com/utiasDSL/crisp_controllers/issues/40)) ([d682c9a](https://github.com/utiasDSL/crisp_controllers/commit/d682c9abb5837c798867def561e5220b0dfe61c8))
+
 ## [1.3.0](https://github.com/utiasDSL/crisp_controllers/compare/v1.2.3...v1.3.0) (2026-02-09)
 
 
