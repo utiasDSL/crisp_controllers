@@ -313,6 +313,16 @@ cartesian_controller:
       default_value: [ 0.039533, 0.025882, -0.04607, 0.036194, 0.026226, -0.021047, 0.0035526]
       description: "Friction parameters part 3"
 
+  variable_stiffness:
+    enabled:
+      type: bool
+      default_value: false
+      description: "Enable receiving stiffness updates via a ROS2 topic. When enabled, stiffness values from the topic override parameter-based stiffness."
+    topic:
+      type: string
+      default_value: "target_stiffness"
+      description: "Topic name for receiving variable stiffness updates (std_msgs/Float64MultiArray with 6 elements: [k_pos_x, k_pos_y, k_pos_z, k_rot_x, k_rot_y, k_rot_z])"
+
   enable_introspection:
     type: bool
     default_value: false

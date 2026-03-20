@@ -18,6 +18,8 @@
 
 #include "pinocchio/algorithm/model.hpp"
 
+#include <std_msgs/msg/float64_multi_array.hpp>
+
 #include <crisp_controllers/cartesian_controller.hpp>
 #include <crisp_controllers/pch.hpp>
 #include <crisp_controllers/utils/friction_model.hpp>
@@ -78,6 +80,10 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   if (new_target_wrench_) {
     parse_target_wrench_();
     new_target_wrench_ = false;
+  }
+  if (new_target_stiffness_) {
+    parse_target_stiffness_();
+    new_target_stiffness_ = false;
   }
 
   pinocchio::forwardKinematics(model_, data_, q_pin, dq);
@@ -318,6 +324,8 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
   new_target_pose_ = false;
   new_target_joint_ = false;
   new_target_wrench_ = false;
+  new_target_stiffness_ = false;
+  use_topic_stiffness_ = false;
 
   multiple_publishers_detected_ = false;
   max_allowed_publishers_ = 1;
@@ -372,6 +380,28 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
 
   wrench_sub_ = get_node()->create_subscription<geometry_msgs::msg::WrenchStamped>(
     "target_wrench", rclcpp::QoS(1), target_wrench_callback);
+
+  if (params_.variable_stiffness.enabled) {
+    auto target_stiffness_callback =
+      [this](const std::shared_ptr<std_msgs::msg::Float64MultiArray> msg) -> void {
+      if (!check_topic_publisher_count(params_.variable_stiffness.topic)) {
+        RCLCPP_WARN_THROTTLE(
+          get_node()->get_logger(),
+          *get_node()->get_clock(),
+          1000,
+          "Ignoring target_stiffness message due to multiple publishers detected!");
+        return;
+      }
+      target_stiffness_buffer_.writeFromNonRT(msg);
+      new_target_stiffness_ = true;
+    };
+
+    stiffness_sub_ = get_node()->create_subscription<std_msgs::msg::Float64MultiArray>(
+      params_.variable_stiffness.topic, rclcpp::QoS(1), target_stiffness_callback);
+
+    RCLCPP_INFO(get_node()->get_logger(), "Variable stiffness enabled on topic: %s",
+      params_.variable_stiffness.topic.c_str());
+  }
 
   // Initialize all control vectors with appropriate dimensions
   tau_task = Eigen::VectorXd::Zero(model_.nv);
@@ -431,9 +461,13 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
 }
 
 void CartesianController::setStiffnessAndDamping() {
-  stiffness.setZero();
-  stiffness.diagonal() << params_.task.k_pos_x, params_.task.k_pos_y, params_.task.k_pos_z,
-    params_.task.k_rot_x, params_.task.k_rot_y, params_.task.k_rot_z;
+  if (use_topic_stiffness_) {
+    stiffness = topic_stiffness_;
+  } else {
+    stiffness.setZero();
+    stiffness.diagonal() << params_.task.k_pos_x, params_.task.k_pos_y, params_.task.k_pos_z,
+      params_.task.k_rot_x, params_.task.k_rot_y, params_.task.k_rot_z;
+  }
 
   damping.setZero();
   // For each axis, use explicit damping if > 0, otherwise compute from stiffness
@@ -557,6 +591,23 @@ void CartesianController::parse_target_wrench_() {
   auto msg = *target_wrench_buffer_.readFromRT();
   target_wrench_ << msg->wrench.force.x, msg->wrench.force.y, msg->wrench.force.z,
     msg->wrench.torque.x, msg->wrench.torque.y, msg->wrench.torque.z;
+}
+
+void CartesianController::parse_target_stiffness_() {
+  auto msg = *target_stiffness_buffer_.readFromRT();
+  if (msg->data.size() != 6) {
+    RCLCPP_WARN_THROTTLE(
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
+      "Variable stiffness message must have exactly 6 elements, got %zu. Ignoring.",
+      msg->data.size());
+    return;
+  }
+  topic_stiffness_.setZero();
+  topic_stiffness_.diagonal() << msg->data[0], msg->data[1], msg->data[2],
+    msg->data[3], msg->data[4], msg->data[5];
+  use_topic_stiffness_ = true;
 }
 
 void CartesianController::log_debug_info(const rclcpp::Time & time) {
