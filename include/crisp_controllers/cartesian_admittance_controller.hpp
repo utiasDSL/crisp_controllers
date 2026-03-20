@@ -257,8 +257,8 @@ private:
   Eigen::Matrix<double, 6, 6> adm_stiffness_;
   /** @brief Admittance damping matrix (6x6 diagonal) */
   Eigen::Matrix<double, 6, 6> adm_damping_;
-  /** @brief Filtered F/T sensor reading (6D wrench) */
-  Eigen::VectorXd ft_wrench_filtered_;
+  /** @brief F/T sensor reading (6D wrench) */
+  Eigen::VectorXd ft_wrench_;
   /** @brief Topic-provided admittance stiffness (6x6 diagonal) */
   Eigen::Matrix<double, 6, 6> topic_adm_stiffness_;
 

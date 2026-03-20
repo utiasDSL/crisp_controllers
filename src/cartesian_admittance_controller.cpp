@@ -127,7 +127,7 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
 
   // 9. Admittance dynamics: accel = M_inv * (F_ext - D * vel - K * error)
   Eigen::Matrix<double, 6, 6> K_adm = use_topic_adm_stiffness_ ? topic_adm_stiffness_ : adm_stiffness_;
-  Eigen::Vector<double, 6> adm_force = ft_wrench_filtered_ - adm_damping_ * inner_motion_ - K_adm * adm_error;
+  Eigen::Vector<double, 6> adm_force = ft_wrench_ - adm_damping_ * inner_motion_ - K_adm * adm_error;
   Eigen::Vector<double, 6> accel = adm_mass_inv_ * adm_force;
 
   // 10. Semi-implicit Euler integration
@@ -385,7 +385,7 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   // Initialize admittance inner loop state
   inner_SE3_ = pinocchio::SE3::Identity();
   inner_motion_.setZero();
-  ft_wrench_filtered_ = Eigen::VectorXd::Zero(6);
+  ft_wrench_ = Eigen::VectorXd::Zero(6);
   topic_adm_stiffness_ = Eigen::Matrix<double, 6, 6>::Zero();
 
   // --- Subscriptions (same as CartesianController) ---
@@ -676,7 +676,7 @@ CartesianAdmittanceController::on_activate(const rclcpp_lifecycle::State & /*pre
   // Reset admittance state so it reinitializes on first update cycle
   admittance_initialized_ = false;
   inner_motion_.setZero();
-  ft_wrench_filtered_.setZero();
+  ft_wrench_.setZero();
 
   RCLCPP_INFO(get_node()->get_logger(), "Admittance controller activated.");
   return CallbackReturn::SUCCESS;
@@ -736,18 +736,8 @@ void CartesianAdmittanceController::parse_target_stiffness_() {
 
 void CartesianAdmittanceController::parse_ft_sensor_() {
   auto msg = *ft_sensor_buffer_.readFromRT();
-  Eigen::VectorXd raw_wrench(6);
-  raw_wrench << msg->wrench.force.x, msg->wrench.force.y, msg->wrench.force.z,
+  ft_wrench_ << msg->wrench.force.x, msg->wrench.force.y, msg->wrench.force.z,
     msg->wrench.torque.x, msg->wrench.torque.y, msg->wrench.torque.z;
-
-  // Subtract static offset if configured
-  if (params_.ft_sensor.use_static_offset) {
-    Eigen::Map<Eigen::VectorXd> offset(params_.ft_sensor.static_offset.data(), 6);
-    raw_wrench -= offset;
-  }
-
-  // Apply EMA filter
-  ft_wrench_filtered_ = exponential_moving_average(ft_wrench_filtered_, raw_wrench, params_.ft_sensor.filter_alpha);
 }
 
 void CartesianAdmittanceController::parse_target_adm_stiffness_() {
@@ -799,7 +789,7 @@ void CartesianAdmittanceController::log_debug_info(const rclcpp::Time & time) {
       "inner_motion: " << inner_motion_.transpose());
     RCLCPP_INFO_STREAM_THROTTLE(
       get_node()->get_logger(), *get_node()->get_clock(), 1000,
-      "ft_wrench_filtered: " << ft_wrench_filtered_.transpose());
+      "ft_wrench: " << ft_wrench_.transpose());
   }
 
   if (params_.log.control_values) {

@@ -443,20 +443,6 @@ cartesian_admittance_controller:
       type: string
       default_value: "ft_sensor_wrench"
       description: "Topic name for external force/torque sensor (geometry_msgs/WrenchStamped)"
-    filter_alpha:
-      type: double
-      default_value: 0.1
-      description: "EMA filter coefficient for F/T sensor readings (0=no filter, 1=max smooth)"
-      validation:
-        bounds<>: [0.0, 1.0]
-    use_static_offset:
-      type: bool
-      default_value: false
-      description: "Subtract a static offset from F/T readings (for sensor bias)"
-    static_offset:
-      type: double_array
-      default_value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-      description: "Static F/T offset to subtract [fx, fy, fz, tx, ty, tz]"
 
   variable_admittance_stiffness:
     enabled:
