@@ -5,6 +5,12 @@
             Control the 3D pose of the end-effector using impedance control or OSC with pinocchio model.
         </description>
     </class>
+    <class name="crisp_controllers/CartesianAdmittanceController"
+           type="crisp_controllers::CartesianAdmittanceController" base_class_type="controller_interface::ControllerInterface">
+        <description>
+            Cartesian admittance controller with impedance outer loop for compliant force-based interaction.
+        </description>
+    </class>
     <class name="crisp_controllers/PoseBroadcaster"
            type="crisp_controllers::PoseBroadcaster" base_class_type="controller_interface::ControllerInterface">
         <description>
