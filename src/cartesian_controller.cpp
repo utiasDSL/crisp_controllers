@@ -381,27 +381,25 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
   wrench_sub_ = get_node()->create_subscription<geometry_msgs::msg::WrenchStamped>(
     "target_wrench", rclcpp::QoS(1), target_wrench_callback);
 
-  if (params_.variable_stiffness.enabled) {
-    auto target_stiffness_callback =
-      [this](const std::shared_ptr<std_msgs::msg::Float64MultiArray> msg) -> void {
-      if (!check_topic_publisher_count(params_.variable_stiffness.topic)) {
-        RCLCPP_WARN_THROTTLE(
-          get_node()->get_logger(),
-          *get_node()->get_clock(),
-          1000,
-          "Ignoring target_stiffness message due to multiple publishers detected!");
-        return;
-      }
-      target_stiffness_buffer_.writeFromNonRT(msg);
-      new_target_stiffness_ = true;
-    };
+  auto target_stiffness_callback =
+    [this](const std::shared_ptr<std_msgs::msg::Float64MultiArray> msg) -> void {
+    if (!check_topic_publisher_count(params_.variable_stiffness.topic)) {
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        1000,
+        "Ignoring target_stiffness message due to multiple publishers detected!");
+      return;
+    }
+    target_stiffness_buffer_.writeFromNonRT(msg);
+    new_target_stiffness_ = true;
+  };
 
-    stiffness_sub_ = get_node()->create_subscription<std_msgs::msg::Float64MultiArray>(
-      params_.variable_stiffness.topic, rclcpp::QoS(1), target_stiffness_callback);
+  stiffness_sub_ = get_node()->create_subscription<std_msgs::msg::Float64MultiArray>(
+    params_.variable_stiffness.topic, rclcpp::QoS(1), target_stiffness_callback);
 
-    RCLCPP_INFO(get_node()->get_logger(), "Variable stiffness enabled on topic: %s",
-      params_.variable_stiffness.topic.c_str());
-  }
+  RCLCPP_INFO(get_node()->get_logger(), "Variable stiffness topic: %s",
+    params_.variable_stiffness.topic.c_str());
 
   // Initialize all control vectors with appropriate dimensions
   tau_task = Eigen::VectorXd::Zero(model_.nv);
