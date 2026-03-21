@@ -50,7 +50,7 @@ controller_interface::return_type TorqueFeedbackController::update(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
   // Update joint states
   for (int i = 0; i < num_joints_; i++) {
-#if ROS2_VERSION_ABOVE_HUMBLE
+#if ROS2_VERSION_ABOVE_JAZZY
     q_[i] = state_interfaces_[i].get_optional().value_or(q_[i]);
     dq_[i] = state_interfaces_[num_joints_ + i].get_optional().value_or(dq_[i]);
 #else
@@ -261,7 +261,7 @@ TorqueFeedbackController::on_configure(const rclcpp_lifecycle::State & /*previou
 CallbackReturn
 TorqueFeedbackController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
   for (int i = 0; i < num_joints_; i++) {
-#if ROS2_VERSION_ABOVE_HUMBLE
+#if ROS2_VERSION_ABOVE_JAZZY
     q_[i] = state_interfaces_[i].get_optional().value_or(q_[i]);
     dq_[i] = state_interfaces_[num_joints_ + i].get_optional().value_or(dq_[i]);
 #else
