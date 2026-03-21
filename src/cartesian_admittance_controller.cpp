@@ -626,7 +626,7 @@ void CartesianAdmittanceController::updateCurrentState(bool initialize) {
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
-#if ROS2_VERSION_ABOVE_HUMBLE
+#if ROS2_VERSION_ABOVE_JAZZY
     double q_meas = state_interfaces_[i].get_optional().value_or(q[i]);
     double dq_meas = state_interfaces_[num_joints + i].get_optional().value_or(dq[i]);
 #else
