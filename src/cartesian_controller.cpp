@@ -463,10 +463,18 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
 void CartesianController::setStiffnessAndDamping() {
   if (use_topic_stiffness_) {
     stiffness = topic_stiffness_;
+    RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 2000,
+      "Using TOPIC stiffness: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
+      stiffness(0,0), stiffness(1,1), stiffness(2,2),
+      stiffness(3,3), stiffness(4,4), stiffness(5,5));
   } else {
     stiffness.setZero();
     stiffness.diagonal() << params_.task.k_pos_x, params_.task.k_pos_y, params_.task.k_pos_z,
       params_.task.k_rot_x, params_.task.k_rot_y, params_.task.k_rot_z;
+    RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 2000,
+      "Using PARAM stiffness: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
+      stiffness(0,0), stiffness(1,1), stiffness(2,2),
+      stiffness(3,3), stiffness(4,4), stiffness(5,5));
   }
 
   damping.setZero();
@@ -608,6 +616,10 @@ void CartesianController::parse_target_stiffness_() {
   topic_stiffness_.diagonal() << msg->data[0], msg->data[1], msg->data[2],
     msg->data[3], msg->data[4], msg->data[5];
   use_topic_stiffness_ = true;
+  RCLCPP_INFO(get_node()->get_logger(),
+    "Variable stiffness received: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
+    msg->data[0], msg->data[1], msg->data[2],
+    msg->data[3], msg->data[4], msg->data[5]);
 }
 
 void CartesianController::log_debug_info(const rclcpp::Time & time) {
