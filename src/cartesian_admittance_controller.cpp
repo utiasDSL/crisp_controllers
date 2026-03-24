@@ -15,6 +15,7 @@
 #include <pinocchio/parsers/urdf.hpp>
 #include <pinocchio/spatial/explog.hpp>
 #include <pinocchio/spatial/fwd.hpp>
+#include <pinocchio/algorithm/utils/force.hpp>
 
 #include "pinocchio/algorithm/model.hpp"
 
@@ -116,18 +117,40 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   desired_orientation_ =
     target_orientation_.slerp(params_.filter.target_pose, desired_orientation_);
 
-  // 8. Compute SE3 error between inner state and desired pose
+  // 8. Compute SE3 error between inner state and desired pose (on manifold)
+  // Build desired SE3 from filtered position and orientation
+  pinocchio::SE3 desired_SE3;
+  desired_SE3.translation() = desired_position_;
+  desired_SE3.rotation() = desired_orientation_.toRotationMatrix();
+
   // Position error: desired - inner
-  Eigen::Vector3d adm_pos_error = desired_position_ - inner_SE3_.translation();
-  // Orientation error: log3(R_desired * R_inner^T)
-  Eigen::Vector3d adm_rot_error = pinocchio::log3(
-    Eigen::Quaterniond(desired_orientation_).toRotationMatrix() * inner_SE3_.rotation().transpose());
+  Eigen::Vector3d adm_pos_error = desired_SE3.translation() - inner_SE3_.translation();
+
+  // Orientation error: quaternion-based with antipodal check
+  Eigen::Quaterniond q_inner(inner_SE3_.rotation());
+  Eigen::Quaterniond q_desired(desired_SE3.rotation());
+  if (q_desired.coeffs().dot(q_inner.coeffs()) < 0.0) {
+    q_inner.coeffs() = -q_inner.coeffs();
+  }
+  Eigen::Quaterniond q_error(q_inner.inverse() * q_desired);
+  Eigen::Vector3d adm_rot_error;
+  adm_rot_error << q_error.x(), q_error.y(), q_error.z();
+  adm_rot_error = inner_SE3_.rotation() * adm_rot_error;  // Rotate to world frame
+
   Eigen::Vector<double, 6> adm_error;
   adm_error << adm_pos_error, adm_rot_error;
 
-  // 9. Admittance dynamics: accel = M_inv * (F_ext - D * vel - K * error)
+  // 9. Transform F/T wrench from sensor (LOCAL) frame to LOCAL_WORLD_ALIGNED frame
+  pinocchio::Force ft_local(ft_wrench_.head(3), ft_wrench_.tail(3));
+  pinocchio::Force ft_world = pinocchio::Force::Zero();
+  pinocchio::changeReferenceFrame(
+    end_effector_pose, ft_local, pinocchio::LOCAL, pinocchio::LOCAL_WORLD_ALIGNED, ft_world);
+  Eigen::Vector<double, 6> ft_wrench_world = ft_world.toVector();
+
+  // 10. Admittance dynamics: accel = M_inv * (F_ext - D * vel + K * error)
+  // Spring term +K*(desired - inner) is a restoring force toward the desired pose
   Eigen::Matrix<double, 6, 6> K_adm = use_topic_adm_stiffness_ ? topic_adm_stiffness_ : adm_stiffness_;
-  Eigen::Vector<double, 6> adm_force = ft_wrench_ - adm_damping_ * inner_motion_ - K_adm * adm_error;
+  Eigen::Vector<double, 6> adm_force = ft_wrench_world - adm_damping_ * inner_motion_ + K_adm * adm_error;
   Eigen::Vector<double, 6> accel = adm_mass_inv_ * adm_force;
 
   // 10. Semi-implicit Euler integration
@@ -467,20 +490,12 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   // F/T sensor subscription
   auto ft_sensor_callback =
     [this](const std::shared_ptr<geometry_msgs::msg::WrenchStamped> msg) -> void {
-    if (!check_topic_publisher_count(params_.ft_sensor.topic)) {
-      RCLCPP_WARN_THROTTLE(
-        get_node()->get_logger(),
-        *get_node()->get_clock(),
-        1000,
-        "Ignoring F/T sensor message due to multiple publishers detected!");
-      return;
-    }
     ft_sensor_buffer_.writeFromNonRT(msg);
     new_ft_sensor_ = true;
   };
 
   ft_sensor_sub_ = get_node()->create_subscription<geometry_msgs::msg::WrenchStamped>(
-    params_.ft_sensor.topic, rclcpp::QoS(1), ft_sensor_callback);
+    params_.ft_sensor.topic, rclcpp::SensorDataQoS(), ft_sensor_callback);
 
   RCLCPP_INFO(get_node()->get_logger(), "F/T sensor subscription on topic: %s",
     params_.ft_sensor.topic.c_str());
@@ -489,14 +504,6 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   if (params_.variable_admittance_stiffness.enabled) {
     auto target_adm_stiffness_callback =
       [this](const std::shared_ptr<std_msgs::msg::Float64MultiArray> msg) -> void {
-      if (!check_topic_publisher_count(params_.variable_admittance_stiffness.topic)) {
-        RCLCPP_WARN_THROTTLE(
-          get_node()->get_logger(),
-          *get_node()->get_clock(),
-          1000,
-          "Ignoring target admittance stiffness message due to multiple publishers detected!");
-        return;
-      }
       target_adm_stiffness_buffer_.writeFromNonRT(msg);
       new_target_adm_stiffness_ = true;
     };
@@ -902,7 +909,17 @@ void CartesianAdmittanceController::log_debug_info(const rclcpp::Time & time) {
 }
 
 bool CartesianAdmittanceController::check_topic_publisher_count(const std::string & topic_name) {
-  auto topic_info = get_node()->get_publishers_info_by_topic(topic_name);
+  std::vector<rclcpp::TopicEndpointInfo> topic_info;
+  try {
+    topic_info = get_node()->get_publishers_info_by_topic(topic_name);
+  } catch (const std::exception & e) {
+    RCLCPP_WARN_THROTTLE(
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      5000,
+      "Failed to get publisher info for topic '%s': %s", topic_name.c_str(), e.what());
+    return true;  // Allow message through if check fails
+  }
   size_t publisher_count = topic_info.size();
 
   if (publisher_count > max_allowed_publishers_) {
