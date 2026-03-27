@@ -313,6 +313,20 @@ cartesian_admittance_controller:
       default_value: [ 0.039533, 0.025882, -0.04607, 0.036194, 0.026226, -0.021047, 0.0035526]
       description: "Friction parameters part 3"
 
+  max_stiffness:
+    translational:
+      type: double
+      default_value: 900.0
+      description: "Maximum allowed translational stiffness value. Stiffness values above this will be clamped."
+      validation:
+        bounds<>: [0.0, 5000.0]
+    rotational:
+      type: double
+      default_value: 60.0
+      description: "Maximum allowed rotational stiffness value. Stiffness values above this will be clamped."
+      validation:
+        bounds<>: [0.0, 100.0]
+
   variable_stiffness:
     enabled:
       type: bool
@@ -443,6 +457,20 @@ cartesian_admittance_controller:
       type: string
       default_value: "ft_sensor_wrench"
       description: "Topic name for external force/torque sensor (geometry_msgs/WrenchStamped)"
+
+  max_admittance_stiffness:
+    translational:
+      type: double
+      default_value: 900.0
+      description: "Maximum allowed translational admittance stiffness value. Values above this will be clamped."
+      validation:
+        bounds<>: [0.0, 5000.0]
+    rotational:
+      type: double
+      default_value: 60.0
+      description: "Maximum allowed rotational admittance stiffness value. Values above this will be clamped."
+      validation:
+        bounds<>: [0.0, 100.0]
 
   variable_admittance_stiffness:
     enabled:

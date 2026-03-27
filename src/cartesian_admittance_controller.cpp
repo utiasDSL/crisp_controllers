@@ -1,4 +1,5 @@
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 
@@ -581,6 +582,24 @@ void CartesianAdmittanceController::setStiffnessAndDamping() {
       params_.task.k_rot_x, params_.task.k_rot_y, params_.task.k_rot_z;
   }
 
+  // Clamp stiffness to [0, max_stiffness]
+  const double max_k_trans = params_.max_stiffness.translational;
+  const double max_k_rot = params_.max_stiffness.rotational;
+  for (int i = 0; i < 3; ++i) {
+    if (stiffness(i, i) < 0.0 || stiffness(i, i) > max_k_trans) {
+      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 1000,
+        "Translational stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, stiffness(i, i), max_k_trans);
+      stiffness(i, i) = std::clamp(stiffness(i, i), 0.0, max_k_trans);
+    }
+  }
+  for (int i = 3; i < 6; ++i) {
+    if (stiffness(i, i) < 0.0 || stiffness(i, i) > max_k_rot) {
+      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 1000,
+        "Rotational stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, stiffness(i, i), max_k_rot);
+      stiffness(i, i) = std::clamp(stiffness(i, i), 0.0, max_k_rot);
+    }
+  }
+
   damping.setZero();
   // For each axis, use explicit damping if > 0, otherwise compute from stiffness
   damping.diagonal()
@@ -619,6 +638,26 @@ void CartesianAdmittanceController::setAdmittanceParameters() {
   adm_stiffness_.diagonal() << params_.admittance.stiffness_x, params_.admittance.stiffness_y,
     params_.admittance.stiffness_z, params_.admittance.stiffness_rx,
     params_.admittance.stiffness_ry, params_.admittance.stiffness_rz;
+
+  // Clamp admittance stiffness to [0, max_admittance_stiffness]
+  const double max_ak_trans = params_.max_admittance_stiffness.translational;
+  const double max_ak_rot = params_.max_admittance_stiffness.rotational;
+  for (int i = 0; i < 3; ++i) {
+    if (adm_stiffness_(i, i) < 0.0 || adm_stiffness_(i, i) > max_ak_trans) {
+      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 1000,
+        "Admittance translational stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i, adm_stiffness_(i, i), max_ak_trans);
+      adm_stiffness_(i, i) = std::clamp(adm_stiffness_(i, i), 0.0, max_ak_trans);
+    }
+  }
+  for (int i = 3; i < 6; ++i) {
+    if (adm_stiffness_(i, i) < 0.0 || adm_stiffness_(i, i) > max_ak_rot) {
+      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 1000,
+        "Admittance rotational stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i, adm_stiffness_(i, i), max_ak_rot);
+      adm_stiffness_(i, i) = std::clamp(adm_stiffness_(i, i), 0.0, max_ak_rot);
+    }
+  }
 
   adm_damping_.setZero();
   adm_damping_.diagonal() << params_.admittance.damping_x, params_.admittance.damping_y,
@@ -735,10 +774,30 @@ void CartesianAdmittanceController::parse_target_stiffness_() {
       msg->data.size());
     return;
   }
+  const double max_k_trans = params_.max_stiffness.translational;
+  const double max_k_rot = params_.max_stiffness.rotational;
+  std::array<double, 6> vals = {msg->data[0], msg->data[1], msg->data[2],
+                                msg->data[3], msg->data[4], msg->data[5]};
+  for (int i = 0; i < 3; ++i) {
+    if (vals[i] < 0.0 || vals[i] > max_k_trans) {
+      RCLCPP_WARN(get_node()->get_logger(),
+        "Topic impedance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, vals[i], max_k_trans);
+      vals[i] = std::clamp(vals[i], 0.0, max_k_trans);
+    }
+  }
+  for (int i = 3; i < 6; ++i) {
+    if (vals[i] < 0.0 || vals[i] > max_k_rot) {
+      RCLCPP_WARN(get_node()->get_logger(),
+        "Topic impedance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, vals[i], max_k_rot);
+      vals[i] = std::clamp(vals[i], 0.0, max_k_rot);
+    }
+  }
   topic_stiffness_.setZero();
-  topic_stiffness_.diagonal() << msg->data[0], msg->data[1], msg->data[2],
-    msg->data[3], msg->data[4], msg->data[5];
+  topic_stiffness_.diagonal() << vals[0], vals[1], vals[2], vals[3], vals[4], vals[5];
   use_topic_stiffness_ = true;
+  RCLCPP_INFO(get_node()->get_logger(),
+    "Variable impedance stiffness received: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
+    vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
 }
 
 void CartesianAdmittanceController::parse_ft_sensor_() {
@@ -758,10 +817,30 @@ void CartesianAdmittanceController::parse_target_adm_stiffness_() {
       msg->data.size());
     return;
   }
+  const double max_ak_trans = params_.max_admittance_stiffness.translational;
+  const double max_ak_rot = params_.max_admittance_stiffness.rotational;
+  std::array<double, 6> avals = {msg->data[0], msg->data[1], msg->data[2],
+                                 msg->data[3], msg->data[4], msg->data[5]};
+  for (int i = 0; i < 3; ++i) {
+    if (avals[i] < 0.0 || avals[i] > max_ak_trans) {
+      RCLCPP_WARN(get_node()->get_logger(),
+        "Topic admittance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, avals[i], max_ak_trans);
+      avals[i] = std::clamp(avals[i], 0.0, max_ak_trans);
+    }
+  }
+  for (int i = 3; i < 6; ++i) {
+    if (avals[i] < 0.0 || avals[i] > max_ak_rot) {
+      RCLCPP_WARN(get_node()->get_logger(),
+        "Topic admittance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, avals[i], max_ak_rot);
+      avals[i] = std::clamp(avals[i], 0.0, max_ak_rot);
+    }
+  }
   topic_adm_stiffness_.setZero();
-  topic_adm_stiffness_.diagonal() << msg->data[0], msg->data[1], msg->data[2],
-    msg->data[3], msg->data[4], msg->data[5];
+  topic_adm_stiffness_.diagonal() << avals[0], avals[1], avals[2], avals[3], avals[4], avals[5];
   use_topic_adm_stiffness_ = true;
+  RCLCPP_INFO(get_node()->get_logger(),
+    "Variable admittance stiffness received: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
+    avals[0], avals[1], avals[2], avals[3], avals[4], avals[5]);
 }
 
 void CartesianAdmittanceController::log_debug_info(const rclcpp::Time & time) {
