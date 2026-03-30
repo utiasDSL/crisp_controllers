@@ -45,7 +45,7 @@ PoseBroadcaster::update(const rclcpp::Time & time, const rclcpp::Duration & peri
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
-#if ROS2_VERSION_ABOVE_JAZZY
+#if ROS2_VERSION_ABOVE_HUMBLE
     q[i] = state_interfaces_[i].get_optional().value_or(q[i]);
 #else
     q[i] = state_interfaces_[i].get_value();

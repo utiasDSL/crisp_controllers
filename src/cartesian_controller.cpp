@@ -528,7 +528,7 @@ void CartesianController::updateCurrentState(bool initialize) {
     auto joint_id = model_.getJointId(joint_name);  // pinocchio joind id might be different
     auto joint = model_.joints[joint_id];
 
-#if ROS2_VERSION_ABOVE_JAZZY
+#if ROS2_VERSION_ABOVE_HUMBLE
     double q_meas = state_interfaces_[i].get_optional().value_or(q[i]);
     double dq_meas = state_interfaces_[num_joints + i].get_optional().value_or(dq[i]);
 #else
