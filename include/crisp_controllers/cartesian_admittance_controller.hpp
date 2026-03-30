@@ -222,6 +222,8 @@ private:
 
   /** @brief Frame ID of the end effector in the robot model */
   int end_effector_frame_id;
+  /** @brief Frame ID of the F/T sensor measurement frame in the robot model */
+  int ft_sensor_frame_id;
   /** @brief Pinocchio robot model */
   pinocchio::Model model_;
   /** @brief Pinocchio data for computations */

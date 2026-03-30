@@ -142,10 +142,11 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   adm_error << adm_pos_error, adm_rot_error;
 
   // 9. Transform F/T wrench from sensor (LOCAL) frame to LOCAL_WORLD_ALIGNED frame
+  pinocchio::SE3 ft_sensor_pose = data_.oMf[ft_sensor_frame_id];
   pinocchio::Force ft_local(ft_wrench_.head(3), ft_wrench_.tail(3));
   pinocchio::Force ft_world = pinocchio::Force::Zero();
   pinocchio::changeReferenceFrame(
-    end_effector_pose, ft_local, pinocchio::LOCAL, pinocchio::LOCAL_WORLD_ALIGNED, ft_world);
+    ft_sensor_pose, ft_local, pinocchio::LOCAL, pinocchio::LOCAL_WORLD_ALIGNED, ft_world);
   Eigen::Vector<double, 6> ft_wrench_world = ft_world.toVector();
 
   // 10. Admittance dynamics: accel = M_inv * (F_ext - D * vel + K * error)
@@ -371,6 +372,16 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
 
   // Preallocate the matrices and vectors that will be used in the control loop
   end_effector_frame_id = model_.getFrameId(params_.end_effector_frame);
+  if (params_.ft_sensor.frame.empty()) {
+    ft_sensor_frame_id = end_effector_frame_id;
+    RCLCPP_WARN(get_node()->get_logger(),
+      "ft_sensor.frame is not set, using end_effector_frame for F/T wrench transformation. "
+      "Set ft_sensor.frame to the actual sensor measurement frame for correct results.");
+  } else {
+    ft_sensor_frame_id = model_.getFrameId(params_.ft_sensor.frame);
+    RCLCPP_INFO(get_node()->get_logger(),
+      "Using F/T sensor frame: %s (id=%d)", params_.ft_sensor.frame.c_str(), ft_sensor_frame_id);
+  }
   q = Eigen::VectorXd::Zero(model_.nv);
   q_pin = Eigen::VectorXd::Zero(model_.nq);
   dq = Eigen::VectorXd::Zero(model_.nv);

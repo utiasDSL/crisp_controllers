@@ -457,6 +457,10 @@ cartesian_admittance_controller:
       type: string
       default_value: "ft_sensor_wrench"
       description: "Topic name for external force/torque sensor (geometry_msgs/WrenchStamped)"
+    frame:
+      type: string
+      default_value: ""
+      description: "Name of the F/T sensor measurement frame in the URDF. If empty, defaults to end_effector_frame (legacy behavior)."
 
   max_admittance_stiffness:
     translational:
