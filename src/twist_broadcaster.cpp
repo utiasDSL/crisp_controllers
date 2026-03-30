@@ -47,7 +47,7 @@ TwistBroadcaster::update(const rclcpp::Time & time, const rclcpp::Duration & per
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
-#if ROS2_VERSION_ABOVE_JAZZY
+#if ROS2_VERSION_ABOVE_HUMBLE
     q[i] = state_interfaces_[i * 2].get_optional().value_or(q[i]);
     q_dot[i] = state_interfaces_[i * 2 + 1].get_optional().value_or(q_dot[i]);
 #else
