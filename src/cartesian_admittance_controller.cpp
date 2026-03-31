@@ -86,6 +86,7 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   if (new_target_stiffness_) {
     parse_target_stiffness_();
     new_target_stiffness_ = false;
+    setStiffnessAndDamping();
   }
 
   // 3. Parse F/T sensor data
@@ -98,6 +99,7 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   if (new_target_adm_stiffness_) {
     parse_target_adm_stiffness_();
     new_target_adm_stiffness_ = false;
+    setAdmittanceParameters();
   }
 
   // 5. Forward kinematics
@@ -278,9 +280,11 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
 
   // 18. Refresh parameters
   params_listener_->refresh_dynamic_parameters();
-  params_ = params_listener_->get_params();
-  setStiffnessAndDamping();
-  setAdmittanceParameters();
+  if (params_listener_->is_old(params_)) {
+    params_ = params_listener_->get_params();
+    setStiffnessAndDamping();
+    setAdmittanceParameters();
+  }
 
   log_debug_info(time);
 
@@ -645,10 +649,14 @@ void CartesianAdmittanceController::setAdmittanceParameters() {
     params_.admittance.mass_rz;
   adm_mass_inv_ = adm_mass_.inverse();
 
-  adm_stiffness_.setZero();
-  adm_stiffness_.diagonal() << params_.admittance.stiffness_x, params_.admittance.stiffness_y,
-    params_.admittance.stiffness_z, params_.admittance.stiffness_rx,
-    params_.admittance.stiffness_ry, params_.admittance.stiffness_rz;
+  if (use_topic_adm_stiffness_) {
+    adm_stiffness_ = topic_adm_stiffness_;
+  } else {
+    adm_stiffness_.setZero();
+    adm_stiffness_.diagonal() << params_.admittance.stiffness_x, params_.admittance.stiffness_y,
+      params_.admittance.stiffness_z, params_.admittance.stiffness_rx,
+      params_.admittance.stiffness_ry, params_.admittance.stiffness_rz;
+  }
 
   // Clamp admittance stiffness to [0, max_admittance_stiffness]
   const double max_ak_trans = params_.max_admittance_stiffness.translational;
@@ -683,7 +691,7 @@ void CartesianAdmittanceController::updateCurrentState(bool initialize) {
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
-#if ROS2_VERSION_ABOVE_HUMBLE
+#if ROS2_VERSION_ABOVE_JAZZY
     double q_meas = state_interfaces_[i].get_optional().value_or(q[i]);
     double dq_meas = state_interfaces_[num_joints + i].get_optional().value_or(dq[i]);
 #else
