@@ -85,6 +85,7 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   if (new_target_stiffness_) {
     parse_target_stiffness_();
     new_target_stiffness_ = false;
+    setStiffnessAndDamping();
   }
 
   pinocchio::forwardKinematics(model_, data_, q_pin, dq);
@@ -208,8 +209,10 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   tau_previous = tau_d;
 
   params_listener_->refresh_dynamic_parameters();
-  params_ = params_listener_->get_params();
-  setStiffnessAndDamping();
+  if (params_listener_->is_old(params_)) {
+    params_ = params_listener_->get_params();
+    setStiffnessAndDamping();
+  }
 
   log_debug_info(time);
 
@@ -520,7 +523,7 @@ void CartesianController::updateCurrentState(bool initialize) {
     auto joint_id = model_.getJointId(joint_name);  // pinocchio joind id might be different
     auto joint = model_.joints[joint_id];
 
-#if ROS2_VERSION_ABOVE_HUMBLE
+#if ROS2_VERSION_ABOVE_JAZZY
     double q_meas = state_interfaces_[i].get_optional().value_or(q[i]);
     double dq_meas = state_interfaces_[num_joints + i].get_optional().value_or(dq[i]);
 #else
