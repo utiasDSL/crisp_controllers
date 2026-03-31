@@ -313,7 +313,7 @@ cartesian_controller:
       default_value: [ 0.039533, 0.025882, -0.04607, 0.036194, 0.026226, -0.021047, 0.0035526]
       description: "Friction parameters part 3"
 
-  max_stiffness:
+  variable_max_stiffness:
     translational:
       type: double
       default_value: 900.0
