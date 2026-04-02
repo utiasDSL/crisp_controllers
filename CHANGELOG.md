@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/utiasDSL/crisp_controllers/compare/v2.1.0...v2.2.0) (2026-04-02)
+
+
+### Features
+
+* Variable Stiffness Controller ([#46](https://github.com/utiasDSL/crisp_controllers/issues/46)) ([2fc192d](https://github.com/utiasDSL/crisp_controllers/commit/2fc192d1801c99b76f3f67bda34815d2f744e64c))
+
 ## [2.1.0](https://github.com/utiasDSL/crisp_controllers/compare/v2.0.0...v2.1.0) (2026-02-28)
 
 
