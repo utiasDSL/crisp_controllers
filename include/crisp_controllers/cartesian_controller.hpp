@@ -14,6 +14,7 @@
 #include <controller_interface/controller_interface.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/wrench_stamped.hpp>
+#include <std_msgs/msg/float64_multi_array.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/multibody/fwd.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -102,6 +103,8 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_sub_;
   /** @brief Subscription for target wrench messages */
   rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_sub_;
+  /** @brief Subscription for variable stiffness messages */
+  rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr stiffness_sub_;
 
   /** @brief Flag to indicate if multiple publishers detected */
   bool multiple_publishers_detected_;
@@ -135,9 +138,16 @@ private:
    */
   void parse_target_wrench_();
 
+  /**
+   * @brief Reads the target stiffness in realtime loop from the buffer and parses it to be used in the controller.
+   */
+  void parse_target_stiffness_();
+
   bool new_target_pose_;
   bool new_target_joint_;
   bool new_target_wrench_;
+  bool new_target_stiffness_ = false;
+  bool use_topic_stiffness_ = false;
 
   realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::PoseStamped>>
     target_pose_buffer_;
@@ -147,6 +157,9 @@ private:
 
   realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::WrenchStamped>>
     target_wrench_buffer_;
+
+  realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64MultiArray>>
+    target_stiffness_buffer_;
 
   /** @brief Target position in Cartesian space */
   Eigen::Vector3d target_position_;
@@ -176,6 +189,8 @@ private:
   Eigen::MatrixXd stiffness = Eigen::MatrixXd::Zero(6, 6);
   /** @brief Cartesian damping matrix (6x6) */
   Eigen::MatrixXd damping = Eigen::MatrixXd::Zero(6, 6);
+  /** @brief Topic-provided stiffness matrix (6x6 diagonal) */
+  Eigen::Matrix<double, 6, 6> topic_stiffness_ = Eigen::Matrix<double, 6, 6>::Zero();
 
   /** @brief Nullspace stiffness matrix for posture control */
   Eigen::MatrixXd nullspace_stiffness;
