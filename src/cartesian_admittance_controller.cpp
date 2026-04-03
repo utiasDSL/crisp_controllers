@@ -694,7 +694,7 @@ void CartesianAdmittanceController::updateCurrentState(bool initialize) {
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
-#if ROS2_VERSION_ABOVE_JAZZY
+#if ROS2_VERSION_ABOVE_HUMBLE
     double q_meas = state_interfaces_[i].get_optional().value_or(q[i]);
     double dq_meas = state_interfaces_[num_joints + i].get_optional().value_or(dq[i]);
 #else
@@ -767,13 +767,14 @@ void CartesianAdmittanceController::parse_target_pose_() {
 
 void CartesianAdmittanceController::parse_target_joint_() {
   auto msg = *target_joint_buffer_.readFromRT();
+  size_t num_joints = static_cast<size_t>(model_.nv);
   if (msg->position.size()) {
-    for (size_t i = 0; i < msg->position.size(); ++i) {
+    for (size_t i = 0; i < std::min(msg->position.size(), num_joints); ++i) {
       q_target[i] = msg->position[i];
     }
   }
   if (msg->velocity.size()) {
-    for (size_t i = 0; i < msg->position.size(); ++i) {
+    for (size_t i = 0; i < std::min(msg->velocity.size(), num_joints); ++i) {
       dq_ref[i] = msg->velocity[i];
     }
   }
