@@ -163,7 +163,7 @@ private:
   void parse_target_stiffness_();
 
   /**
-   * @brief Reads the F/T sensor data from the realtime buffer and applies filtering
+   * @brief Reads the F/T sensor data from the realtime buffer and updates the internal wrench
    */
   void parse_ft_sensor_();
 

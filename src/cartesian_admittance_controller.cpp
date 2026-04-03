@@ -129,16 +129,9 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   // Position error: desired - inner
   Eigen::Vector3d adm_pos_error = desired_SE3.translation() - inner_SE3_.translation();
 
-  // Orientation error: quaternion-based with antipodal check
-  Eigen::Quaterniond q_inner(inner_SE3_.rotation());
-  Eigen::Quaterniond q_desired(desired_SE3.rotation());
-  if (q_desired.coeffs().dot(q_inner.coeffs()) < 0.0) {
-    q_inner.coeffs() = -q_inner.coeffs();
-  }
-  Eigen::Quaterniond q_error(q_inner.inverse() * q_desired);
-  Eigen::Vector3d adm_rot_error;
-  adm_rot_error << q_error.x(), q_error.y(), q_error.z();
-  adm_rot_error = inner_SE3_.rotation() * adm_rot_error;  // Rotate to world frame
+  // Orientation error: SO(3) logarithmic map (world frame)
+  Eigen::Vector3d adm_rot_error =
+    pinocchio::log3(desired_SE3.rotation() * inner_SE3_.rotation().transpose());
 
   Eigen::Vector<double, 6> adm_error;
   adm_error << adm_pos_error, adm_rot_error;
@@ -159,7 +152,6 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
 
   // 10. Semi-implicit Euler integration
   double dt = period.seconds();
-  if (dt <= 0.0) dt = 0.001;  // safety
   inner_motion_ += accel * dt;
   // Update inner_SE3_ using exponential map
   pinocchio::SE3 delta = pinocchio::exp6(pinocchio::Motion(inner_motion_ * dt));
@@ -382,9 +374,20 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
       "ft_sensor.frame is not set, using end_effector_frame for F/T wrench transformation. "
       "Set ft_sensor.frame to the actual sensor measurement frame for correct results.");
   } else {
+    if (!model_.existFrame(params_.ft_sensor.frame)) {
+      RCLCPP_ERROR(
+        get_node()->get_logger(),
+        "F/T sensor frame '%s' does not exist in the robot model. Please check the "
+        "ft_sensor.frame parameter and the URDF frames.",
+        params_.ft_sensor.frame.c_str());
+      return CallbackReturn::ERROR;
+    }
     ft_sensor_frame_id = model_.getFrameId(params_.ft_sensor.frame);
-    RCLCPP_INFO(get_node()->get_logger(),
-      "Using F/T sensor frame: %s (id=%d)", params_.ft_sensor.frame.c_str(), ft_sensor_frame_id);
+    RCLCPP_INFO(
+      get_node()->get_logger(),
+      "Using F/T sensor frame: %s (id=%d)",
+      params_.ft_sensor.frame.c_str(),
+      ft_sensor_frame_id);
   }
   q = Eigen::VectorXd::Zero(model_.nv);
   q_pin = Eigen::VectorXd::Zero(model_.nq);
@@ -635,7 +638,7 @@ void CartesianAdmittanceController::setStiffnessAndDamping() {
   nullspace_stiffness.diagonal() << params_.nullspace.stiffness * weights;
   nullspace_damping.diagonal() << 2.0 * nullspace_stiffness.diagonal().cwiseSqrt();
 
-  if (params_.nullspace.damping) {
+  if (params_.nullspace.damping >= 0.0) {
     nullspace_damping.diagonal() = params_.nullspace.damping * weights;
   } else {
     nullspace_damping.diagonal() = 2.0 * nullspace_stiffness.diagonal().cwiseSqrt();

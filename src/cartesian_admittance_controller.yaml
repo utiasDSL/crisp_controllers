@@ -10,7 +10,7 @@ cartesian_admittance_controller:
   base_frame:
     type: string
     default_value: ""
-    description: "Name of the end-effector frame"
+    description: "Name of the base/root frame as reference for kinematics computations"
 
   use_operational_space:
     type: bool
