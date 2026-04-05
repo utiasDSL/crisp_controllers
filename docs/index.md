@@ -171,8 +171,7 @@ Grippers tested in real hardware:
 <!---->
 
 Many thanks community contributions:
-
-- Lev Kozlov [@lvjonok](https://github.com/lvjonok) for testing and providing interfaces for the Panda/FER and UR with pixi.
+- Ivan Domrachev [@domrachev03](https://github.com/domrachev03) and Lev Kozlov [@lvjonok](https://github.com/lvjonok) for implementing the variable stiffness and admittance controllers, and also for testing and providing interfaces for the Panda/FER and UR with pixi.
 - Vincenzo Orlando [@VinsOrl09](https://github.com/lvjonok) for testing and providing interfaces for the UR robots in docker containers.
 - Linus Schwarz [@Linus-Schwarz](https://github.com/Linus-Schwarz) for testing and providing interfaces for the BOTA force-torque sensors.
 - Niklas Schlueter [@niklasschlueter](https://github.com/niklasschlueter) for testing and providing interfaces for the DynaArm robot.
