@@ -69,6 +69,47 @@ The nullspace position can be set with `robot.set_target_joint(...)` when using 
 It will publish a target joint position which is interpreted as the nullspace target.
 
 
+## Variable Stiffness
+
+Both the joint and Cartesian controllers support **variable stiffness**, where the proportional gains $\mathbf{K}_p$ can be dynamically adjusted at runtime via a dedicated ROS2 topic. This enables adaptive compliance — for example, lowering stiffness during contact-rich phases and increasing it for precise positioning. The variable stiffness range is bounded by configurable minimum and maximum values.
+
+## Admittance Control
+
+The admittance controller adds a force-reactive layer on top of the Cartesian impedance controller, enabling compliant interaction with the environment using an external force/torque sensor.
+
+The controller has two cascaded loops:
+
+### Inner Loop: Admittance (Virtual Mass-Spring-Damper)
+
+The admittance layer maintains an internal pose state $x_{inner}$ that evolves as a virtual mass-spring-damper driven by external forces:
+
+$$M_{adm} \ddot{x} + D_{adm} \dot{x} + K_{adm} (x_{inner} - x_{desired}) = F_{ext}$$
+
+where:
+
+- $M_{adm}$ — virtual inertia matrix ($6 \times 6$ diagonal), controls how quickly the system responds
+- $D_{adm}$ — virtual damping matrix ($6 \times 6$ diagonal), controls oscillation suppression
+- $K_{adm}$ — virtual stiffness matrix ($6 \times 6$ diagonal), controls how strongly the system returns to $x_{desired}$
+- $F_{ext}$ — external wrench from the F/T sensor topic, transformed from the sensor measurement frame to world-aligned frame using Pinocchio's `changeReferenceFrame`
+- $x_{desired}$ — the commanded target pose (from `target_pose` topic)
+
+!!! note
+    This requires an **external F/T sensor** (or the robot's built-in external wrench estimation, e.g. as provided by Franka manipulators). The URDF must include a separate frame for the F/T sensor measurement — the controller transforms the measured force from the local sensor frame to the world-aligned Pinocchio frame.
+
+**Integration** uses semi-implicit Euler on the SE(3) manifold at each control cycle:
+
+$$\ddot{x} = M_{adm}^{-1} \left( F_{ext} - D_{adm} \dot{x}_{inner} - K_{adm} \cdot \text{Error}(x_{inner}, x_{desired}) \right)$$
+
+$$\dot{x}_{inner} \leftarrow \dot{x}_{inner} + \ddot{x} \cdot \Delta t$$
+
+$$x_{inner} \leftarrow \exp_6(\dot{x}_{inner} \cdot \Delta t) \cdot x_{inner}$$
+
+The pose error $\text{Error}(x_{inner}, x_{desired})$ is computed using separate $\mathbb{R}^3$ translational and $SO(3)$ rotational errors (rather than a full $SE(3)$ logarithmic map) to avoid unnatural screw motions.
+
+### Outer Loop: Impedance
+
+The resulting pose $x_{inner}$ from the admittance layer is used as the target for an outer Cartesian impedance controller, which computes the required joint torques (identical to the [Cartesian control](#cartesian-control) described above).
+
 ## Safety and extras
 
 The actual torque commands sent to the robot are clamped to the allowed torque limits and torque rate limits defined in the config. 

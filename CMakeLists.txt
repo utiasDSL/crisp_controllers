@@ -83,10 +83,16 @@ generate_parameter_library(
   src/twist_broadcaster.yaml
 )
 
+generate_parameter_library(
+  cartesian_admittance_controller_parameters
+  src/cartesian_admittance_controller.yaml
+)
+
 add_library(
         ${PROJECT_NAME}
         SHARED
         src/cartesian_controller.cpp
+        src/cartesian_admittance_controller.cpp
         src/pose_broadcaster.cpp
         src/torque_feedback_controller.cpp
         src/twist_broadcaster.cpp
@@ -114,6 +120,7 @@ endif()
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
     cartesian_controller_parameters
+    cartesian_admittance_controller_parameters
     pose_broadcaster_parameters
     torque_feedback_controller_parameters
     twist_broadcaster_parameters
