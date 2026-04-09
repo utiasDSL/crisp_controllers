@@ -81,34 +81,34 @@ The controller has two cascaded loops:
 
 ### Inner Loop: Admittance (Virtual Mass-Spring-Damper)
 
-The admittance layer maintains an internal pose state $x_{inner}$ that evolves as a virtual mass-spring-damper driven by external forces:
+The admittance layer maintains an internal pose state \( \mathbf{x}_\text{inner} \) that evolves as a virtual mass-spring-damper driven by external forces:
 
-$$M_{adm} \ddot{x} + D_{adm} \dot{x} + K_{adm} (x_{inner} - x_{desired}) = F_{ext}$$
+$$\mathbf{M}_\text{adm} \ddot{\mathbf{x}} + \mathbf{D}_\text{adm} \dot{\mathbf{x}} + \mathbf{K}_\text{adm} (\mathbf{x}_\text{inner} - \mathbf{x}_\text{desired}) = \mathbf{F}_\text{ext}$$
 
 where:
 
-- $M_{adm}$ — virtual inertia matrix ($6 \times 6$ diagonal), controls how quickly the system responds
-- $D_{adm}$ — virtual damping matrix ($6 \times 6$ diagonal), controls oscillation suppression
-- $K_{adm}$ — virtual stiffness matrix ($6 \times 6$ diagonal), controls how strongly the system returns to $x_{desired}$
-- $F_{ext}$ — external wrench from the F/T sensor topic, transformed from the sensor measurement frame to world-aligned frame using Pinocchio's `changeReferenceFrame`
-- $x_{desired}$ — the commanded target pose (from `target_pose` topic)
+-  \( \mathbf{M}_\text{adm} \)  is the virtual inertia matrix (\(6 \times 6\) diagonal), controls how quickly the system responds.
+-  \( \mathbf{D}_\text{adm} \)  is the virtual damping matrix (\(6 \times 6\) diagonal), controls oscillation suppression.
+-  \( \mathbf{K}_\text{adm} \)  is the virtual stiffness matrix (\(6 \times 6\) diagonal), controls how strongly the system returns to \( \mathbf{x}_\text{desired} \).
+-  \( \mathbf{F}_\text{ext} \)  is the external wrench from the F/T sensor topic, transformed from the sensor measurement frame to world-aligned frame using Pinocchio's `changeReferenceFrame`.
+-  \( \mathbf{x}_\text{desired} \)  is the commanded target pose (from `target_pose` topic).
 
 !!! note
     This requires an **external F/T sensor** (or the robot's built-in external wrench estimation, e.g. as provided by Franka manipulators). The URDF must include a separate frame for the F/T sensor measurement — the controller transforms the measured force from the local sensor frame to the world-aligned Pinocchio frame.
 
 **Integration** uses semi-implicit Euler on the SE(3) manifold at each control cycle:
 
-$$\ddot{x} = M_{adm}^{-1} \left( F_{ext} - D_{adm} \dot{x}_{inner} - K_{adm} \cdot \text{Error}(x_{inner}, x_{desired}) \right)$$
+$$\ddot{\mathbf{x}} = \mathbf{M}_\text{adm}^{-1} \left( \mathbf{F}_\text{ext} - \mathbf{D}_\text{adm} \dot{\mathbf{x}}_\text{inner} - \mathbf{K}_\text{adm} \cdot \text{Error}(\mathbf{x}_\text{inner}, \mathbf{x}_\text{desired}) \right)$$
 
-$$\dot{x}_{inner} \leftarrow \dot{x}_{inner} + \ddot{x} \cdot \Delta t$$
+$$\dot{\mathbf{x}}_\text{inner} \leftarrow \dot{\mathbf{x}}_\text{inner} + \ddot{\mathbf{x}} \cdot \Delta t$$
 
-$$x_{inner} \leftarrow \exp_6(\dot{x}_{inner} \cdot \Delta t) \cdot x_{inner}$$
+$$\mathbf{x}_\text{inner} \leftarrow \exp_6(\dot{\mathbf{x}}_\text{inner} \cdot \Delta t) \cdot \mathbf{x}_\text{inner}$$
 
-The pose error $\text{Error}(x_{inner}, x_{desired})$ is computed using separate $\mathbb{R}^3$ translational and $SO(3)$ rotational errors (rather than a full $SE(3)$ logarithmic map) to avoid unnatural screw motions.
+The pose error \( \text{Error}(\mathbf{x}_\text{inner}, \mathbf{x}_\text{desired}) \) is computed using separate \( \mathbb{R}^3 \) translational and \( SO(3) \) rotational errors (rather than a full \( SE(3) \) logarithmic map) to avoid unnatural screw motions.
 
 ### Outer Loop: Impedance
 
-The resulting pose $x_{inner}$ from the admittance layer is used as the target for an outer Cartesian impedance controller, which computes the required joint torques (identical to the [Cartesian control](#cartesian-control) described above).
+The resulting pose \( \mathbf{x}_\text{inner} \) from the admittance layer is used as the target for an outer Cartesian impedance controller, which computes the required joint torques (identical to the [Cartesian control](#cartesian-control) described above).
 
 ## Safety and extras
 
