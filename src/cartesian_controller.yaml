@@ -335,7 +335,7 @@ cartesian_controller:
     topic:
       type: string
       default_value: "target_stiffness"
-      description: "Topic name for receiving variable stiffness updates (std_msgs/Float64MultiArray with 6 elements: [k_pos_x, k_pos_y, k_pos_z, k_rot_x, k_rot_y, k_rot_z])"
+      description: "Topic name for receiving variable stiffness updates (std_msgs/Float64MultiArray with 36 elements representing a row-major 6x6 stiffness matrix)"
 
   enable_introspection:
     type: bool

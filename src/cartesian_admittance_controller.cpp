@@ -694,7 +694,7 @@ void CartesianAdmittanceController::updateCurrentState(bool initialize) {
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
-#if ROS2_VERSION_ABOVE_HUMBLE
+#if HAS_LOANED_STATE_GET_OPTIONAL
     double q_meas = state_interfaces_[i].get_optional().value_or(q[i]);
     double dq_meas = state_interfaces_[num_joints + i].get_optional().value_or(dq[i]);
 #else
@@ -788,39 +788,60 @@ void CartesianAdmittanceController::parse_target_wrench_() {
 
 void CartesianAdmittanceController::parse_target_stiffness_() {
   auto msg = *target_stiffness_buffer_.readFromRT();
-  if (msg->data.size() != 6) {
+  if (msg->data.size() != 36) {
     RCLCPP_WARN_THROTTLE(
       get_node()->get_logger(),
       *get_node()->get_clock(),
       1000,
-      "Variable stiffness message must have exactly 6 elements, got %zu. Ignoring.",
+      "Variable stiffness message must have exactly 36 elements (row-major 6x6), got %zu. Ignoring.",
       msg->data.size());
     return;
   }
+  // Row-major 6x6 matrix
+  Eigen::Matrix<double, 6, 6> K =
+    Eigen::Map<const Eigen::Matrix<double, 6, 6, Eigen::RowMajor>>(msg->data.data());
+
+  // Enforce symmetry: a physical stiffness matrix must satisfy K == K^T.
+  // Reject the message entirely if the input is not symmetric within tolerance.
+  constexpr double kSymmetryTolerance = 1e-6;
+  const double max_asym = (K - K.transpose()).cwiseAbs().maxCoeff();
+  if (max_asym > kSymmetryTolerance) {
+    RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
+      "Topic impedance stiffness matrix not symmetric (max |K - K^T|=%.3g > %.1g), ignoring.",
+      max_asym, kSymmetryTolerance);
+    return;
+  }
+
+  // Clamp every entry. Diagonal must be non-negative; off-diagonals may be
+  // negative but are magnitude-bounded. Block bounds:
+  //   trans x trans -> max_k_trans
+  //   rot   x rot   -> max_k_rot
+  //   cross block   -> max(max_k_trans, max_k_rot)
+  // Bounds are symmetric in (i,j) / (j,i), so clamping preserves symmetry.
   const double max_k_trans = params_.variable_max_impedance_stiffness.translational;
   const double max_k_rot = params_.variable_max_impedance_stiffness.rotational;
-  std::array<double, 6> vals = {msg->data[0], msg->data[1], msg->data[2],
-                                msg->data[3], msg->data[4], msg->data[5]};
-  for (int i = 0; i < 3; ++i) {
-    if (vals[i] < 0.0 || vals[i] > max_k_trans) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic impedance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, vals[i], max_k_trans);
-      vals[i] = std::clamp(vals[i], 0.0, max_k_trans);
+  const double max_k_cross = std::max(max_k_trans, max_k_rot);
+  for (int i = 0; i < 6; ++i) {
+    for (int j = 0; j < 6; ++j) {
+      const bool trans_block = (i < 3 && j < 3);
+      const bool rot_block = (i >= 3 && j >= 3);
+      const double max_val = trans_block ? max_k_trans
+                             : rot_block ? max_k_rot
+                                         : max_k_cross;
+      const double lo = (i == j) ? 0.0 : -max_val;
+      if (K(i, j) < lo || K(i, j) > max_val) {
+        RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
+          "Topic impedance stiffness[%d,%d]=%.1f out of [%.1f, %.1f], clamping.",
+          i, j, K(i, j), lo, max_val);
+        K(i, j) = std::clamp(K(i, j), lo, max_val);
+      }
     }
   }
-  for (int i = 3; i < 6; ++i) {
-    if (vals[i] < 0.0 || vals[i] > max_k_rot) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic impedance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, vals[i], max_k_rot);
-      vals[i] = std::clamp(vals[i], 0.0, max_k_rot);
-    }
-  }
-  topic_stiffness_.setZero();
-  topic_stiffness_.diagonal() << vals[0], vals[1], vals[2], vals[3], vals[4], vals[5];
+  topic_stiffness_ = K;
   use_topic_stiffness_ = true;
   RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-    "Variable impedance stiffness received: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
-    vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+    "Variable impedance stiffness received (6x6), diagonal: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
+    K(0, 0), K(1, 1), K(2, 2), K(3, 3), K(4, 4), K(5, 5));
 }
 
 void CartesianAdmittanceController::parse_ft_sensor_() {
@@ -831,39 +852,61 @@ void CartesianAdmittanceController::parse_ft_sensor_() {
 
 void CartesianAdmittanceController::parse_target_adm_stiffness_() {
   auto msg = *target_adm_stiffness_buffer_.readFromRT();
-  if (msg->data.size() != 6) {
+  if (msg->data.size() != 36) {
     RCLCPP_WARN_THROTTLE(
       get_node()->get_logger(),
       *get_node()->get_clock(),
       1000,
-      "Variable admittance stiffness must have 6 elements, got %zu. Ignoring.",
+      "Variable admittance stiffness must have 36 elements (row-major 6x6), got %zu. Ignoring.",
       msg->data.size());
     return;
   }
+  // Row-major 6x6 matrix
+  Eigen::Matrix<double, 6, 6> Ka =
+    Eigen::Map<const Eigen::Matrix<double, 6, 6, Eigen::RowMajor>>(msg->data.data());
+
+  // Enforce symmetry: a physical stiffness matrix must satisfy K == K^T.
+  // Reject the message entirely if the input is not symmetric within tolerance.
+  constexpr double kSymmetryTolerance = 1e-6;
+  const double max_asym = (Ka - Ka.transpose()).cwiseAbs().maxCoeff();
+  if (max_asym > kSymmetryTolerance) {
+    RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
+      "Topic admittance stiffness matrix not symmetric (max |K - K^T|=%.3g > %.1g), ignoring.",
+      max_asym, kSymmetryTolerance);
+    return;
+  }
+
+  // Clamp every entry. Diagonal must be non-negative; off-diagonals may be
+  // negative but are magnitude-bounded. Block bounds:
+  //   trans x trans -> max_ak_trans
+  //   rot   x rot   -> max_ak_rot
+  //   cross block   -> max(max_ak_trans, max_ak_rot)
+  // TODO: what bound to use for cross block values
+  // Bounds are symmetric in (i,j) / (j,i), so clamping preserves symmetry.
   const double max_ak_trans = params_.variable_max_admittance_stiffness.translational;
   const double max_ak_rot = params_.variable_max_admittance_stiffness.rotational;
-  std::array<double, 6> avals = {msg->data[0], msg->data[1], msg->data[2],
-                                 msg->data[3], msg->data[4], msg->data[5]};
-  for (int i = 0; i < 3; ++i) {
-    if (avals[i] < 0.0 || avals[i] > max_ak_trans) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic admittance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, avals[i], max_ak_trans);
-      avals[i] = std::clamp(avals[i], 0.0, max_ak_trans);
+  const double max_ak_cross = std::max(max_ak_trans, max_ak_rot);
+  for (int i = 0; i < 6; ++i) {
+    for (int j = 0; j < 6; ++j) {
+      const bool trans_block = (i < 3 && j < 3);
+      const bool rot_block = (i >= 3 && j >= 3);
+      const double max_val = trans_block ? max_ak_trans
+                             : rot_block ? max_ak_rot
+                                         : max_ak_cross;
+      const double lo = (i == j) ? 0.0 : -max_val;
+      if (Ka(i, j) < lo || Ka(i, j) > max_val) {
+        RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
+          "Topic admittance stiffness[%d,%d]=%.1f out of [%.1f, %.1f], clamping.",
+          i, j, Ka(i, j), lo, max_val);
+        Ka(i, j) = std::clamp(Ka(i, j), lo, max_val);
+      }
     }
   }
-  for (int i = 3; i < 6; ++i) {
-    if (avals[i] < 0.0 || avals[i] > max_ak_rot) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic admittance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, avals[i], max_ak_rot);
-      avals[i] = std::clamp(avals[i], 0.0, max_ak_rot);
-    }
-  }
-  topic_adm_stiffness_.setZero();
-  topic_adm_stiffness_.diagonal() << avals[0], avals[1], avals[2], avals[3], avals[4], avals[5];
+  topic_adm_stiffness_ = Ka;
   use_topic_adm_stiffness_ = true;
   RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-    "Variable admittance stiffness received: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
-    avals[0], avals[1], avals[2], avals[3], avals[4], avals[5]);
+    "Variable admittance stiffness received (6x6), diagonal: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
+    Ka(0, 0), Ka(1, 1), Ka(2, 2), Ka(3, 3), Ka(4, 4), Ka(5, 5));
 }
 
 void CartesianAdmittanceController::log_debug_info(const rclcpp::Time & time) {
