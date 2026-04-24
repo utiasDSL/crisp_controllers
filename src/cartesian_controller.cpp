@@ -643,12 +643,11 @@ void CartesianController::parse_target_stiffness_() {
   // negative but are magnitude-bounded. Block bounds:
   //   trans x trans -> max_k_trans
   //   rot   x rot   -> max_k_rot
-  //   cross block   -> max(max_k_trans, max_k_rot)
-  // TODO: what bound to use for cross block values
+  //   cross block   -> max_k_cross  (translational-rotational coupling)
   // Bounds are symmetric in (i,j) / (j,i), so clamping preserves symmetry.
   const double max_k_trans = params_.variable_max_stiffness.translational;
   const double max_k_rot = params_.variable_max_stiffness.rotational;
-  const double max_k_cross = std::max(max_k_trans, max_k_rot);
+  const double max_k_cross = params_.variable_max_stiffness.cross;
   for (int i = 0; i < 6; ++i) {
     for (int j = 0; j < 6; ++j) {
       const bool trans_block = (i < 3 && j < 3);

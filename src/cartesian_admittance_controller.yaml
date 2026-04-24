@@ -326,6 +326,12 @@ cartesian_admittance_controller:
       description: "Maximum allowed rotational stiffness value. Stiffness values above this will be clamped."
       validation:
         bounds<>: [0.0, 100.0]
+    cross:
+      type: double
+      default_value: 500.0
+      description: "Maximum allowed magnitude for cross-coupling stiffness entries (translational-rotational off-diagonal blocks). Values above this will be clamped."
+      validation:
+        bounds<>: [0.0, 5000.0]
 
   variable_stiffness:
     enabled:
@@ -475,6 +481,12 @@ cartesian_admittance_controller:
       description: "Maximum allowed rotational admittance stiffness value. Values above this will be clamped."
       validation:
         bounds<>: [0.0, 100.0]
+    cross:
+      type: double
+      default_value: 100.0
+      description: "Maximum allowed magnitude for cross-coupling admittance stiffness entries (translational-rotational off-diagonal blocks). Values above this will be clamped."
+      validation:
+        bounds<>: [0.0, 5000.0]
 
   variable_admittance_stiffness:
     enabled:

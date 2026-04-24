@@ -694,7 +694,7 @@ void CartesianAdmittanceController::updateCurrentState(bool initialize) {
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
-#if HAS_LOANED_STATE_GET_OPTIONAL
+#if ROS2_VERSION_ABOVE_HUMBLE
     double q_meas = state_interfaces_[i].get_optional().value_or(q[i]);
     double dq_meas = state_interfaces_[num_joints + i].get_optional().value_or(dq[i]);
 #else
@@ -816,11 +816,11 @@ void CartesianAdmittanceController::parse_target_stiffness_() {
   // negative but are magnitude-bounded. Block bounds:
   //   trans x trans -> max_k_trans
   //   rot   x rot   -> max_k_rot
-  //   cross block   -> max(max_k_trans, max_k_rot)
+  //   cross block   -> max_k_cross  (translational-rotational coupling)
   // Bounds are symmetric in (i,j) / (j,i), so clamping preserves symmetry.
   const double max_k_trans = params_.variable_max_impedance_stiffness.translational;
   const double max_k_rot = params_.variable_max_impedance_stiffness.rotational;
-  const double max_k_cross = std::max(max_k_trans, max_k_rot);
+  const double max_k_cross = params_.variable_max_impedance_stiffness.cross;
   for (int i = 0; i < 6; ++i) {
     for (int j = 0; j < 6; ++j) {
       const bool trans_block = (i < 3 && j < 3);
@@ -880,12 +880,11 @@ void CartesianAdmittanceController::parse_target_adm_stiffness_() {
   // negative but are magnitude-bounded. Block bounds:
   //   trans x trans -> max_ak_trans
   //   rot   x rot   -> max_ak_rot
-  //   cross block   -> max(max_ak_trans, max_ak_rot)
-  // TODO: what bound to use for cross block values
+  //   cross block   -> max_ak_cross  (translational-rotational coupling)
   // Bounds are symmetric in (i,j) / (j,i), so clamping preserves symmetry.
   const double max_ak_trans = params_.variable_max_admittance_stiffness.translational;
   const double max_ak_rot = params_.variable_max_admittance_stiffness.rotational;
-  const double max_ak_cross = std::max(max_ak_trans, max_ak_rot);
+  const double max_ak_cross = params_.variable_max_admittance_stiffness.cross;
   for (int i = 0; i < 6; ++i) {
     for (int j = 0; j < 6; ++j) {
       const bool trans_block = (i < 3 && j < 3);
