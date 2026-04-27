@@ -100,6 +100,26 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
    * target_position_);*/
   end_effector_pose = data_.oMf[end_effector_frame_id];
 
+  if (!end_effector_pose.translation().allFinite() ||
+      !end_effector_pose.rotation().allFinite()) {
+    RCLCPP_ERROR_THROTTLE(
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
+      "end_effector_pose contains NaN/Inf. "
+      "Holding previous torque command this cycle.");
+    if (!params_.stop_commands) {
+      for (size_t i = 0; i < params_.joints.size(); ++i) {
+#if ROS2_VERSION_ABOVE_HUMBLE
+        (void)command_interfaces_[i].set_value(tau_previous[i]);
+#else
+        command_interfaces_[i].set_value(tau_previous[i]);
+#endif
+      }
+    }
+    return controller_interface::return_type::OK;
+  }
+
   // We consider translation and rotation separately to avoid unatural screw
   // motions
   if (params_.use_local_jacobian) {
@@ -303,6 +323,16 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
   }
   
   // Preallocate the matrices and vectors that will be used in the control loop
+  if (!model_.existFrame(params_.end_effector_frame)) {
+    RCLCPP_ERROR_STREAM(
+      get_node()->get_logger(),
+      "end_effector_frame '" << params_.end_effector_frame
+        << "' is not present in the robot model. Refusing to configure: "
+           "activating with an invalid frame results in undefined behavior "
+           "(out-of-bounds access into pinocchio::Data, manifesting as a "
+           "segfault or NaN/Inf in computed torques).");
+    return CallbackReturn::ERROR;
+  }
   end_effector_frame_id = model_.getFrameId(params_.end_effector_frame);
   q = Eigen::VectorXd::Zero(model_.nv);
   q_pin = Eigen::VectorXd::Zero(model_.nq);
