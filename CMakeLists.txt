@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 project(crisp_controllers)
 
 find_program(CCACHE_PROGRAM ccache)
@@ -60,11 +60,12 @@ find_package(hardware_interface REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(pinocchio REQUIRED)
 find_package(realtime_tools REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(generate_parameter_library REQUIRED)
 
 generate_parameter_library(
-  cartesian_impedance_controller_parameters
-  src/cartesian_impedance_controller.yaml
+  cartesian_controller_parameters
+  src/cartesian_controller.yaml
 )
 
 generate_parameter_library(
@@ -82,10 +83,16 @@ generate_parameter_library(
   src/twist_broadcaster.yaml
 )
 
+generate_parameter_library(
+  cartesian_admittance_controller_parameters
+  src/cartesian_admittance_controller.yaml
+)
+
 add_library(
         ${PROJECT_NAME}
         SHARED
         src/cartesian_controller.cpp
+        src/cartesian_admittance_controller.cpp
         src/pose_broadcaster.cpp
         src/torque_feedback_controller.cpp
         src/twist_broadcaster.cpp
@@ -112,7 +119,8 @@ endif()
 # Link parameter libraries to the main library
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
-    cartesian_impedance_controller_parameters
+    cartesian_controller_parameters
+    cartesian_admittance_controller_parameters
     pose_broadcaster_parameters
     torque_feedback_controller_parameters
     twist_broadcaster_parameters
@@ -121,46 +129,47 @@ target_link_libraries(${PROJECT_NAME}
 
 ament_target_dependencies(${PROJECT_NAME}
   PUBLIC
-controller_interface
-hardware_interface
-pluginlib
-rclcpp
-rclcpp_lifecycle
-pinocchio
-generate_parameter_library
-realtime_tools
+    controller_interface
+    hardware_interface
+    pluginlib
+    rclcpp
+    rclcpp_lifecycle
+    pinocchio
+    generate_parameter_library
+    realtime_tools
+    std_msgs
 )
 
 pluginlib_export_plugin_description_file(
         controller_interface crisp_controllers.xml)
 
 install(
-        TARGETS
-        ${PROJECT_NAME}
-        RUNTIME DESTINATION bin
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
+    TARGETS ${PROJECT_NAME}
+    EXPORT export_${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
 )
 
 install(
-        DIRECTORY include/
-        DESTINATION include
+    DIRECTORY include/
+    DESTINATION include
 )
 
-ament_export_include_directories(
-        include
-)
-ament_export_libraries(
-        ${PROJECT_NAME}
-)
 ament_export_dependencies(
-        controller_interface
-        pluginlib
-        rclcpp
-        rclcpp_lifecycle
-        hardware_interface
-        Eigen3
+    controller_interface
+    pluginlib
+    rclcpp
+    rclcpp_lifecycle
+    hardware_interface
+    Eigen3
+    pinocchio
+    realtime_tools
+    std_msgs
+    generate_parameter_library
 )
+
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)

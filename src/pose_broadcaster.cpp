@@ -5,6 +5,7 @@
 
 #include <Eigen/src/Core/Matrix.h>  // NOLINT(build/include_order)
 #include <crisp_controllers/pose_broadcaster.hpp>
+#include "crisp_controllers/utils/ros2_version.hpp"
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <pinocchio/algorithm/frames.hpp>
@@ -44,9 +45,14 @@ PoseBroadcaster::update(const rclcpp::Time & time, const rclcpp::Duration & peri
     auto joint_id = model_.getJointId(joint_name);
     auto joint = model_.joints[joint_id];
 
+#if ROS2_VERSION_ABOVE_HUMBLE
+    q[i] = state_interfaces_[i].get_optional().value_or(q[i]);
+#else
     q[i] = state_interfaces_[i].get_value();
-    if (continous_joint_types.count(
-          joint.shortname())) {  // Then we are handling a continous joint that is SO(2)
+#endif
+    if (
+      continous_joint_types.count(
+        joint.shortname())) {  // Then we are handling a continous joint that is SO(2)
       q_pin[joint.idx_q()] = std::cos(q[i]);
       q_pin[joint.idx_q() + 1] = std::sin(q[i]);
     } else {
@@ -65,19 +71,24 @@ PoseBroadcaster::update(const rclcpp::Time & time, const rclcpp::Duration & peri
   bool should_publish =
     (publish_elapsed_ >= publish_interval_) || (publish_interval_.nanoseconds() == 0);
   if (should_publish && realtime_pose_publisher_) {
-    if (realtime_pose_publisher_->trylock()) {
-      auto & pose_msg = realtime_pose_publisher_->msg_;
-      pose_msg.header.stamp = time;
-      pose_msg.header.frame_id = params_.base_frame;
-      pose_msg.pose.position.x = current_pose.translation()[0];
-      pose_msg.pose.position.y = current_pose.translation()[1];
-      pose_msg.pose.position.z = current_pose.translation()[2];
-      pose_msg.pose.orientation.x = current_quaternion.x();
-      pose_msg.pose.orientation.y = current_quaternion.y();
-      pose_msg.pose.orientation.z = current_quaternion.z();
-      pose_msg.pose.orientation.w = current_quaternion.w();
-      realtime_pose_publisher_->unlockAndPublish();
+    geometry_msgs::msg::PoseStamped pose_msg;
+    pose_msg.header.stamp = time;
+    pose_msg.header.frame_id = params_.base_frame;
+    pose_msg.pose.position.x = current_pose.translation()[0];
+    pose_msg.pose.position.y = current_pose.translation()[1];
+    pose_msg.pose.position.z = current_pose.translation()[2];
+    pose_msg.pose.orientation.x = current_quaternion.x();
+    pose_msg.pose.orientation.y = current_quaternion.y();
+    pose_msg.pose.orientation.z = current_quaternion.z();
+    pose_msg.pose.orientation.w = current_quaternion.w();
 
+#if REALTIME_TOOLS_NEW_API
+    if (realtime_pose_publisher_->try_publish(pose_msg)) {
+#else
+    if (realtime_pose_publisher_->trylock()) {
+      realtime_pose_publisher_->msg_ = pose_msg;
+      realtime_pose_publisher_->unlockAndPublish();
+#endif
       publish_elapsed_ = publish_elapsed_ - publish_interval_;
       // clamp to publish only 1 time even if missed multiple intervals
       publish_elapsed_ = std::min(publish_elapsed_, publish_interval_);

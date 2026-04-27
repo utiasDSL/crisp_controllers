@@ -1,9 +1,9 @@
 [project]
 name = "crisp-controllers"
 version = "0.1.0"
-description = "Add your description here"
+description = "A collection of ROS2 controllers for the CRISP project."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.6.15",

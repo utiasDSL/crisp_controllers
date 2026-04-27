@@ -6,6 +6,7 @@
 #include <crisp_controllers/torque_feedback_controller.hpp>
 #include <crisp_controllers/utils/friction_model.hpp>
 #include <crisp_controllers/utils/pseudo_inverse.hpp>
+#include "crisp_controllers/utils/ros2_version.hpp"
 
 #include <pinocchio/algorithm/aba.hpp>
 #include <pinocchio/algorithm/frames.hpp>
@@ -49,8 +50,13 @@ controller_interface::return_type TorqueFeedbackController::update(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
   // Update joint states
   for (int i = 0; i < num_joints_; i++) {
+#if ROS2_VERSION_ABOVE_HUMBLE
+    q_[i] = state_interfaces_[i].get_optional().value_or(q_[i]);
+    dq_[i] = state_interfaces_[num_joints_ + i].get_optional().value_or(dq_[i]);
+#else
     q_[i] = state_interfaces_[i].get_value();
     dq_[i] = state_interfaces_[num_joints_ + i].get_value();
+#endif
   }
 
   // Compute forward kinematics and jacobian
@@ -114,7 +120,11 @@ controller_interface::return_type TorqueFeedbackController::update(
   tau_commanded_ = tau_d + tau_f + tau_nullspace;
 
   for (int i = 0; i < num_joints_; i++) {
+#if ROS2_VERSION_ABOVE_HUMBLE
+    (void)command_interfaces_[i].set_value(tau_commanded_[i]);
+#else
     command_interfaces_[i].set_value(tau_commanded_[i]);
+#endif
   }
 
   params_listener_->refresh_dynamic_parameters();
@@ -251,8 +261,13 @@ TorqueFeedbackController::on_configure(const rclcpp_lifecycle::State & /*previou
 CallbackReturn
 TorqueFeedbackController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
   for (int i = 0; i < num_joints_; i++) {
+#if ROS2_VERSION_ABOVE_HUMBLE
+    q_[i] = state_interfaces_[i].get_optional().value_or(q_[i]);
+    dq_[i] = state_interfaces_[num_joints_ + i].get_optional().value_or(dq_[i]);
+#else
     q_[i] = state_interfaces_[i].get_value();
     dq_[i] = state_interfaces_[num_joints_ + i].get_value();
+#endif
     tau_ext_[i] = 0.0;
     q_init_[i] = q_[i];
   }

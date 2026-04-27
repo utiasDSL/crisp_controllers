@@ -1,0 +1,343 @@
+cartesian_controller:
+  joints:
+    type: string_array
+    description: "Names of the joints"
+
+  end_effector_frame:
+    type: string
+    description: "Name of the end-effector frame"
+
+  base_frame:
+    type: string
+    default_value: ""
+    description: "Name of the end-effector frame"
+
+  use_operational_space:
+    type: bool
+    default_value: False
+    description: "Whether we use operational space control or cartesian impedance control"
+
+  operational_space_regularization:
+    type: double
+    default_value: 0.01
+    description: "Regularization (damping) for Mx pseudo-inverse. Higher values improve stability near singularities but reduce accuracy. Valid range is 0.001-1.0; typical useful values are in the 0.01-0.5 range."
+    validation:
+      bounds<>: [0.001, 1.0]
+
+  task:
+    k_pos_x:
+      type: double
+      default_value: 500.0
+      description: "Stiffness in the x direction for the translation"
+      validation:
+        bounds<>: [0.0, 5000.0]
+    d_pos_x:
+      type: double
+      default_value: -1.0
+      description: "Damping in the x direction for the translation. If negative, computed as 2*sqrt(stiffness)"
+      validation:
+        bounds<>: [-1.0, 5000.0]
+    k_pos_y:
+      type: double
+      default_value: 500.0
+      description: "Stiffness in the y direction for the translation"
+      validation:
+        bounds<>: [0.0, 5000.0]
+    d_pos_y:
+      type: double
+      default_value: -1.0
+      description: "Damping in the y direction for the translation. If negative, computed as 2*sqrt(stiffness)"
+      validation:
+        bounds<>: [-1.0, 5000.0]
+    k_pos_z:
+      type: double
+      default_value: 500.0
+      description: "Stiffness in the z direction for the translation"
+      validation:
+        bounds<>: [0.0, 5000.0]
+    d_pos_z:
+      type: double
+      default_value: -1.0
+      description: "Damping in the z direction for the translation. If negative, computed as 2*sqrt(stiffness)"
+      validation:
+        bounds<>: [-1.0, 5000.0]
+    k_rot_x:
+      type: double
+      default_value: 30.0
+      description: "Stiffness in the x direction for the orientation"
+      validation:
+        bounds<>: [0.0, 5000.0]
+    d_rot_x:
+      type: double
+      default_value: -1.0
+      description: "Damping in the x direction for the orientation. If negative, computed as 2*sqrt(stiffness)"
+      validation:
+        bounds<>: [-1.0, 5000.0]
+    k_rot_y:
+      type: double
+      default_value: 30.0
+      description: "Stiffness in the y direction for the orientation"
+      validation:
+        bounds<>: [0.0, 5000.0]
+    d_rot_y:
+      type: double
+      default_value: -1.0
+      description: "Damping in the y direction for the orientation. If negative, computed as 2*sqrt(stiffness)"
+      validation:
+        bounds<>: [-1.0, 5000.0]
+    k_rot_z:
+      type: double
+      default_value: 30.0
+      description: "Stiffness in the z direction for the orientation"
+      validation:
+        bounds<>: [0.0, 5000.0]
+    d_rot_z:
+      type: double
+      default_value: -1.0
+      description: "Damping in the z direction for the orientation. If negative, computed as 2*sqrt(stiffness)"
+      validation:
+        bounds<>: [-1.0, 5000.0]
+    error_clip:
+      x:
+        type: double
+        description: "Max allowed error in x direction."
+        default_value: 0.1
+      y:
+        type: double
+        description: "Max allowed error in y direction."
+        default_value: 0.1
+      z:
+        type: double
+        description: "Max allowed error in z direction."
+        default_value: 0.1
+      rx:
+        type: double
+        description: "Max allowed error in the rotational x direction (local or global frame)."
+        default_value: 0.5
+      ry:
+        type: double
+        description: "Max allowed error in the rotational y direction (local or global frame)."
+        default_value: 0.5
+      rz:
+        type: double
+        description: "Max allowed error in the rotational z direction (local or global frame)."
+        default_value: 0.5
+
+  nullspace:
+    stiffness:
+      type: double
+      default_value: 1.0
+      description: "Stiffness of the nullspace controller."
+      validation:
+        bounds<>: [0.0, 500.0]
+    damping:
+      type: double
+      default_value: -1.0
+      description: "Damping of the nullspace controller. If negative, then 2 sqrt(stiffness) is used."
+      validation:
+        bounds<>: [-1.0, 500.0]
+    weights:
+      __map_joints:
+        value:
+          type: double
+          default_value: 1.0
+          description: "Weights for each joint for the nullspace parameters."
+          validation:
+            bounds<>: [0.0, 500.0]
+    regularization:
+      type: double
+      default_value: 0.000001
+      description: "Regularization value for the pseudo-inverse."
+      validation:
+        bounds<>: [0.000001, 0.0001]
+    projector_type:
+      type: string
+      default_value: "kinematic"
+      description: "Which type of nullspace projector should be used: kinematic, dynamic or none."
+      validation:
+        one_of<>: [["kinematic", "dynamic", "none"]]
+    max_tau:
+      type: double
+      default_value: 5
+      description: "Maximal torque value that can be applied in the nullspace. This is used to be sure that we do not interfere with the main task."
+
+  noise:
+    add_random_noise:
+      type: bool
+      default_value: false
+      description: "Whether or not we add random noise to the torques. This is just to test for stability."
+    amplitude:
+      type: double
+      default_value: 0.0
+      description: "Magnitude of the added noise, if added."
+      validation:
+        bounds<>: [0.0, 10.0]
+
+
+  use_friction:
+    type: bool
+    default_value: false
+    description: "Use friction compensation"
+
+  use_coriolis_compensation:
+    type: bool
+    default_value: false
+    description: "Use coriolis compensation"
+
+  use_gravity_compensation:
+    type: bool
+    default_value: false
+    description: "Add use_gravity_compensation. Double check that your robot is not already doing this behind the scenes (which is the case for Franka Robotics). In this case you should leave this parameter to false!"
+
+  use_local_jacobian:
+    type: bool
+    default_value: false
+    description: "If true, we use the local jacobian for computations, otherwise we use the world jacobian."
+
+  log:
+    enabled:
+      type: bool
+      default_value: false
+      description: "If set so to true, log some debugging statements."
+    robot_state:
+      type: bool
+      default_value: false
+      description: "If set so to true, log the robot state like the joint state and end effector position."
+    control_values:
+      type: bool
+      default_value: false
+      description: "If set so to true, log the control values like error to target."
+    limits:
+      type: bool
+      default_value: false
+      description: "If set so to true, log the limits of each joint."
+    controller_parameters:
+      type: bool
+      default_value: false
+      description: "If set so to true, log the controller parameters like the stiffness, damping..."
+    computed_torques:
+      type: bool
+      default_value: false
+      description: "If set so to true, log the individual computed torques."
+    dynamic_params:
+      type: bool
+      default_value: false
+      description: "If set so to true, log the dynamic_params like the mass matrix, operational mass matrix..."
+    timing:
+      type: bool
+      default_value: false
+      description: "If true, the time required by the loop will be displayed."
+
+  filter:
+    target_pose:
+      type: double
+      default_value: 0.1
+      description: "Amount of smoothing for the target pose when using the EMA. The EMA is applied at each step"
+      validation:
+        bounds<>: [0.1, 1.0]
+    q:
+      type: double
+      default_value: 0.5
+      description: "Amount of smoothing for the target pose when using the EMA."
+      validation:
+        bounds<>: [0.0, 1.0]
+    dq:
+      type: double
+      default_value: 0.5
+      description: "Amount of smoothing for the target pose when using the EMA."
+      validation:
+        bounds<>: [0.0, 1.0]
+    q_ref:
+      type: double
+      default_value: 0.5
+      description: "Amount of smoothing for the target pose when using the EMA."
+      validation:
+        bounds<>: [0.0, 1.0]
+
+    output_torque:
+      type: double
+      default_value: 0.5
+      description: "Amount of smoothing for the output torque when using the EMA."
+      validation:
+        bounds<>: [0.0, 1.0]
+
+  limit_error:
+    type: bool
+    default_value: true
+    description: "Limit\\clamp the error computed as the difference between the current pose and target pose."
+
+  limit_torques:
+    type: bool
+    default_value: true
+    description: "Limit torques"
+
+  joint_limit_repulsion:
+    enabled:
+      type: bool
+      default_value: true
+      description: "Enable joint limit repulsion torques that push joints away from their limits"
+    safe_range:
+      type: double
+      default_value: 0.1
+      description: "Distance from joint limit where repulsion starts [rad]"
+      validation:
+        bounds<>: [0.01, 1.0]
+    max_torque:
+      type: double
+      default_value: 5.0
+      description: "Maximum repulsion torque at joint limit [Nm]"
+      validation:
+        bounds<>: [0.0, 50.0]
+
+  max_delta_tau:
+    type: double
+    default_value: 0.5
+    description: "Max allowed change in torque per joint per control loop."
+
+  stop_commands:
+    type: bool
+    default_value: False
+    description: "If set to true, we will stop sending commands to the robot. This is mainly for debugging useful."
+
+  friction:
+    fp1:
+      type: double_array
+      default_value: [0.54615, 0.87224, 0.64068, 1.2794, 0.83904, 0.30301, 0.56489]
+      description: "Friction parameters part 1"
+    fp2:
+      type: double_array
+      default_value: [ 5.1181, 9.0657, 10.136, 5.5903, 8.3469, 17.133, 10.336]
+      description: "Friction parameters part 2"
+    fp3:
+      type: double_array
+      default_value: [ 0.039533, 0.025882, -0.04607, 0.036194, 0.026226, -0.021047, 0.0035526]
+      description: "Friction parameters part 3"
+
+  variable_max_stiffness:
+    translational:
+      type: double
+      default_value: 900.0
+      description: "Maximum allowed translational stiffness value. Stiffness values above this will be clamped."
+      validation:
+        bounds<>: [0.0, 5000.0]
+    rotational:
+      type: double
+      default_value: 60.0
+      description: "Maximum allowed rotational stiffness value. Stiffness values above this will be clamped."
+      validation:
+        bounds<>: [0.0, 100.0]
+
+  variable_stiffness:
+    enabled:
+      type: bool
+      default_value: false
+      description: "Enable receiving stiffness updates via a ROS2 topic. When enabled, stiffness values from the topic override parameter-based stiffness."
+    topic:
+      type: string
+      default_value: "target_stiffness"
+      description: "Topic name for receiving variable stiffness updates (std_msgs/Float64MultiArray with 6 elements: [k_pos_x, k_pos_y, k_pos_z, k_rot_x, k_rot_y, k_rot_z])"
+
+  enable_introspection:
+    type: bool
+    default_value: false
+    description: "Whether or not to enable introspection for this controller. This will allow us to visualize the internal state of the controller in plotjuggler using the introspection topics."

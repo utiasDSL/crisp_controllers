@@ -1,8 +1,13 @@
 #pragma once
 
 /**
- * @file cartesian_controller.hpp
- * @brief Cartesian controller implementation for robot manipulation (supports impedance and OSC)
+ * @file cartesian_admittance_controller.hpp
+ * @brief Cartesian admittance controller with impedance outer loop for compliant force-based interaction
+ *
+ * Maintains an internal virtual mass-spring-damper (MSD) state that evolves based on external
+ * F/T sensor readings. The MSD output becomes the desired pose for an impedance (Cartesian)
+ * outer control loop. This is a separate class that contains equivalent impedance logic
+ * to CartesianController, not derived from it.
  */
 
 #include <memory>
@@ -14,17 +19,18 @@
 #include <controller_interface/controller_interface.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/wrench_stamped.hpp>
+#include <std_msgs/msg/float64_multi_array.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/multibody/fwd.hpp>
+#include <pinocchio/spatial/se3.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/float64_multi_array.hpp>
 
 #include <crisp_controllers/utils/ros2_version.hpp>
 
 #if ROS2_VERSION_ABOVE_HUMBLE
-#include <crisp_controllers/cartesian_controller_parameters.hpp>
+#include <crisp_controllers/cartesian_admittance_controller_parameters.hpp>
 #else
-#include <cartesian_controller_parameters.hpp>
+#include <cartesian_admittance_controller_parameters.hpp>
 #endif
 
 #include <sensor_msgs/msg/joint_state.hpp>
@@ -35,14 +41,16 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 namespace crisp_controllers {
 
 /**
- * @brief Controller implementing Cartesian control
+ * @brief Cartesian admittance controller with impedance outer loop
  *
- * This controller implements Cartesian control for robotic manipulation,
- * supporting both impedance control and operational space control (OSC),
- * allowing for compliant interaction with the environment while maintaining
- * desired position and orientation targets.
+ * This controller implements a two-layer control scheme:
+ * 1. Inner admittance loop: A virtual mass-spring-damper system driven by external F/T sensor
+ *    readings, producing a desired pose that tracks the commanded pose while being compliant
+ *    to external forces.
+ * 2. Outer impedance loop: Standard Cartesian impedance (or OSC) control that tracks the
+ *    inner loop's output pose, with all the same compensation torques as CartesianController.
  */
-class CartesianController : public controller_interface::ControllerInterface {
+class CartesianAdmittanceController : public controller_interface::ControllerInterface {
 public:
   /**
    * @brief Get the command interface configuration
@@ -94,72 +102,103 @@ public:
    */
   CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
-  /*CartesianImpedanceController();*/
-
 private:
+  // ---- Subscriptions (same as CartesianController) ----
+
   /** @brief Subscription for target pose messages */
   rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
   /** @brief Subscription for target joint state messages */
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_sub_;
   /** @brief Subscription for target wrench messages */
   rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_sub_;
-  /** @brief Subscription for variable stiffness messages */
+  /** @brief Subscription for variable impedance stiffness messages */
   rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr stiffness_sub_;
+
+  /** @brief Subscription for F/T sensor messages */
+  rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr ft_sensor_sub_;
+  /** @brief Subscription for variable admittance stiffness messages */
+  rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr adm_stiffness_sub_;
 
   /** @brief Flag to indicate if multiple publishers detected */
   bool multiple_publishers_detected_;
-
   /** @brief Expected maximum number of publishers per topic */
   size_t max_allowed_publishers_;
 
+  // ---- Methods ----
+
   /**
-   * @brief Set the stiffness and damping matrices based on parameters
+   * @brief Set the impedance stiffness and damping matrices based on parameters
    */
   void setStiffnessAndDamping();
 
   /**
+   * @brief Set the admittance mass, stiffness, and damping matrices from parameters
+   */
+  void setAdmittanceParameters();
+
+  /**
    * @brief Get the current state of the robot from hardware interfaces and update internal variables
-   * @param initialize If set to true, initialize the exponential moving average filter with the current state 
+   * @param initialize If set to true, initialize the exponential moving average filter with the current state
    */
   void updateCurrentState(bool initialize = false);
 
   /**
-   * @brief Reads the target pose in realtime loop from the buffer and parses it to be used in the controller.
+   * @brief Reads the target pose in realtime loop from the buffer and parses it
    */
   void parse_target_pose_();
 
   /**
-   * @brief Reads the target joint in realtime loop from the buffer and parses it to be used in the controller.
+   * @brief Reads the target joint in realtime loop from the buffer and parses it
    */
   void parse_target_joint_();
 
   /**
-   * @brief Reads the target wrench in realtime loop from the buffer and parses it to be used in the controller.
+   * @brief Reads the target wrench in realtime loop from the buffer and parses it
    */
   void parse_target_wrench_();
 
   /**
-   * @brief Reads the target stiffness in realtime loop from the buffer and parses it to be used in the controller.
+   * @brief Reads the target impedance stiffness in realtime loop from the buffer and parses it
    */
   void parse_target_stiffness_();
 
+  /**
+   * @brief Reads the F/T sensor data from the realtime buffer and updates the internal wrench
+   */
+  void parse_ft_sensor_();
+
+  /**
+   * @brief Reads the target admittance stiffness from the realtime buffer
+   */
+  void parse_target_adm_stiffness_();
+
+  // ---- Flags for new data ----
   bool new_target_pose_;
   bool new_target_joint_;
   bool new_target_wrench_;
   bool new_target_stiffness_ = false;
   bool use_topic_stiffness_ = false;
+  bool new_ft_sensor_ = false;
+  bool new_target_adm_stiffness_ = false;
+  bool use_topic_adm_stiffness_ = false;
 
+  // ---- Realtime buffers (same as CartesianController) ----
   realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::PoseStamped>>
     target_pose_buffer_;
-
   realtime_tools::RealtimeBuffer<std::shared_ptr<sensor_msgs::msg::JointState>>
     target_joint_buffer_;
-
   realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::WrenchStamped>>
     target_wrench_buffer_;
-
   realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64MultiArray>>
     target_stiffness_buffer_;
+
+  // ---- Admittance-specific realtime buffers ----
+  realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::WrenchStamped>>
+    ft_sensor_buffer_;
+  realtime_tools::RealtimeBuffer<std::shared_ptr<std_msgs::msg::Float64MultiArray>>
+    target_adm_stiffness_buffer_;
+
+  // ---- Target / desired state ----
 
   /** @brief Target position in Cartesian space */
   Eigen::Vector3d target_position_;
@@ -172,18 +211,25 @@ private:
   /** @brief Desired target orientation as quaternion after applying filtering */
   Eigen::Quaterniond desired_orientation_;
 
+  // ---- Parameters ----
+
   /** @brief Parameter listener for dynamic parameter updates */
-  std::shared_ptr<cartesian_controller::ParamListener> params_listener_;
+  std::shared_ptr<cartesian_admittance_controller::ParamListener> params_listener_;
   /** @brief Current parameter values */
-  cartesian_controller::Params params_;
+  cartesian_admittance_controller::Params params_;
+
+  // ---- Pinocchio model ----
 
   /** @brief Frame ID of the end effector in the robot model */
   int end_effector_frame_id;
-
+  /** @brief Frame ID of the F/T sensor measurement frame in the robot model */
+  int ft_sensor_frame_id;
   /** @brief Pinocchio robot model */
   pinocchio::Model model_;
   /** @brief Pinocchio data for computations */
   pinocchio::Data data_;
+
+  // ---- Impedance outer loop matrices ----
 
   /** @brief Cartesian stiffness matrix (6x6) */
   Eigen::MatrixXd stiffness = Eigen::MatrixXd::Zero(6, 6);
@@ -197,12 +243,32 @@ private:
   /** @brief Nullspace damping matrix for posture control */
   Eigen::MatrixXd nullspace_damping;
 
-  /** @brief Current joint positions with dimension nv. */
+  // ---- Admittance inner loop state ----
+
+  /** @brief Internal MSD pose state */
+  pinocchio::SE3 inner_SE3_;
+  /** @brief Internal MSD velocity state (6D: linear + angular) */
+  Eigen::Vector<double, 6> inner_motion_;
+  /** @brief First-cycle initialization flag for admittance state */
+  bool admittance_initialized_;
+  /** @brief Admittance virtual mass matrix (6x6 diagonal) */
+  Eigen::Matrix<double, 6, 6> adm_mass_;
+  /** @brief Inverse of admittance virtual mass matrix */
+  Eigen::Matrix<double, 6, 6> adm_mass_inv_;
+  /** @brief Admittance stiffness matrix (6x6 diagonal) */
+  Eigen::Matrix<double, 6, 6> adm_stiffness_;
+  /** @brief Admittance damping matrix (6x6 diagonal) */
+  Eigen::Matrix<double, 6, 6> adm_damping_;
+  /** @brief F/T sensor reading (6D wrench) */
+  Eigen::VectorXd ft_wrench_;
+  /** @brief Topic-provided admittance stiffness (6x6 diagonal) */
+  Eigen::Matrix<double, 6, 6> topic_adm_stiffness_;
+
+  // ---- Joint state vectors ----
+
+  /** @brief Current joint positions with dimension nv */
   Eigen::VectorXd q;
-  /** @brief Current joint positions with dimension nq.
-   This is size might be different than the actuated dimension of the joint type is different! 
-   Check https://github.com/stack-of-tasks/pinocchio/issues/1127
-  */
+  /** @brief Current joint positions with dimension nq (may differ for continuous joints) */
   Eigen::VectorXd q_pin;
   /** @brief Current joint velocities */
   Eigen::VectorXd dq;
@@ -232,7 +298,7 @@ private:
   /** @brief Friction parameters 3 of size nv */
   Eigen::VectorXd fp3;
 
-  /** @brief Allowed type of joints **/
+  /** @brief Allowed type of joints */
   const std::unordered_set<std::basic_string<char>> allowed_joint_types = {
     "JointModelRX",
     "JointModelRY",
@@ -242,7 +308,7 @@ private:
     "JointModelRUBY",
     "JointModelRUBZ",
   };
-  /** @brief Continous joint types that should be considered separetly. **/
+  /** @brief Continuous joint types that should be considered separately */
   const std::unordered_set<std::basic_string<char>> continous_joint_types = {
     "JointModelRUBX", "JointModelRUBY", "JointModelRUBZ"};
 

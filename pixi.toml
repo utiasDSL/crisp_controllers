@@ -1,0 +1,71 @@
+[workspace]
+preview = ["pixi-build"]
+authors = [
+    "Daniel San José Pro <42489409+danielsanjosepro@users.noreply.github.com>"
+]
+channels = ["https://fast.prefix.dev/conda-forge"]
+name = "crisp_py"
+platforms = ["linux-64"]
+
+[activation]
+scripts = ["install/setup.sh"]
+
+[dependencies]
+python = "*"
+compilers = "*"
+cmake = "*"
+pkg-config = "*"
+make = "*"
+ninja = "*"
+pinocchio = ">=3.7.0,<4"
+# pinocchio = ">=3.7.0,<4"
+
+[tasks]
+clean = "rm -rf build install log"
+build = "colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+clean-build = [{ task = "clean" }, { task = "build" }]
+source = "source install/setup.sh"
+
+[target.linux.dependencies]
+libgl-devel = "*"
+
+[environments]
+humble = { features = ["humble"] }
+jazzy = { features = ["jazzy"] }
+kilted = { features = ["kilted"] }
+
+# humble
+[feature.humble]
+channels = ["https://prefix.dev/robostack-humble"]
+
+[feature.humble.dependencies]
+ros-humble-desktop = "*"
+colcon-common-extensions = "*"
+ros-humble-ros2-control = "*"
+ros-humble-ros2-controllers = "*"
+
+# jazzy
+[feature.jazzy]
+channels = ["https://prefix.dev/robostack-jazzy"]
+
+[feature.jazzy.dependencies]
+ros-jazzy-desktop = "*"
+colcon-common-extensions = "*"
+ros-jazzy-ros2-control = "*"
+ros-jazzy-ros2-controllers = "*"
+
+# kilted
+[feature.kilted]
+channels = ["https://prefix.dev/robostack-kilted", "https://prefix.dev/conda-forge"]
+
+[feature.kilted.dependencies]
+ros2-distro-mutex = "*"
+ros-kilted-desktop = "*"
+colcon-common-extensions = "*"
+ros-kilted-ros2-control = "*"
+ros-kilted-ros2-controllers = "*"
+fmt = ">=11.2.0,<12"
+
+[pypi-dependencies]
+crisp-controllers = { path = ".", editable = false }
+pre-commit = ">=4.5.1, <5"

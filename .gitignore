@@ -7,3 +7,5 @@ src/franka_description
 src/franka_ros2
 src/libfranka
 MUJOCO_LOG.TXT
+src/crisp_controllers.egg-info
+tmp

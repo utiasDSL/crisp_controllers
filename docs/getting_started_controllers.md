@@ -22,6 +22,7 @@ Robots that we tested are:
 
 - **FR3** (real and simulated): https://github.com/danielsanjosepro/pixi_franka_ros2
 - **FER/Panda** (real): https://github.com/lvjonok/pixi_panda_ros2
+- **UR** (real): https://github.com/lvjonok/pixi_ur_ros2
 - **IIWA** (simulated): https://github.com/danielsanjosepro/pixi_iiwa_ros2
 
 ### Grippers
@@ -30,7 +31,7 @@ Grippers that we tested are:
 
 - **Franka Hand**: a node is included in the [fr3 pixi](https://github.com/danielsanjosepro/pixi_franka_ros2) and [panda pixi](https://github.com/lvjonok/pixi_panda_ros2) repositories which is started automatically with the robot. If the Franka Hand is not connected, the node will crash silently. Checkout [this config](https://github.com/utiasDSL/crisp_py/blob/main/crisp_py/config/grippers/gripper_franka.yaml) for using it with `crisp_py`.
 - Any **Dynamixel**-based gripper: https://github.com/danielsanjosepro/dynamixel_wrapper - check README.md
-- **Robotiq 2F-85**: work in progress...
+- **Robotiq 2F-85**: https://github.com/danielsanjosepro/pixi_robotiq_ros2
 
 ### Cameras
 
@@ -44,7 +45,7 @@ Cameras that we tested are:
 Sensors that we tested are:
 
 - **Anyskin** tactile sensor: https://github.com/danielsanjosepro/anyskin_ros2
-- **Force/Torque** sensors: work in progress...
+- **Force/Torque** sensors: https://github.com/utiasDSL/botasys_ft_sensor_ros2
 
 ## Start ROS2 nodes with docker containers
 
@@ -54,12 +55,13 @@ Some other manipulators that could be added to this list is [Duatic](https://git
 
 ### Available Demos
 
-| Robots | Franka Robotics FR3 | FR Dual FR3 | IIWA 14 | Kinova Gen3 |
-| :--- | :---: | :---: | :---: | :---: |
-| MuJoCo simulated Hardware | ✅ | ✅ | ✅ | ✅ |
-| Real Hardware | ✅ | ✅ | ❔[^1]  | ❔[^1] |
+| Robots | Franka Robotics FR3 | FR Dual FR3 | IIWA 14 | Kinova Gen3 | UR5 |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| MuJoCo simulated Hardware | ✅ | ✅ | ✅ | ✅ | ✅ [^2]|
+| Real Hardware | ✅ | ✅ | ❔[^1]  | ❔[^1] |  ✅ [^2] |
 
 [^1]: Untested, but effort interface available.
+[^2]: Available at: https://github.com/danielsanjosepro/crisp_ur_demo
 
 We also have some examples with cameras.
 

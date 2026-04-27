@@ -1,14 +1,14 @@
 
 [project]
-site_name = "CRISP Controllers - Learning Systems Lab"
+site_name = "CRISP Controllers - Learning Systems and Robotics Lab"
 nav = [
     {"Home" = "index.md"},
     {"Design Philosophy"= "design_philosophy.md"},
     {"Getting Started" = [
-        {"Getting Started" = "getting_started.md"},
-        {"Getting Started ROS2" = "getting_started_controllers.md"},
-        {"Getting Started Python" = "getting_started_py.md"},
-        {"Getting Started Gym" = "getting_started_gym.md"},
+        {"Getting Started Overview" = "getting_started.md"},
+        {"Getting Started with the ROS2 components" = "getting_started_controllers.md"},
+        {"Getting Started with crisp_py" = "getting_started_py.md"},
+        {"Getting Started with crisp_gym" = "getting_started_gym.md"},
         {"Custom Configs" = "getting_started_config.md"},
         {"Multi-Machine Setup" = "getting_started_multiple_machines.md"},
         {"Low-Level Controller Details" = "getting_started_controller_details.md"},

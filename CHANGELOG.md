@@ -1,5 +1,42 @@
 # Changelog
 
+## [2.3.0](https://github.com/utiasDSL/crisp_controllers/compare/v2.2.0...v2.3.0) (2026-04-09)
+
+
+### Features
+
+* Admittance Controller ([#47](https://github.com/utiasDSL/crisp_controllers/issues/47)) ([0c51c8b](https://github.com/utiasDSL/crisp_controllers/commit/0c51c8b6413da6d3738165536897083db0c2f608))
+
+## [2.2.0](https://github.com/utiasDSL/crisp_controllers/compare/v2.1.0...v2.2.0) (2026-04-02)
+
+
+### Features
+
+* Variable Stiffness Controller ([#46](https://github.com/utiasDSL/crisp_controllers/issues/46)) ([2fc192d](https://github.com/utiasDSL/crisp_controllers/commit/2fc192d1801c99b76f3f67bda34815d2f744e64c))
+
+## [2.1.0](https://github.com/utiasDSL/crisp_controllers/compare/v2.0.0...v2.1.0) (2026-02-28)
+
+
+### Features
+
+* refactor controller state update + add regularization configurable parameter for inverse mass matrix computation  ([#40](https://github.com/utiasDSL/crisp_controllers/issues/40)) ([d682c9a](https://github.com/utiasDSL/crisp_controllers/commit/d682c9abb5837c798867def561e5220b0dfe61c8))
+
+## [1.3.0](https://github.com/utiasDSL/crisp_controllers/compare/v1.2.3...v1.3.0) (2026-02-09)
+
+
+### Features
+
+* Add new parameters for the controllers and fix reference frame when using world base jacobian ([#29](https://github.com/utiasDSL/crisp_controllers/issues/29)) ([2544834](https://github.com/utiasDSL/crisp_controllers/commit/25448340bd536416819ebce55722b57b544d7027))
+* Update docs with dynaarm ([#30](https://github.com/utiasDSL/crisp_controllers/issues/30)) ([aa2be28](https://github.com/utiasDSL/crisp_controllers/commit/aa2be286ef09b3d12a4ae35ecb9146f2f2ae2f9a))
+
+## [1.2.3](https://github.com/utiasDSL/crisp_controllers/compare/v1.2.2...v1.2.3) (2026-01-29)
+
+
+### Bug Fixes
+
+* add warning to for versions in docs ([5814498](https://github.com/utiasDSL/crisp_controllers/commit/5814498444627ff808ab9c063b8d048bcc600ad8))
+* path for videos ([e80645e](https://github.com/utiasDSL/crisp_controllers/commit/e80645e318f27f0e115c4d9081b73cf8ddaebcc9))
+
 ## [1.2.2](https://github.com/utiasDSL/crisp_controllers/compare/v1.2.1...v1.2.2) (2025-12-23)
 
 
