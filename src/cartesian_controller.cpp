@@ -227,37 +227,37 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   // performance drop in the controller which reults in "communication_constraint_violation" errors
   // for Franka robot.
 
-  static int read_counter = 0;
-  // Change the number that `read_counter` doing mode operation with to control the output frequency
-  // 1 is for every cycle, 2 is for every other cycle, etc. Increase the number to reduce output
-  // frequency, to avoid causing "communication_constraint_violation" errors for Franka robot.
-  if (read_counter % 1 == 0) {
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "q: " << q.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "q target: " << q_target.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "q ref: " << q_ref.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "dq: " << dq.transpose());
-    RCLCPP_INFO_STREAM(
-      get_node()->get_logger(),
-      "current eef:" << end_effector_pose.translation().transpose() << " "
-                     << end_effector_pose.rotation().eulerAngles(2, 1, 0).transpose() << " "
-                     << Eigen::Quaterniond(end_effector_pose.rotation()).coeffs().transpose());
-    RCLCPP_INFO_STREAM(
-      get_node()->get_logger(),
-      "desired eef:" << desired_position_.transpose() << " "
-                     << desired_orientation_.toRotationMatrix().eulerAngles(2, 1, 0).transpose()
-                     << " " << desired_orientation_.coeffs().transpose());
+  // static int read_counter = 0;
+  // // Change the number that `read_counter` doing mode operation with to control the output frequency
+  // // 1 is for every cycle, 2 is for every other cycle, etc. Increase the number to reduce output
+  // // frequency, to avoid causing "communication_constraint_violation" errors for Franka robot.
+  // if (read_counter % 1 == 0) {
+  //   RCLCPP_INFO_STREAM(get_node()->get_logger(), "q: " << q.transpose());
+  //   RCLCPP_INFO_STREAM(get_node()->get_logger(), "q target: " << q_target.transpose());
+  //   RCLCPP_INFO_STREAM(get_node()->get_logger(), "q ref: " << q_ref.transpose());
+  //   RCLCPP_INFO_STREAM(get_node()->get_logger(), "dq: " << dq.transpose());
+  //   RCLCPP_INFO_STREAM(
+  //     get_node()->get_logger(),
+  //     "current eef:" << end_effector_pose.translation().transpose() << " "
+  //                    << end_effector_pose.rotation().eulerAngles(2, 1, 0).transpose() << " "
+  //                    << Eigen::Quaterniond(end_effector_pose.rotation()).coeffs().transpose());
+  //   RCLCPP_INFO_STREAM(
+  //     get_node()->get_logger(),
+  //     "desired eef:" << desired_position_.transpose() << " "
+  //                    << desired_orientation_.toRotationMatrix().eulerAngles(2, 1, 0).transpose()
+  //                    << " " << desired_orientation_.coeffs().transpose());
 
-    RCLCPP_INFO_STREAM(
-      get_node()->get_logger(),
-      "target eef:" << target_position_.transpose() << " "
-                    << target_orientation_.toRotationMatrix().eulerAngles(2, 1, 0).transpose()
-                    << " " << target_orientation_.coeffs().transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "error: " << error.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "task tau: " << tau_task.transpose());
-    RCLCPP_INFO_STREAM(get_node()->get_logger(), "nullspace tau: " << tau_nullspace.transpose());
-    read_counter = 0;  // Optional: prevents overflow, but not necessary
-  }
-  read_counter++;
+  //   RCLCPP_INFO_STREAM(
+  //     get_node()->get_logger(),
+  //     "target eef:" << target_position_.transpose() << " "
+  //                   << target_orientation_.toRotationMatrix().eulerAngles(2, 1, 0).transpose()
+  //                   << " " << target_orientation_.coeffs().transpose());
+  //   RCLCPP_INFO_STREAM(get_node()->get_logger(), "error: " << error.transpose());
+  //   RCLCPP_INFO_STREAM(get_node()->get_logger(), "task tau: " << tau_task.transpose());
+  //   RCLCPP_INFO_STREAM(get_node()->get_logger(), "nullspace tau: " << tau_nullspace.transpose());
+  //   read_counter = 0;  // Optional: prevents overflow, but not necessary
+  // }
+  // read_counter++;
 
   return controller_interface::return_type::OK;
 }
