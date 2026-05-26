@@ -509,7 +509,8 @@ void CartesianController::setStiffnessAndDamping() {
   nullspace_stiffness.diagonal() << params_.nullspace.stiffness * weights;
   nullspace_damping.diagonal() << 2.0 * nullspace_stiffness.diagonal().cwiseSqrt();
 
-  if (params_.nullspace.damping) {
+  // For nullspace, use explicit damping if > 0, otherwise compute from stiffness
+  if (params_.nullspace.damping > 0) {
     nullspace_damping.diagonal() = params_.nullspace.damping * weights;
   } else {
     nullspace_damping.diagonal() = 2.0 * nullspace_stiffness.diagonal().cwiseSqrt();
