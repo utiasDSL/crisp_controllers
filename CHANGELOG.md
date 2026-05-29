@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/learnsyslab/crisp_controllers/compare/v2.3.0...v2.3.1) (2026-05-29)
+
+
+### Bug Fixes
+
+* validate end_effector_frame in cartesian/admittance controllers and broadcasters, drop redundant on_activate check ([#53](https://github.com/learnsyslab/crisp_controllers/issues/53)) ([4b91853](https://github.com/learnsyslab/crisp_controllers/commit/4b918539d475f72512895e418e9d0a0b2c84cc9f))
+
 ## [2.3.0](https://github.com/utiasDSL/crisp_controllers/compare/v2.2.0...v2.3.0) (2026-04-09)
 
 
