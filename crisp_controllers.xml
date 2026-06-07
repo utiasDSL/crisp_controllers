@@ -11,22 +11,16 @@
             Cartesian admittance controller with impedance outer loop for compliant force-based interaction.
         </description>
     </class>
-    <class name="crisp_controllers/PoseBroadcaster"
-           type="crisp_controllers::PoseBroadcaster" base_class_type="controller_interface::ControllerInterface">
+    <class name="crisp_controllers/StateBroadcaster"
+           type="crisp_controllers::StateBroadcaster" base_class_type="controller_interface::ControllerInterface">
         <description>
-            Simple broadcaster for the pose.
+            Broadcaster for joint, Cartesian pose, twist, and wrench state outputs.
         </description>
     </class>
     <class name="crisp_controllers/TorqueFeedbackController"
            type="crisp_controllers::TorqueFeedbackController" base_class_type="controller_interface::ControllerInterface">
         <description>
             Torque feedback controller for robotic manipulators that responds to external torques with PD control and friction compensation.
-        </description>
-    </class>
-    <class name="crisp_controllers/TwistBroadcaster"
-           type="crisp_controllers::TwistBroadcaster" base_class_type="controller_interface::ControllerInterface">
-        <description>
-            Simple broadcaster for the twist velocity.
         </description>
     </class>
 </library>

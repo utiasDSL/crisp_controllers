@@ -1,0 +1,125 @@
+state_broadcaster:
+  joints:
+    type: string_array
+    default_value: []
+    description: "Names of the joints"
+  end_effector_frame:
+    type: string
+    description: "Name of the end-effector frame"
+  base_frame:
+    type: string
+    description: "Name of the base frame"
+  use_gravity_compensation:
+    type: bool
+    default_value: true
+    description: "Subtract model gravity torques from the external effort residual"
+  use_coriolis_compensation:
+    type: bool
+    default_value: true
+    description: "Subtract model Coriolis torques from the external effort residual"
+  use_inertial_compensation:
+    type: bool
+    default_value: true
+    description: "Subtract estimated model inertial torques from the external effort residual"
+  acceleration_filter_alpha:
+    type: double
+    default_value: 0.80
+    description: "EMA smoothing factor for estimated joint acceleration; higher values smooth more"
+    validation:
+      bounds<>: [0.0, 1.0]
+  pose:
+    topic:
+      type: string
+      default_value: "current_pose"
+      description: "Topic name for publishing the current pose (geometry_msgs/PoseStamped)"
+    publish_frequency:
+      type: double
+      default_value: 500.0
+      description: "Publishing frequency in Hz (0.0 means no throttling)"
+    frame:
+      type: string
+      default_value: ""
+      description: "Frame id for the pose output; empty uses base_frame"
+  twist:
+    topic:
+      type: string
+      default_value: "current_twist"
+      description: "Topic name for publishing the current twist (geometry_msgs/TwistStamped)"
+    publish_frequency:
+      type: double
+      default_value: 500.0
+      description: "Publishing frequency in Hz (0.0 means no throttling)"
+    frame:
+      type: string
+      default_value: ""
+      description: "Frame id for the twist output; empty uses end_effector_frame"
+    reference_frame:
+      type: string
+      default_value: "local"
+      description: "Frame convention for the published twist: local or local_world_aligned"
+      validation:
+        one_of<>: [["local", "local_world_aligned"]]
+  wrench:
+    regularization:
+      type: double
+      default_value: 0.000001
+      description: "Damping used for the wrench least-squares solve"
+      validation:
+        bounds<>: [0.000001, 0.01]
+    raw:
+      topic:
+        type: string
+        default_value: "current_wrench"
+        description: "Topic name for publishing the measured-effort wrench (geometry_msgs/WrenchStamped)"
+      publish_frequency:
+        type: double
+        default_value: 500.0
+        description: "Publishing frequency in Hz (0.0 means no throttling)"
+      frame:
+        type: string
+        default_value: ""
+        description: "Frame id for the raw wrench output; empty follows reference_frame"
+      reference_frame:
+        type: string
+        default_value: "local_world_aligned"
+        description: "Frame convention for the published raw wrench: local or local_world_aligned"
+        validation:
+          one_of<>: [["local", "local_world_aligned"]]
+    external:
+      topic:
+        type: string
+        default_value: "external_wrench"
+        description: "Topic name for publishing the residual external wrench (geometry_msgs/WrenchStamped)"
+      publish_frequency:
+        type: double
+        default_value: 500.0
+        description: "Publishing frequency in Hz (0.0 means no throttling)"
+      frame:
+        type: string
+        default_value: ""
+        description: "Frame id for the external wrench output; empty follows reference_frame"
+      reference_frame:
+        type: string
+        default_value: "local_world_aligned"
+        description: "Frame convention for the published external wrench: local or local_world_aligned"
+        validation:
+          one_of<>: [["local", "local_world_aligned"]]
+  effort:
+    external:
+      topic:
+        type: string
+        default_value: "external_effort"
+        description: "Topic name for publishing residual torques (std_msgs/Float64MultiArray)"
+      publish_frequency:
+        type: double
+        default_value: 500.0
+        description: "Publishing frequency in Hz (0.0 means no throttling)"
+  joint_states:
+    topic:
+      type: string
+      default_value: "joint_states"
+      description: "Topic name for publishing joint states (sensor_msgs/JointState)"
+    publish_frequency:
+      type: double
+      default_value: 1000.0
+      description: "Publishing frequency in Hz (0.0 means no throttling)"

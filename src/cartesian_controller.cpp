@@ -64,7 +64,7 @@ CartesianController::state_interface_configuration() const {
 }
 
 controller_interface::return_type
-CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & /*period*/) {
+CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & period) {
   
   // Update current state information with EMA filtered values
   updateCurrentState();
@@ -223,6 +223,30 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
 #else
       command_interfaces_[i].set_value(tau_d[i]);
 #endif
+    }
+  }
+
+  publish_elapsed_ = publish_elapsed_ + period;
+  const bool should_publish =
+    realtime_effort_publisher_ &&
+    ((publish_elapsed_ >= publish_interval_) || (publish_interval_.nanoseconds() == 0));
+  if (should_publish) {
+#if REALTIME_TOOLS_NEW_API
+    for (size_t i = 0; i < effort_msg_.data.size(); ++i) {
+      effort_msg_.data[i] = params_.stop_commands ? 0.0 : tau_d[i];
+    }
+    if (realtime_effort_publisher_->try_publish(effort_msg_)) {
+#else
+    if (realtime_effort_publisher_->trylock()) {
+      auto & effort_data = realtime_effort_publisher_->msg_.data;
+      for (size_t i = 0; i < effort_data.size(); ++i) {
+        effort_data[i] = params_.stop_commands ? 0.0 : tau_d[i];
+      }
+      realtime_effort_publisher_->unlockAndPublish();
+#endif
+      publish_elapsed_ = publish_elapsed_ - publish_interval_;
+      // clamp to publish only 1 time even if missed multiple intervals
+      publish_elapsed_ = std::min(publish_elapsed_, publish_interval_);
     }
   }
 
@@ -446,6 +470,38 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
   tau_wrench = Eigen::VectorXd::Zero(model_.nv);
   tau_d = Eigen::VectorXd::Zero(model_.nv);
 
+  effort_publisher_.reset();
+  realtime_effort_publisher_.reset();
+  publish_elapsed_ = rclcpp::Duration(0, 0);
+  publish_interval_ = rclcpp::Duration(0, 0);
+  if (params_.effort_publisher.publish_frequency > 0.0) {
+    if (params_.effort_publisher.topic.empty()) {
+      RCLCPP_ERROR(
+        get_node()->get_logger(),
+        "Failed to configure because effort_publisher.topic is empty.");
+      return CallbackReturn::ERROR;
+    }
+    effort_publisher_ = get_node()->create_publisher<std_msgs::msg::Float64MultiArray>(
+      params_.effort_publisher.topic, rclcpp::SystemDefaultsQoS());
+    realtime_effort_publisher_ =
+      std::make_shared<realtime_tools::RealtimePublisher<std_msgs::msg::Float64MultiArray>>(
+        effort_publisher_);
+#if !REALTIME_TOOLS_NEW_API
+    realtime_effort_publisher_->msg_.data.resize(params_.joints.size(), 0.0);
+#else
+    effort_msg_.data.resize(params_.joints.size(), 0.0);
+#endif
+    publish_interval_ =
+      rclcpp::Duration::from_seconds(1.0 / params_.effort_publisher.publish_frequency);
+    RCLCPP_INFO(
+      get_node()->get_logger(),
+      "Commanded effort topic: %s at %.3f Hz",
+      params_.effort_publisher.topic.c_str(),
+      params_.effort_publisher.publish_frequency);
+  } else {
+    RCLCPP_INFO(get_node()->get_logger(), "Commanded effort publisher is disabled.");
+  }
+
   // Initialize target state vectors
   target_position_ = Eigen::Vector3d::Zero();
   target_orientation_ = Eigen::Quaterniond::Identity();
@@ -601,6 +657,8 @@ CartesianController::on_activate(const rclcpp_lifecycle::State & /*previous_stat
   target_orientation_ = Eigen::Quaterniond(end_effector_pose.rotation());
   desired_position_ = target_position_;
   desired_orientation_ = target_orientation_;
+
+  publish_elapsed_ = rclcpp::Duration(0, 0);
 
   RCLCPP_INFO(get_node()->get_logger(), "Controller activated.");
   return CallbackReturn::SUCCESS;
