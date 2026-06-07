@@ -170,12 +170,12 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   Eigen::Vector<double, 6> adm_force = ft_wrench_world - adm_damping_ * inner_motion_ + K_adm * adm_error;
   Eigen::Vector<double, 6> accel = adm_mass_inv_ * adm_force;
 
-  // 10. Semi-implicit Euler integration
+  // 10. Semi-implicit Euler integration (translation and rotation integrated separately)
   double dt = period.seconds();
   inner_motion_ += accel * dt;
-  // Update inner_SE3_ using exponential map
-  pinocchio::SE3 delta = pinocchio::exp6(pinocchio::Motion(inner_motion_ * dt));
-  inner_SE3_ = delta * inner_SE3_;
+  inner_SE3_.translation() += inner_motion_.head(3) * dt;
+  inner_SE3_.rotation() =
+    (pinocchio::exp3(Eigen::Vector3d(inner_motion_.tail(3) * dt)) * inner_SE3_.rotation()).eval();
 
   // 11. Use inner_SE3_ as the desired for impedance outer loop
   // Compute impedance error (same as CartesianController but using inner_SE3_ as target)
