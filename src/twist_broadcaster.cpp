@@ -198,8 +198,11 @@ CallbackReturn TwistBroadcaster::on_configure(const rclcpp_lifecycle::State & /*
   q = Eigen::VectorXd::Zero(model_.nv);
   q_dot = Eigen::VectorXd::Zero(model_.nv);
 
+  const auto current_twist_topic =
+    params_.topics.current_twist.empty() ? "current_twist" : params_.topics.current_twist;
+
   twist_publisher_ = get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(
-    "current_twist", rclcpp::SystemDefaultsQoS());
+    current_twist_topic, rclcpp::SystemDefaultsQoS());
   realtime_twist_publisher_ =
     std::make_shared<realtime_tools::RealtimePublisher<geometry_msgs::msg::TwistStamped>>(
       twist_publisher_);

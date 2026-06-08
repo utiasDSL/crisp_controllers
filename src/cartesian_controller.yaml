@@ -194,6 +194,20 @@ cartesian_controller:
     default_value: false
     description: "If true, we use the local jacobian for computations, otherwise we use the world jacobian."
 
+  topics:
+    target_pose:
+      type: string
+      default_value: "target_pose"
+      description: "Topic name for target pose commands."
+    target_joint:
+      type: string
+      default_value: "target_joint"
+      description: "Topic name for target joint commands."
+    target_wrench:
+      type: string
+      default_value: "target_wrench"
+      description: "Topic name for target wrench commands."
+
   log:
     enabled:
       type: bool
