@@ -198,6 +198,20 @@ cartesian_admittance_controller:
     type: bool
     default_value: false
     description: "If true, use legacy exp6 integration that couples translation and rotation. If false (default), integrate translation (Euler) and rotation (exp3) independently so a pure rotation spins in place."
+    
+  topics:
+    target_pose:
+      type: string
+      default_value: "target_pose"
+      description: "Topic name for target pose commands."
+    target_joint:
+      type: string
+      default_value: "target_joint"
+      description: "Topic name for target joint commands."
+    target_wrench:
+      type: string
+      default_value: "target_wrench"
+      description: "Topic name for target wrench commands."
 
   log:
     enabled:
