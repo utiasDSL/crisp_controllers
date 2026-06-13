@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.4.0](https://github.com/learnsyslab/crisp_controllers/compare/v2.3.1...v2.4.0) (2026-06-13)
+
+
+### Features
+
+* decouple translation from rotation in admittance MSD integration ([#57](https://github.com/learnsyslab/crisp_controllers/issues/57)) ([2df8954](https://github.com/learnsyslab/crisp_controllers/commit/2df8954a3a5f729913b9332f8d46b12f4b5917ea))
+* parameterize controller and broadcaster topics ([#60](https://github.com/learnsyslab/crisp_controllers/issues/60)) ([b39afea](https://github.com/learnsyslab/crisp_controllers/commit/b39afeaa60c9a046cfcbc46824e6ca8c91cb88ac))
+
+
+### Bug Fixes
+
+* negative nullspace damping not handled correctly ([#56](https://github.com/learnsyslab/crisp_controllers/issues/56)) ([c3af67e](https://github.com/learnsyslab/crisp_controllers/commit/c3af67e45e1940bcc557cca218657cdd1b0c5add))
+
 ## [2.3.1](https://github.com/learnsyslab/crisp_controllers/compare/v2.3.0...v2.3.1) (2026-05-29)
 
 
