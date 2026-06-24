@@ -47,8 +47,8 @@ For more information on the controllers, check the [controllers details](getting
             ros__parameters:
             update_rate: 1000  # Hz
 
-            pose_broadcaster:
-                type: crisp_controllers/PoseBroadcaster
+            state_broadcaster:
+                type: crisp_controllers/StateBroadcaster
 
             gravity_compensation:
                 type: crisp_controllers/CartesianController
@@ -61,13 +61,21 @@ For more information on the controllers, check the [controllers details](getting
 
             # more controllers...
         /**:
-        pose_broadcaster:
+        state_broadcaster:
             ros__parameters:
             joints:
                 - <TODO>
 
             end_effector_frame: <TODO>
             base_frame: base
+
+            pose:
+                topic: current_pose
+                publish_frequency: 500.0
+
+            twist:
+                topic: current_twist
+                publish_frequency: 500.0
 
         gravity_compensation:
             ros__parameters:
@@ -182,11 +190,27 @@ For more information on the controllers, check the [controllers details](getting
         Node(
             package="controller_manager",
             executable="spawner",
-            arguments=["pose_broadcaster"],
+            arguments=["state_broadcaster"],
             output="screen",
         ),
         ...
         ```
+
+    !!! note "Migrating old pose/twist broadcaster parameters"
+        `crisp_controllers/StateBroadcaster` replaces the old pose and twist broadcaster setup. If an old config used flat `topic` or `publish_frequency` parameters, move them under the matching output:
+
+        ```yaml
+        state_broadcaster:
+            ros__parameters:
+                pose:
+                    topic: current_pose
+                    publish_frequency: 500.0
+                twist:
+                    topic: current_twist
+                    publish_frequency: 500.0
+        ```
+
+        Old pose broadcaster `topic` and `publish_frequency` values become `pose.topic` and `pose.publish_frequency`. Old twist broadcaster values become `twist.topic` and `twist.publish_frequency`. If both old broadcasters existed, merge both nested blocks into the single `state_broadcaster` config.
 
 6. After launching your robot you should see that new controller are being loaded. If you get stuck somewhere in the process feel free to open an issue.
 7. Finally, to use the robots in crisp_py, add a configuration file for the new robot and Gymnasium environments that use it.
@@ -234,4 +258,3 @@ For more information on the controllers, check the [controllers details](getting
         In a similar manner, you can add this config to an Gymnasium environment to create a Gymnasium env with this config!
 
 8. Voila, you are good to go!
-

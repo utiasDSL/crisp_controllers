@@ -27,6 +27,14 @@ state_broadcaster:
     description: "EMA smoothing factor for estimated joint acceleration; higher values smooth more"
     validation:
       bounds<>: [0.0, 1.0]
+  topic:
+    type: string
+    default_value: ""
+    description: "Deprecated legacy flat topic parameter. Ignored; use pose.topic or twist.topic instead."
+  publish_frequency:
+    type: double
+    default_value: 0.0
+    description: "Deprecated legacy flat publish frequency parameter. Ignored; use pose.publish_frequency or twist.publish_frequency instead."
   pose:
     topic:
       type: string

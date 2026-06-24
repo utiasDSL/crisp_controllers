@@ -282,6 +282,9 @@ private:
   bool configure_publish_interval(
     const std::string & output_name, double publish_frequency, PublishTimer & timer) const;
 
+  /** @brief Warn when deprecated parameters are supplied. */
+  void warn_legacy_parameters() const;
+
   /**
    * @brief Validate common parameters required before model and publisher setup.
    * @return True when required joints, frames, and topics are configured.

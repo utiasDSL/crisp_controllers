@@ -17,6 +17,18 @@
             Broadcaster for joint, Cartesian pose, twist, and wrench state outputs.
         </description>
     </class>
+    <class name="crisp_controllers/PoseBroadcaster"
+           type="crisp_controllers::StateBroadcaster" base_class_type="controller_interface::ControllerInterface">
+        <description>
+            Backwards-compatible alias for StateBroadcaster.
+        </description>
+    </class>
+    <class name="crisp_controllers/TwistBroadcaster"
+           type="crisp_controllers::StateBroadcaster" base_class_type="controller_interface::ControllerInterface">
+        <description>
+            Backwards-compatible alias for StateBroadcaster.
+        </description>
+    </class>
     <class name="crisp_controllers/TorqueFeedbackController"
            type="crisp_controllers::TorqueFeedbackController" base_class_type="controller_interface::ControllerInterface">
         <description>

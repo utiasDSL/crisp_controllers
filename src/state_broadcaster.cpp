@@ -240,6 +240,8 @@ CallbackReturn StateBroadcaster::on_init() {
 
 CallbackReturn
 StateBroadcaster::on_configure(const rclcpp_lifecycle::State & /*previous_state*/) {
+  warn_legacy_parameters();
+
   if (!validate_common_parameters() || !build_model() || !cache_joint_model_indices()) {
     return CallbackReturn::ERROR;
   }
@@ -411,6 +413,27 @@ bool StateBroadcaster::configure_publish_interval(
   timer.interval = publish_frequency > 0.0 ? rclcpp::Duration::from_seconds(1.0 / publish_frequency)
                                            : rclcpp::Duration(0, 0);
   return true;
+}
+
+void StateBroadcaster::warn_legacy_parameters() const {
+  const auto & overrides = get_node()->get_node_parameters_interface()->get_parameter_overrides();
+  const bool has_legacy_topic = overrides.find("topic") != overrides.end();
+  const bool has_legacy_publish_frequency = overrides.find("publish_frequency") != overrides.end();
+
+  if (!has_legacy_topic && !has_legacy_publish_frequency) {
+    return;
+  }
+
+  const char * legacy_params = has_legacy_topic && has_legacy_publish_frequency
+    ? "'topic' and 'publish_frequency' were"
+    : has_legacy_topic ? "'topic' was" : "'publish_frequency' was";
+
+  RCLCPP_WARN(
+    get_node()->get_logger(),
+    "Deprecated flat StateBroadcaster parameter%s %s supplied and ignored. "
+    "Use pose.topic/pose.publish_frequency or twist.topic/twist.publish_frequency instead. "
+    "Configured nested values, or their defaults, will be used.",
+    has_legacy_topic && has_legacy_publish_frequency ? "s" : "", legacy_params);
 }
 
 bool StateBroadcaster::validate_common_parameters() const {
