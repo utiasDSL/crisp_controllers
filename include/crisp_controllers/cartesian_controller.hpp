@@ -18,7 +18,6 @@
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/multibody/fwd.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <realtime_tools/realtime_publisher.hpp>
 
 #include <crisp_controllers/utils/ros2_version.hpp>
 
@@ -106,14 +105,6 @@ private:
   rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_sub_;
   /** @brief Subscription for variable stiffness messages */
   rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr stiffness_sub_;
-
-  /** @brief Publisher for commanded joint effort values */
-  rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr effort_publisher_;
-  /** @brief Realtime publisher for commanded joint effort values */
-  std::shared_ptr<realtime_tools::RealtimePublisher<std_msgs::msg::Float64MultiArray>>
-    realtime_effort_publisher_;
-  /** @brief Pre-sized commanded effort message for realtime publication */
-  std_msgs::msg::Float64MultiArray effort_msg_;
 
   /** @brief Flag to indicate if multiple publishers detected */
   bool multiple_publishers_detected_;
@@ -282,11 +273,6 @@ private:
   Eigen::VectorXd tau_wrench;
   /** @brief Final desired torque command */
   Eigen::VectorXd tau_d;
-
-  /** @brief Time accumulated since the last effort publication */
-  rclcpp::Duration publish_elapsed_{0, 0};
-  /** @brief Effort publication interval */
-  rclcpp::Duration publish_interval_{0, 0};
 
   /** @brief Inverse of the manipulator joint mass projected in Cartesian space (6x6) */
   Eigen::Matrix<double, 6, 6> Mx_inv = Eigen::Matrix<double, 6, 6>::Zero();

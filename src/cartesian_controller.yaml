@@ -181,7 +181,7 @@ cartesian_controller:
 
   use_coriolis_compensation:
     type: bool
-    default_value: true
+    default_value: false
     description: "Use coriolis compensation"
 
   use_gravity_compensation:
@@ -298,16 +298,6 @@ cartesian_controller:
     type: bool
     default_value: False
     description: "If set to true, we will stop sending commands to the robot. This is mainly for debugging useful."
-
-  effort_publisher:
-    topic:
-      type: string
-      default_value: "commanded_effort"
-      description: "Topic name for publishing commanded joint efforts as std_msgs/Float64MultiArray. Values are in joints order."
-    publish_frequency:
-      type: double
-      default_value: 1000.0
-      description: "Frequency in Hz for publishing commanded joint efforts. Values <= 0.0 disable publishing."
 
   friction:
     fp1:
