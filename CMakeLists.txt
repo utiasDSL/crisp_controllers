@@ -127,18 +127,30 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 
-ament_target_dependencies(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
   PUBLIC
-    controller_interface
-    hardware_interface
-    pluginlib
-    rclcpp
-    rclcpp_lifecycle
-    pinocchio
-    generate_parameter_library
-    realtime_tools
-    std_msgs
+    pluginlib::pluginlib
+    rclcpp::rclcpp
+    rclcpp_lifecycle::rclcpp_lifecycle
+    pinocchio::pinocchio
+    realtime_tools::realtime_tools
+    ${std_msgs_TARGETS}
 )
+
+# ros2_control did not export namespaced targets until after humble
+if(TARGET controller_interface::controller_interface)
+  target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+      controller_interface::controller_interface
+      hardware_interface::hardware_interface
+  )
+else()
+  ament_target_dependencies(${PROJECT_NAME}
+    PUBLIC
+      controller_interface
+      hardware_interface
+  )
+endif()
 
 pluginlib_export_plugin_description_file(
         controller_interface crisp_controllers.xml)
