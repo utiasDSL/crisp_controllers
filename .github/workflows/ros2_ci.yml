@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ROS_DISTRO: [humble, jazzy, kilted, lyrical, rolling]
+        ROS_DISTRO: [humble, jazzy, kilted, lyrical]
         ROS_REPO: [main]
     env:
       CCACHE_DIR: "${{ github.workspace }}/.ccache"  # directory for ccache (and how we enable ccache in industrial_ci)

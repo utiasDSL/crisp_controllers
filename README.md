@@ -1,11 +1,9 @@
 <img src="media/crisp_logo.webp" alt="CRISP Controllers Logo"/>
 
-<a href="https://github.com/utiasDSL/crisp_controllers/actions/workflows/humble_ros2_ci.yml"><img src="https://github.com/utiasDSL/crisp_controllers/actions/workflows/humble_ros2_ci.yml/badge.svg"/></a>
-<a href="https://github.com/utiasDSL/crisp_controllers/actions/workflows/jazzy_ros2_ci.yml"><img src="https://github.com/utiasDSL/crisp_controllers/actions/workflows/jazzy_ros2_ci.yml/badge.svg"/></a>
-<a href="https://github.com/utiasDSL/crisp_controllers/actions/workflows/kilted_ros2_ci.yml"><img src="https://github.com/utiasDSL/crisp_controllers/actions/workflows/kilted_ros2_ci.yml/badge.svg"/></a>
-<a href="https://github.com/utiasDSL/crisp_controllers/actions/workflows/rolling_ros2_ci.yml"><img src="https://github.com/utiasDSL/crisp_controllers/actions/workflows/rolling_ros2_ci.yml/badge.svg"/></a>
+<a href="https://github.com/utiasDSL/crisp_controllers/actions/workflows/ros2_ci.yml"><img src="https://github.com/utiasDSL/crisp_controllers/actions/workflows/ros2_ci.yml/badge.svg"/></a>
 <a href="https://danielsanjosepro.github.io/crisp_controllers/"><img alt="Static Badge" src="https://img.shields.io/badge/docs-passing-blue?style=flat&link=https%3A%2F%2Fdanielsanjosepro.github.io%2Fcrisp_controllers%2F"></a>
 <a href="https://utiasDSL.github.io/crisp_controllers#citing"><img alt="Static Badge" src="https://img.shields.io/badge/arxiv-cite-b31b1b?style=flat"></a>
+<img alt="Static Badge" src="https://img.shields.io/badge/IEEE-RAP%202026-blue?style=flat&link=https%3A%2F%2Fieeexplore.ieee.org%2Fabstract%2Fdocument%2F11505755">
 
 CRISP is a collection of real-time, C++ controllers for compliant torque-based control for manipulators compatible with `ros2_control`, including **Cartesian Impedance Control** and **Operational Space Control**. Developed for deploying high-level learning-based policies (VLA, Diffusion, ...) and teleoperation on your manipulator. It is robot-agnostic and compatible with any manipulator offering and effort interface. Check the [project website](https://utiasdsl.github.io/crisp_controllers/) for guides, getting started, demos and more! 
 
