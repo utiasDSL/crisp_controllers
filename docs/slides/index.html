@@ -1394,6 +1394,10 @@ body.commenting .comment-panel { display: block; }
 .comment-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .comment-actions button { border: 1px solid #050505; border-radius: 999px; background: #f9f7ef; padding: 8px 10px; font-family: var(--font-mono); font-size: 12px; }
 </style>
+<style>/* docs integration chrome */
+.docs-back{position:fixed;top:18px;left:18px;z-index:10001;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid rgba(5,5,5,.28);border-radius:999px;background:rgba(251,249,241,.92);color:#050505;font-family:var(--font-mono,monospace);font-size:13px;text-decoration:none;letter-spacing:.02em;box-shadow:0 4px 14px rgba(5,5,5,.08);backdrop-filter:blur(4px);opacity:.55;cursor:pointer!important;transition:opacity .2s ease,transform .2s ease;}
+.docs-back:hover{opacity:1;transform:translateY(-1px);}
+</style>
 </head>
 <body>
 <div class="deck-viewport">
@@ -3848,9 +3852,7 @@ body.commenting .comment-panel { display: block; }
      OUTSIDE-STAGE CONTROLS
      =========================================== -->
 <div class="deck-controls" id="deckControls">1 / 15</div>
-<div class="edit-hotzone" title="Edit mode"></div>
-<button class="edit-toggle" id="editToggle" title="Edit mode (E)">edit</button>
-<button class="comment-toggle" id="commentToggle" title="Review comments (C)">comment</button>
+<a class="docs-back" href="../" title="Back to documentation">← Docs</a>
 
 <script>
 /* ===========================================
@@ -5141,34 +5143,7 @@ document.querySelectorAll('[data-mode-toggle]').forEach(root => new ModeToggle(r
 document.querySelectorAll('[data-arm-demo]').forEach(root => new ScopedArmDemo(root));
 const armCanvas = document.getElementById('armCanvas');
 if (armCanvas) window.armDemo = new ArmDemo(armCanvas);
-const editor = new InlineEditor();
-window.slideCommenter = new SlideCommenter(deck);
-const hotzone = document.querySelector('.edit-hotzone');
-const editToggle = document.getElementById('editToggle');
-const commentToggle = document.getElementById('commentToggle');
-let hideTimeout = null;
-const chromeButtons = [editToggle, commentToggle];
-const showChrome = () => chromeButtons.forEach(button => button.classList.add('show'));
-const hideChromeSoon = () => {
-    hideTimeout = setTimeout(() => {
-        if (!editor.isActive && !window.slideCommenter.isActive) chromeButtons.forEach(button => button.classList.remove('show'));
-    }, 400);
-};
-hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); showChrome(); });
-hotzone.addEventListener('mouseleave', hideChromeSoon);
-chromeButtons.forEach(button => {
-    button.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
-    button.addEventListener('mouseleave', hideChromeSoon);
-});
-editToggle.addEventListener('click', () => editor.toggleEditMode());
-commentToggle.addEventListener('click', () => window.slideCommenter.toggle());
-hotzone.addEventListener('click', () => editor.toggleEditMode());
-document.addEventListener('keydown', (e) => {
-    if (isTypingTarget(e.target)) return;
-    if (e.key === 'e' || e.key === 'E') editor.toggleEditMode();
-    if (e.key === 'c' || e.key === 'C') window.slideCommenter.toggle();
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); editor.save(); window.slideCommenter.save(); }
-});
+/* edit + comment review tools removed for the docs build */
 </script>
 </body>
 </html>

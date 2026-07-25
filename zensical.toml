@@ -3,6 +3,7 @@
 site_name = "CRISP Controllers - Learning Systems and Robotics Lab"
 nav = [
     {"Home" = "index.md"},
+    {"Slides Robot Learning Munich" = "slides/index.html"},
     {"Design Philosophy"= "design_philosophy.md"},
     {"Getting Started" = [
         {"Getting Started Overview" = "getting_started.md"},
