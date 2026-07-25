@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/learnsyslab/crisp_controllers/compare/v2.4.0...v2.4.1) (2026-07-25)
+
+
+### Bug Fixes
+
+* remove rolling form industrial_ci and update readme badges ([#63](https://github.com/learnsyslab/crisp_controllers/issues/63)) ([0062739](https://github.com/learnsyslab/crisp_controllers/commit/0062739d752e76f2c0361e0ac423aeb414505b04))
+
 ## [2.4.0](https://github.com/learnsyslab/crisp_controllers/compare/v2.3.1...v2.4.0) (2026-06-13)
 
 
