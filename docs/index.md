@@ -23,6 +23,9 @@ _If you use this work, please cite it using the [bibtex](#citing) below._
 Check the [controllers (CRISP controllers) :simple-github:](https://github.com/utiasDSL/crisp_controllers), the simple [python interface (crisp_py) :simple-github:](https://github.com/utiasDSL/crisp_py), and a [Gymnasium wrapper (crisp_gym) :simple-github:](https://github.com/utiasDSL/crisp_gym) for real-world experiments.
 
 
+!!! info "Presentation slides"
+    View the [CRISP presentation slides](slides/index.html) — *Compliant ROS2 Controllers for Learning-Based Manipulation Policies* (IEEE RA-P 2026). Best on a laptop; on a phone, turn it sideways.
+
 !!! info "Aloha gripper for Manipulators"
     Check out [aloha4franka](https://tum-lsy.github.io/aloha4franka/) for the gripper used in the videos.
 
