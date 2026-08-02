@@ -10,6 +10,18 @@ hide:
 # CRISP - **C**ompliant **R**OS2 Controllers for Learn**i**ng-Ba**s**ed Manipulation **P**olicies
 
 *Authors: [Daniel San Jose Pro](https://danielsanjosepro.github.io)[^1], [Oliver Hausdörfer](https://oliver.hausdoerfer.de/)[^1], [Ralf Römer](https://ralfroemer99.github.io)[^1], Maximilian Dösch[^1], [Martin Schuck](https://amacati.github.io/) [^1] and [Angela P. Schoellig](https://www.ce.cit.tum.de/lsy/prof-angela-schoellig/) [^1]*.
+
+<div class="presentation-info">
+  <div class="presentation-info__text">
+    <p>View the <a href="slides/index.html">CRISP presentation slides</a>: <em>Compliant ROS2 Controllers for Learning-Based Manipulation Policies</em> (IEEE RA-P 2026).</p>
+    <p>Watch the <a href="https://youtu.be/WQd2eTBQQ40?si=GnNO7UqwXHmSJ0eu">presentation recording from the Robot Learning Munich Paper Club</a>.</p>
+  </div>
+  <div class="presentation-info__preview">
+    <iframe class="presentation-info__iframe" src="https://www.youtube-nocookie.com/embed/WQd2eTBQQ40?autoplay=1&mute=1&controls=0&loop=1&playlist=WQd2eTBQQ40&modestbranding=1&playsinline=1&rel=0&start=60" data-video-id="WQd2eTBQQ40" data-start-times="60,240,420,660,900,1140,1380" title="CRISP presentation recording preview" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+    <a class="presentation-info__preview-link" href="https://youtu.be/WQd2eTBQQ40?si=GnNO7UqwXHmSJ0eu" aria-label="Watch the CRISP presentation recording on YouTube"></a>
+  </div>
+</div>
+
 [^1]: The authors are with Technical University of Munich, Germany; TUM School of Computation, Information and Technology, Department of Computer Engineering, Learning Systems and Robotics Lab; Munich Institute of Robotics and Machine Intelligence; and the Robotics Institute Germany.
 
 You want to deploy your learning-based policy to your manipulator, or collect teleoperation data? `CRISP` provides the tools for that.
@@ -21,7 +33,6 @@ You want to deploy your learning-based policy to your manipulator, or collect te
 _If you use this work, please cite it using the [bibtex](#citing) below._
 
 Check the [controllers (CRISP controllers) :simple-github:](https://github.com/utiasDSL/crisp_controllers), the simple [python interface (crisp_py) :simple-github:](https://github.com/utiasDSL/crisp_py), and a [Gymnasium wrapper (crisp_gym) :simple-github:](https://github.com/utiasDSL/crisp_gym) for real-world experiments.
-
 
 !!! info "Aloha gripper for Manipulators"
     Check out [aloha4franka](https://tum-lsy.github.io/aloha4franka/) for the gripper used in the videos.

@@ -59,6 +59,56 @@
   color: #008000; /* green */
 }
 
+.presentation-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 1.25rem 0;
+  padding: 1rem;
+  border: 1px solid var(--md-primary-fg-color);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--md-primary-fg-color) 10%, transparent);
+}
+
+.presentation-info__text {
+  flex: 1 1 auto;
+}
+
+.presentation-info__preview {
+  position: relative;
+  flex: 0 0 220px;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  background: #000;
+}
+
+.presentation-info__preview iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  border: 0;
+  pointer-events: none;
+}
+
+.presentation-info__preview-link {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .presentation-info {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .presentation-info__preview {
+    flex-basis: auto;
+    max-width: 220px;
+  }
+}
+
 /* Carousel Styles */
 .carousel-container {
   position: relative;

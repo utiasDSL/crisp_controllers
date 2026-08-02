@@ -3,6 +3,7 @@
 site_name = "CRISP Controllers - Learning Systems and Robotics Lab"
 nav = [
     {"Home" = "index.md"},
+    {"Slides Robot Learning Munich" = "slides/index.html"},
     {"Design Philosophy"= "design_philosophy.md"},
     {"Getting Started" = [
         {"Getting Started Overview" = "getting_started.md"},
@@ -37,6 +38,7 @@ extra_css = [
 ]
 extra_javascript = [
   "javascripts/carousel.js",
+  "javascripts/presentation-preview.js",
   # "javascripts/katex.js",
   # "https://unpkg.com/katex@0/dist/katex.min.js",
   # "https://unpkg.com/katex@0/dist/contrib/auto-render.min.js",
