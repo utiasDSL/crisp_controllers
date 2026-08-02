@@ -179,11 +179,23 @@ CallbackReturn PoseBroadcaster::on_configure(const rclcpp_lifecycle::State & /*p
     }
   }
 
+  if (!model_.existFrame(params_.end_effector_frame)) {
+    RCLCPP_ERROR_STREAM(
+      get_node()->get_logger(),
+      "end_effector_frame '" << params_.end_effector_frame
+        << "' is not present in the robot model. Refusing to configure: "
+           "activating with an invalid frame results in undefined behavior "
+           "(out-of-bounds access into pinocchio::Data).");
+    return CallbackReturn::ERROR;
+  }
   end_effector_frame_id = model_.getFrameId(params_.end_effector_frame);
   q = Eigen::VectorXd::Zero(model_.nv);
 
+  const auto current_pose_topic =
+    params_.topics.current_pose.empty() ? "current_pose" : params_.topics.current_pose;
+
   pose_publisher_ = get_node()->create_publisher<geometry_msgs::msg::PoseStamped>(
-    "current_pose", rclcpp::SystemDefaultsQoS());
+    current_pose_topic, rclcpp::SystemDefaultsQoS());
   realtime_pose_publisher_ =
     std::make_shared<realtime_tools::RealtimePublisher<geometry_msgs::msg::PoseStamped>>(
       pose_publisher_);

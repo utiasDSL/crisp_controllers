@@ -17,8 +17,8 @@ cmake = "*"
 pkg-config = "*"
 make = "*"
 ninja = "*"
+colcon-common-extensions = "*"
 pinocchio = ">=3.7.0,<4"
-# pinocchio = ">=3.7.0,<4"
 
 [tasks]
 clean = "rm -rf build install log"
@@ -33,6 +33,8 @@ libgl-devel = "*"
 humble = { features = ["humble"] }
 jazzy = { features = ["jazzy"] }
 kilted = { features = ["kilted"] }
+lyrical = { features = ["lyrical"] }
+rolling = { features = ["rolling"] }
 
 # humble
 [feature.humble]
@@ -40,7 +42,6 @@ channels = ["https://prefix.dev/robostack-humble"]
 
 [feature.humble.dependencies]
 ros-humble-desktop = "*"
-colcon-common-extensions = "*"
 ros-humble-ros2-control = "*"
 ros-humble-ros2-controllers = "*"
 
@@ -50,7 +51,6 @@ channels = ["https://prefix.dev/robostack-jazzy"]
 
 [feature.jazzy.dependencies]
 ros-jazzy-desktop = "*"
-colcon-common-extensions = "*"
 ros-jazzy-ros2-control = "*"
 ros-jazzy-ros2-controllers = "*"
 
@@ -61,10 +61,29 @@ channels = ["https://prefix.dev/robostack-kilted", "https://prefix.dev/conda-for
 [feature.kilted.dependencies]
 ros2-distro-mutex = "*"
 ros-kilted-desktop = "*"
-colcon-common-extensions = "*"
 ros-kilted-ros2-control = "*"
 ros-kilted-ros2-controllers = "*"
 fmt = ">=11.2.0,<12"
+
+# lyrical
+[feature.lyrical]
+channels = ["https://prefix.dev/robostack-lyrical", "https://prefix.dev/conda-forge"]
+
+[feature.lyrical.dependencies]
+ros2-distro-mutex = "*"
+ros-lyrical-desktop = "*"
+ros-lyrical-ros2-control = "*"
+ros-lyrical-ros2-controllers = "*"
+
+# rolling
+[feature.rolling]
+channels = ["https://prefix.dev/robostack-rolling", "https://prefix.dev/conda-forge"]
+
+[feature.rolling.dependencies]
+ros2-distro-mutex = "*"
+ros-rolling-desktop = "*"
+ros-rolling-ros2-control = "*"
+ros-rolling-ros2-controllers = "*"
 
 [pypi-dependencies]
 crisp-controllers = { path = ".", editable = false }

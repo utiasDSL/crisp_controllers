@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.4.1](https://github.com/learnsyslab/crisp_controllers/compare/v2.4.0...v2.4.1) (2026-07-25)
+
+
+### Bug Fixes
+
+* remove rolling form industrial_ci and update readme badges ([#63](https://github.com/learnsyslab/crisp_controllers/issues/63)) ([0062739](https://github.com/learnsyslab/crisp_controllers/commit/0062739d752e76f2c0361e0ac423aeb414505b04))
+
+## [2.4.0](https://github.com/learnsyslab/crisp_controllers/compare/v2.3.1...v2.4.0) (2026-06-13)
+
+
+### Features
+
+* decouple translation from rotation in admittance MSD integration ([#57](https://github.com/learnsyslab/crisp_controllers/issues/57)) ([2df8954](https://github.com/learnsyslab/crisp_controllers/commit/2df8954a3a5f729913b9332f8d46b12f4b5917ea))
+* parameterize controller and broadcaster topics ([#60](https://github.com/learnsyslab/crisp_controllers/issues/60)) ([b39afea](https://github.com/learnsyslab/crisp_controllers/commit/b39afeaa60c9a046cfcbc46824e6ca8c91cb88ac))
+
+
+### Bug Fixes
+
+* negative nullspace damping not handled correctly ([#56](https://github.com/learnsyslab/crisp_controllers/issues/56)) ([c3af67e](https://github.com/learnsyslab/crisp_controllers/commit/c3af67e45e1940bcc557cca218657cdd1b0c5add))
+
+## [2.3.1](https://github.com/learnsyslab/crisp_controllers/compare/v2.3.0...v2.3.1) (2026-05-29)
+
+
+### Bug Fixes
+
+* validate end_effector_frame in cartesian/admittance controllers and broadcasters, drop redundant on_activate check ([#53](https://github.com/learnsyslab/crisp_controllers/issues/53)) ([4b91853](https://github.com/learnsyslab/crisp_controllers/commit/4b918539d475f72512895e418e9d0a0b2c84cc9f))
+
 ## [2.3.0](https://github.com/utiasDSL/crisp_controllers/compare/v2.2.0...v2.3.0) (2026-04-09)
 
 

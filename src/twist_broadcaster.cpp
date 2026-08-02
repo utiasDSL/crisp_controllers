@@ -185,12 +185,24 @@ CallbackReturn TwistBroadcaster::on_configure(const rclcpp_lifecycle::State & /*
     }
   }
 
+  if (!model_.existFrame(params_.end_effector_frame)) {
+    RCLCPP_ERROR_STREAM(
+      get_node()->get_logger(),
+      "end_effector_frame '" << params_.end_effector_frame
+        << "' is not present in the robot model. Refusing to configure: "
+           "activating with an invalid frame results in undefined behavior "
+           "(out-of-bounds access into pinocchio::Data).");
+    return CallbackReturn::ERROR;
+  }
   end_effector_frame_id = model_.getFrameId(params_.end_effector_frame);
   q = Eigen::VectorXd::Zero(model_.nv);
   q_dot = Eigen::VectorXd::Zero(model_.nv);
 
+  const auto current_twist_topic =
+    params_.topics.current_twist.empty() ? "current_twist" : params_.topics.current_twist;
+
   twist_publisher_ = get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(
-    "current_twist", rclcpp::SystemDefaultsQoS());
+    current_twist_topic, rclcpp::SystemDefaultsQoS());
   realtime_twist_publisher_ =
     std::make_shared<realtime_tools::RealtimePublisher<geometry_msgs::msg::TwistStamped>>(
       twist_publisher_);

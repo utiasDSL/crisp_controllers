@@ -107,6 +107,26 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   pinocchio::updateFramePlacements(model_, data_);
   end_effector_pose = data_.oMf[end_effector_frame_id];
 
+  if (!end_effector_pose.translation().allFinite() ||
+      !end_effector_pose.rotation().allFinite()) {
+    RCLCPP_ERROR_THROTTLE(
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
+      "end_effector_pose contains NaN/Inf. "
+      "Holding previous torque command this cycle.");
+    if (!params_.stop_commands) {
+      for (size_t i = 0; i < params_.joints.size(); ++i) {
+#if ROS2_VERSION_ABOVE_HUMBLE
+        (void)command_interfaces_[i].set_value(tau_previous[i]);
+#else
+        command_interfaces_[i].set_value(tau_previous[i]);
+#endif
+      }
+    }
+    return controller_interface::return_type::OK;
+  }
+
   // 6. Initialize admittance state on first cycle
   if (!admittance_initialized_) {
     inner_SE3_ = end_effector_pose;
@@ -150,12 +170,19 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   Eigen::Vector<double, 6> adm_force = ft_wrench_world - adm_damping_ * inner_motion_ + K_adm * adm_error;
   Eigen::Vector<double, 6> accel = adm_mass_inv_ * adm_force;
 
-  // 10. Semi-implicit Euler integration
+  // 10. Semi-implicit Euler integration of the admittance target
   double dt = period.seconds();
   inner_motion_ += accel * dt;
-  // Update inner_SE3_ using exponential map
-  pinocchio::SE3 delta = pinocchio::exp6(pinocchio::Motion(inner_motion_ * dt));
-  inner_SE3_ = delta * inner_SE3_;
+  if (params_.coupled_se3_integration) {
+    // Legacy: exp6 left-multiply couples translation and rotation.
+    pinocchio::SE3 delta = pinocchio::exp6(pinocchio::Motion(inner_motion_ * dt));
+    inner_SE3_ = delta * inner_SE3_;
+  } else {
+    // Default: integrate translation (Euler) and rotation (exp3) independently.
+    inner_SE3_.translation() += inner_motion_.head(3) * dt;
+    inner_SE3_.rotation() =
+      (pinocchio::exp3(Eigen::Vector3d(inner_motion_.tail(3) * dt)) * inner_SE3_.rotation()).eval();
+  }
 
   // 11. Use inner_SE3_ as the desired for impedance outer loop
   // Compute impedance error (same as CartesianController but using inner_SE3_ as target)
@@ -367,6 +394,16 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   }
 
   // Preallocate the matrices and vectors that will be used in the control loop
+  if (!model_.existFrame(params_.end_effector_frame)) {
+    RCLCPP_ERROR_STREAM(
+      get_node()->get_logger(),
+      "end_effector_frame '" << params_.end_effector_frame
+        << "' is not present in the robot model. Refusing to configure: "
+           "activating with an invalid frame results in undefined behavior "
+           "(out-of-bounds access into pinocchio::Data, manifesting as a "
+           "segfault or NaN/Inf in computed torques).");
+    return CallbackReturn::ERROR;
+  }
   end_effector_frame_id = model_.getFrameId(params_.end_effector_frame);
   if (params_.ft_sensor.frame.empty()) {
     ft_sensor_frame_id = end_effector_frame_id;
@@ -430,15 +467,23 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   ft_wrench_ = Eigen::VectorXd::Zero(6);
   topic_adm_stiffness_ = Eigen::Matrix<double, 6, 6>::Zero();
 
+  const auto target_pose_topic =
+    params_.topics.target_pose.empty() ? "target_pose" : params_.topics.target_pose;
+  const auto target_joint_topic =
+    params_.topics.target_joint.empty() ? "target_joint" : params_.topics.target_joint;
+  const auto target_wrench_topic =
+    params_.topics.target_wrench.empty() ? "target_wrench" : params_.topics.target_wrench;
+
   // --- Subscriptions (same as CartesianController) ---
   auto target_pose_callback =
-    [this](const std::shared_ptr<geometry_msgs::msg::PoseStamped> msg) -> void {
-    if (!check_topic_publisher_count("target_pose")) {
+    [this, target_pose_topic](const std::shared_ptr<geometry_msgs::msg::PoseStamped> msg) -> void {
+    if (!check_topic_publisher_count(target_pose_topic)) {
       RCLCPP_WARN_THROTTLE(
         get_node()->get_logger(),
         *get_node()->get_clock(),
         1000,
-        "Ignoring target_pose message due to multiple publishers detected!");
+        "Ignoring message on '%s' due to multiple publishers detected!",
+        target_pose_topic.c_str());
       return;
     }
     target_pose_buffer_.writeFromNonRT(msg);
@@ -446,13 +491,14 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   };
 
   auto target_joint_callback =
-    [this](const std::shared_ptr<sensor_msgs::msg::JointState> msg) -> void {
-    if (!check_topic_publisher_count("target_joint")) {
+    [this, target_joint_topic](const std::shared_ptr<sensor_msgs::msg::JointState> msg) -> void {
+    if (!check_topic_publisher_count(target_joint_topic)) {
       RCLCPP_WARN_THROTTLE(
         get_node()->get_logger(),
         *get_node()->get_clock(),
         1000,
-        "Ignoring target_joint message due to multiple publishers detected!");
+        "Ignoring message on '%s' due to multiple publishers detected!",
+        target_joint_topic.c_str());
       return;
     }
     target_joint_buffer_.writeFromNonRT(msg);
@@ -460,13 +506,15 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   };
 
   auto target_wrench_callback =
-    [this](const std::shared_ptr<geometry_msgs::msg::WrenchStamped> msg) -> void {
-    if (!check_topic_publisher_count("target_wrench")) {
+    [this, target_wrench_topic](
+      const std::shared_ptr<geometry_msgs::msg::WrenchStamped> msg) -> void {
+    if (!check_topic_publisher_count(target_wrench_topic)) {
       RCLCPP_WARN_THROTTLE(
         get_node()->get_logger(),
         *get_node()->get_clock(),
         1000,
-        "Ignoring target_wrench message due to multiple publishers detected!");
+        "Ignoring message on '%s' due to multiple publishers detected!",
+        target_wrench_topic.c_str());
       return;
     }
     target_wrench_buffer_.writeFromNonRT(msg);
@@ -474,13 +522,13 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   };
 
   pose_sub_ = get_node()->create_subscription<geometry_msgs::msg::PoseStamped>(
-    "target_pose", rclcpp::QoS(1), target_pose_callback);
+    target_pose_topic, rclcpp::QoS(1), target_pose_callback);
 
   joint_sub_ = get_node()->create_subscription<sensor_msgs::msg::JointState>(
-    "target_joint", rclcpp::QoS(1), target_joint_callback);
+    target_joint_topic, rclcpp::QoS(1), target_joint_callback);
 
   wrench_sub_ = get_node()->create_subscription<geometry_msgs::msg::WrenchStamped>(
-    "target_wrench", rclcpp::QoS(1), target_wrench_callback);
+    target_wrench_topic, rclcpp::QoS(1), target_wrench_callback);
 
   if (params_.variable_stiffness.enabled) {
     auto target_stiffness_callback =

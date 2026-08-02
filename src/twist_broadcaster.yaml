@@ -9,6 +9,11 @@ twist_broadcaster:
   base_frame:
     type: string
     description: "Name of the base frame"
+  topics:
+    current_twist:
+      type: string
+      default_value: "current_twist"
+      description: "Topic name for published end-effector twists."
   publish_frequency:
     type: double
     default_value: 250.0
