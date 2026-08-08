@@ -5,6 +5,7 @@
 // NOLINTBEGIN(build/include_order)
 #include <crisp_controllers/torque_feedback_controller.hpp>
 #include <crisp_controllers/utils/friction_model.hpp>
+#include <crisp_controllers/utils/nullspace_gains.hpp>
 #include <crisp_controllers/utils/pseudo_inverse.hpp>
 #include "crisp_controllers/utils/ros2_version.hpp"
 
@@ -76,13 +77,8 @@ controller_interface::return_type TorqueFeedbackController::update(
 
   // Compute nullspace control to maintain initial joint positions
   Eigen::VectorXd q_error = q_ - q_init_;
-  double nullspace_damping = params_.nullspace.damping > 0
-    ? params_.nullspace.damping
-    : 2.0 * sqrt(params_.nullspace.stiffness);
-
   Eigen::VectorXd tau_secondary =
-    -params_.nullspace.stiffness * nullspace_weights_.cwiseProduct(q_error) -
-    nullspace_damping * nullspace_weights_.cwiseProduct(dq_);
+    -nullspace_stiffness_.cwiseProduct(q_error) - nullspace_damping_.cwiseProduct(dq_);
   // Compute nullspace projection based on projector type
   Eigen::MatrixXd Id_nv = Eigen::MatrixXd::Identity(model_.nv, model_.nv);
 
@@ -108,10 +104,7 @@ controller_interface::return_type TorqueFeedbackController::update(
   Eigen::VectorXd tau_nullspace = nullspace_projection_ * tau_secondary;
 
   // Limit nullspace torques
-  for (int i = 0; i < num_joints_; i++) {
-    tau_nullspace[i] =
-      std::max(-params_.nullspace.max_tau, std::min(params_.nullspace.max_tau, tau_nullspace[i]));
-  }
+  tau_nullspace = tau_nullspace.cwiseMin(nullspace_max_tau_).cwiseMax(-nullspace_max_tau_);
 
   auto tau_d = -params_.k_fb * tau_ext_thresholded - params_.kd * dq_;
   auto tau_f = get_friction(dq_, friction_fp1_, friction_fp2_, friction_fp3_);
@@ -130,10 +123,9 @@ controller_interface::return_type TorqueFeedbackController::update(
   params_listener_->refresh_dynamic_parameters();
   params_ = params_listener_->get_params();
 
-  // Update nullspace weights
-  for (size_t i = 0; i < joint_names_.size(); ++i) {
-    nullspace_weights_[i] = params_.nullspace.weights.joints_map.at(joint_names_[i]).value;
-  }
+  // An invalid live update must not bring down an active torque controller, so the previous
+  // gains are kept and the failure is only reported.
+  (void)setNullspaceGains();
 
   return controller_interface::return_type::OK;
 }
@@ -156,9 +148,11 @@ CallbackReturn TorqueFeedbackController::on_init() {
 
   tau_ext_ = Eigen::VectorXd::Zero(num_joints_);
 
-  nullspace_weights_ = Eigen::VectorXd::Ones(num_joints_);
-  for (size_t i = 0; i < joint_names_.size(); ++i) {
-    nullspace_weights_[i] = params_.nullspace.weights.joints_map.at(joint_names_[i]).value;
+  nullspace_stiffness_ = Eigen::VectorXd::Zero(num_joints_);
+  nullspace_damping_ = Eigen::VectorXd::Zero(num_joints_);
+  nullspace_max_tau_ = Eigen::VectorXd::Zero(num_joints_);
+  if (!setNullspaceGains()) {
+    return CallbackReturn::ERROR;
   }
 
   friction_fp1_ =
@@ -176,6 +170,31 @@ CallbackReturn TorqueFeedbackController::on_init() {
     std::bind(&TorqueFeedbackController::target_joint_callback_, this, std::placeholders::_1));
 
   return CallbackReturn::SUCCESS;
+}
+
+bool TorqueFeedbackController::setNullspaceGains() {
+  const auto stiffness_gains = expand_nullspace_gains(params_.nullspace.stiffness, num_joints_);
+  const auto damping_gains = expand_nullspace_gains(params_.nullspace.damping, num_joints_);
+  const auto max_tau_gains = expand_nullspace_gains(params_.nullspace.max_tau, num_joints_);
+  if (!stiffness_gains || !damping_gains || !max_tau_gains) {
+    RCLCPP_ERROR_THROTTLE(
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
+      "Each nullspace parameter must hold either a single value or one value per joint (%d), "
+      "but stiffness has %zu, damping has %zu and max_tau has %zu.",
+      num_joints_,
+      params_.nullspace.stiffness.size(),
+      params_.nullspace.damping.size(),
+      params_.nullspace.max_tau.size());
+    return false;
+  }
+
+  nullspace_stiffness_ = *stiffness_gains;
+  nullspace_damping_ = resolve_nullspace_damping(*damping_gains, *stiffness_gains);
+  nullspace_max_tau_ = *max_tau_gains;
+
+  return true;
 }
 
 CallbackReturn

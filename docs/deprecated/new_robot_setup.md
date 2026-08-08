@@ -80,7 +80,7 @@ For more information on the controllers, check the [available controllers and br
                 k_rot_z: 30.0
 
             nullspace: 
-                stiffness: 0.0
+                stiffness: [0.0]
 
             use_friction: true
             use_coriolis_compensation: true
@@ -105,13 +105,13 @@ For more information on the controllers, check the [available controllers and br
             max_delta_tau: 0.5
 
             nullspace: 
-                stiffness: 5.0
+                # A single value applies to every joint, or give one value per joint
+                # to tune them individually, e.g. stiffness: [5.0, 4.0, 4.0, 3.0, 3.0, 3.0]
+                stiffness: [5.0]
                 projector_type: none  # So we are directly controlling the joints!
-                damping: 0.5
-                max_tau: 5.0
+                damping: [0.5]
+                max_tau: [5.0]
                 regularization: 1.0e-06
-                weights:
-                <TODO>
 
             use_friction: true
             use_coriolis_compensation: true
@@ -137,7 +137,7 @@ For more information on the controllers, check the [available controllers and br
                 k_rot_z: 30.0
 
             nullspace: 
-                stiffness: 2.0
+                stiffness: [2.0]
 
             use_friction: false
             use_coriolis_compensation: true

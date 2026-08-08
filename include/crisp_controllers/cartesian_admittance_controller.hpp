@@ -19,11 +19,11 @@
 #include <controller_interface/controller_interface.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/wrench_stamped.hpp>
-#include <std_msgs/msg/float64_multi_array.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/multibody/fwd.hpp>
 #include <pinocchio/spatial/se3.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/float64_multi_array.hpp>
 
 #include <crisp_controllers/utils/ros2_version.hpp>
 
@@ -127,9 +127,11 @@ private:
   // ---- Methods ----
 
   /**
-   * @brief Set the impedance stiffness and damping matrices based on parameters
+   * @brief Set impedance stiffness and damping matrices and nullspace torque limit from parameters.
+   * @return false if a nullspace parameter holds neither a single value nor one value per
+   * degree of freedom, in which case the previous values are kept.
    */
-  void setStiffnessAndDamping();
+  [[nodiscard]] bool setStiffnessAndDamping();
 
   /**
    * @brief Set the admittance mass, stiffness, and damping matrices from parameters
@@ -242,6 +244,8 @@ private:
   Eigen::MatrixXd nullspace_stiffness;
   /** @brief Nullspace damping matrix for posture control */
   Eigen::MatrixXd nullspace_damping;
+  /** @brief Maximum nullspace torque per degree of freedom */
+  Eigen::VectorXd nullspace_max_tau;
 
   // ---- Admittance inner loop state ----
 
