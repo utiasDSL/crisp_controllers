@@ -14,10 +14,10 @@
 #include <controller_interface/controller_interface.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/wrench_stamped.hpp>
-#include <std_msgs/msg/float64_multi_array.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/multibody/fwd.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/float64_multi_array.hpp>
 
 #include <crisp_controllers/utils/ros2_version.hpp>
 
@@ -113,9 +113,11 @@ private:
   size_t max_allowed_publishers_;
 
   /**
-   * @brief Set the stiffness and damping matrices based on parameters
+   * @brief Set stiffness and damping matrices and nullspace torque limit from parameters.
+   * @return false if a nullspace parameter holds neither a single value nor one value per
+   * degree of freedom, in which case the previous values are kept.
    */
-  void setStiffnessAndDamping();
+  [[nodiscard]] bool setStiffnessAndDamping();
 
   /**
    * @brief Get the current state of the robot from hardware interfaces and update internal variables
@@ -196,6 +198,8 @@ private:
   Eigen::MatrixXd nullspace_stiffness;
   /** @brief Nullspace damping matrix for posture control */
   Eigen::MatrixXd nullspace_damping;
+  /** @brief Maximum nullspace torque per degree of freedom */
+  Eigen::VectorXd nullspace_max_tau;
 
   /** @brief Current joint positions with dimension nv. */
   Eigen::VectorXd q;

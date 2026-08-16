@@ -25,6 +25,7 @@
 #include <crisp_controllers/pch.hpp>
 #include <crisp_controllers/utils/friction_model.hpp>
 #include <crisp_controllers/utils/joint_limits.hpp>
+#include <crisp_controllers/utils/nullspace_gains.hpp>
 #include <crisp_controllers/utils/pseudo_inverse.hpp>
 #include "crisp_controllers/utils/fiters.hpp"
 #include "crisp_controllers/utils/torque_rate_saturation.hpp"
@@ -65,7 +66,6 @@ CartesianController::state_interface_configuration() const {
 
 controller_interface::return_type
 CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & /*period*/) {
-  
   // Update current state information with EMA filtered values
   updateCurrentState();
 
@@ -85,7 +85,9 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   if (new_target_stiffness_) {
     parse_target_stiffness_();
     new_target_stiffness_ = false;
-    setStiffnessAndDamping();
+    // An invalid live update must not bring down an active torque controller, so the previous
+    // gains are kept and the failure is only reported.
+    (void)setStiffnessAndDamping();
   }
 
   pinocchio::forwardKinematics(model_, data_, q_pin, dq);
@@ -100,8 +102,7 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
    * target_position_);*/
   end_effector_pose = data_.oMf[end_effector_frame_id];
 
-  if (!end_effector_pose.translation().allFinite() ||
-      !end_effector_pose.rotation().allFinite()) {
+  if (!end_effector_pose.translation().allFinite() || !end_effector_pose.rotation().allFinite()) {
     RCLCPP_ERROR_THROTTLE(
       get_node()->get_logger(),
       *get_node()->get_clock(),
@@ -189,8 +190,7 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   tau_secondary << nullspace_stiffness * (q_ref - q) + nullspace_damping * (dq_ref - dq);
 
   tau_nullspace << nullspace_projection * tau_secondary;
-  tau_nullspace =
-    tau_nullspace.cwiseMin(params_.nullspace.max_tau).cwiseMax(-params_.nullspace.max_tau);
+  tau_nullspace = tau_nullspace.cwiseMin(nullspace_max_tau).cwiseMax(-nullspace_max_tau);
 
   tau_friction =
     params_.use_friction ? get_friction(dq, fp1, fp2, fp3) : Eigen::VectorXd::Zero(model_.nv);
@@ -231,7 +231,7 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
   params_listener_->refresh_dynamic_parameters();
   if (params_listener_->is_old(params_)) {
     params_ = params_listener_->get_params();
-    setStiffnessAndDamping();
+    (void)setStiffnessAndDamping();
   }
 
   log_debug_info(time);
@@ -321,16 +321,16 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
       return CallbackReturn::ERROR;
     }
   }
-  
+
   // Preallocate the matrices and vectors that will be used in the control loop
   if (!model_.existFrame(params_.end_effector_frame)) {
     RCLCPP_ERROR_STREAM(
       get_node()->get_logger(),
       "end_effector_frame '" << params_.end_effector_frame
-        << "' is not present in the robot model. Refusing to configure: "
-           "activating with an invalid frame results in undefined behavior "
-           "(out-of-bounds access into pinocchio::Data, manifesting as a "
-           "segfault or NaN/Inf in computed torques).");
+                             << "' is not present in the robot model. Refusing to configure: "
+                                "activating with an invalid frame results in undefined behavior "
+                                "(out-of-bounds access into pinocchio::Data, manifesting as a "
+                                "segfault or NaN/Inf in computed torques).");
     return CallbackReturn::ERROR;
   }
   end_effector_frame_id = model_.getFrameId(params_.end_effector_frame);
@@ -352,8 +352,11 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
 
   nullspace_stiffness = Eigen::MatrixXd::Zero(model_.nv, model_.nv);
   nullspace_damping = Eigen::MatrixXd::Zero(model_.nv, model_.nv);
+  nullspace_max_tau = Eigen::VectorXd::Zero(model_.nv);
 
-  setStiffnessAndDamping();
+  if (!setStiffnessAndDamping()) {
+    return CallbackReturn::ERROR;
+  }
 
   new_target_pose_ = false;
   new_target_joint_ = false;
@@ -402,8 +405,8 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
   };
 
   auto target_wrench_callback =
-    [this, target_wrench_topic](
-      const std::shared_ptr<geometry_msgs::msg::WrenchStamped> msg) -> void {
+    [this,
+     target_wrench_topic](const std::shared_ptr<geometry_msgs::msg::WrenchStamped> msg) -> void {
     if (!check_topic_publisher_count(target_wrench_topic)) {
       RCLCPP_WARN_THROTTLE(
         get_node()->get_logger(),
@@ -443,7 +446,9 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
   stiffness_sub_ = get_node()->create_subscription<std_msgs::msg::Float64MultiArray>(
     params_.variable_stiffness.topic, rclcpp::QoS(1), target_stiffness_callback);
 
-  RCLCPP_INFO(get_node()->get_logger(), "Variable stiffness topic: %s",
+  RCLCPP_INFO(
+    get_node()->get_logger(),
+    "Variable stiffness topic: %s",
     params_.variable_stiffness.topic.c_str());
 
   // Initialize all control vectors with appropriate dimensions
@@ -503,7 +508,25 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
   return CallbackReturn::SUCCESS;
 }
 
-void CartesianController::setStiffnessAndDamping() {
+bool CartesianController::setStiffnessAndDamping() {
+  const auto nullspace_stiffness_gains =
+    expand_nullspace_gains(params_.nullspace.stiffness, model_.nv);
+  const auto nullspace_damping_gains = expand_nullspace_gains(params_.nullspace.damping, model_.nv);
+  const auto nullspace_max_tau_gains = expand_nullspace_gains(params_.nullspace.max_tau, model_.nv);
+  if (!nullspace_stiffness_gains || !nullspace_damping_gains || !nullspace_max_tau_gains) {
+    RCLCPP_ERROR_THROTTLE(
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
+      "Each nullspace parameter must hold either a single value or one value per degree of "
+      "freedom (%d), but stiffness has %zu, damping has %zu and max_tau has %zu.",
+      model_.nv,
+      params_.nullspace.stiffness.size(),
+      params_.nullspace.damping.size(),
+      params_.nullspace.max_tau.size());
+    return false;
+  }
+
   if (use_topic_stiffness_) {
     stiffness = topic_stiffness_;
   } else {
@@ -517,15 +540,27 @@ void CartesianController::setStiffnessAndDamping() {
   const double max_k_rot = params_.variable_max_stiffness.rotational;
   for (int i = 0; i < 3; ++i) {
     if (stiffness(i, i) < 0.0 || stiffness(i, i) > max_k_trans) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Translational stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, stiffness(i, i), max_k_trans);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Translational stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        stiffness(i, i),
+        max_k_trans);
       stiffness(i, i) = std::clamp(stiffness(i, i), 0.0, max_k_trans);
     }
   }
   for (int i = 3; i < 6; ++i) {
     if (stiffness(i, i) < 0.0 || stiffness(i, i) > max_k_rot) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Rotational stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, stiffness(i, i), max_k_rot);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Rotational stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        stiffness(i, i),
+        max_k_rot);
       stiffness(i, i) = std::clamp(stiffness(i, i), 0.0, max_k_rot);
     }
   }
@@ -542,19 +577,12 @@ void CartesianController::setStiffnessAndDamping() {
 
   nullspace_stiffness.setZero();
   nullspace_damping.setZero();
+  nullspace_stiffness.diagonal() = *nullspace_stiffness_gains;
+  nullspace_damping.diagonal() =
+    resolve_nullspace_damping(*nullspace_damping_gains, *nullspace_stiffness_gains);
+  nullspace_max_tau = *nullspace_max_tau_gains;
 
-  auto weights = Eigen::VectorXd(model_.nv);
-  for (size_t i = 0; i < params_.joints.size(); ++i) {
-    weights[i] = params_.nullspace.weights.joints_map.at(params_.joints.at(i)).value;
-  }
-  nullspace_stiffness.diagonal() << params_.nullspace.stiffness * weights;
-
-  // For nullspace, use explicit damping if > 0, otherwise compute from stiffness
-  if (params_.nullspace.damping > 0) {
-    nullspace_damping.diagonal() = params_.nullspace.damping * weights;
-  } else {
-    nullspace_damping.diagonal() = 2.0 * nullspace_stiffness.diagonal().cwiseSqrt();
-  }
+  return true;
 }
 
 void CartesianController::updateCurrentState(bool initialize) {
@@ -571,26 +599,21 @@ void CartesianController::updateCurrentState(bool initialize) {
     double q_meas = state_interfaces_[i].get_value();
     double dq_meas = state_interfaces_[num_joints + i].get_value();
 #endif
-    
-    q_ref[i] = initialize 
-      ? q_meas
-      : exponential_moving_average(q_ref[i], q_target[i], params_.filter.q_ref);
 
-    q[i] = initialize
-      ? q_meas
-      : exponential_moving_average(q[i], q_meas, params_.filter.q);    
-    
-    if (continous_joint_types.count(joint.shortname())) { // Then we are handling a continous
-                                                          // joint that is SO(2)
+    q_ref[i] =
+      initialize ? q_meas : exponential_moving_average(q_ref[i], q_target[i], params_.filter.q_ref);
+
+    q[i] = initialize ? q_meas : exponential_moving_average(q[i], q_meas, params_.filter.q);
+
+    if (continous_joint_types.count(joint.shortname())) {  // Then we are handling a continous
+                                                           // joint that is SO(2)
       q_pin[joint.idx_q()] = std::cos(q[i]);
       q_pin[joint.idx_q() + 1] = std::sin(q[i]);
     } else {  // simple revolute joint case
       q_pin[joint.idx_q()] = q[i];
     }
 
-    dq[i] = initialize
-      ? dq_meas
-      : exponential_moving_average(dq[i], dq_meas, params_.filter.dq);
+    dq[i] = initialize ? dq_meas : exponential_moving_average(dq[i], dq_meas, params_.filter.dq);
 
     q_target[i] = initialize ? q_meas : q_target[i];
   }
@@ -598,7 +621,6 @@ void CartesianController::updateCurrentState(bool initialize) {
 
 CallbackReturn
 CartesianController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  
   // Update the current state with initial measurements (no EMA filtering)
   // to avoid large initial errors
   updateCurrentState(true);
@@ -667,28 +689,48 @@ void CartesianController::parse_target_stiffness_() {
   }
   const double max_k_trans = params_.variable_max_stiffness.translational;
   const double max_k_rot = params_.variable_max_stiffness.rotational;
-  std::array<double, 6> vals = {msg->data[0], msg->data[1], msg->data[2],
-                                msg->data[3], msg->data[4], msg->data[5]};
+  std::array<double, 6> vals = {
+    msg->data[0], msg->data[1], msg->data[2], msg->data[3], msg->data[4], msg->data[5]};
   for (int i = 0; i < 3; ++i) {
     if (vals[i] < 0.0 || vals[i] > max_k_trans) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, vals[i], max_k_trans);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Topic stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        vals[i],
+        max_k_trans);
       vals[i] = std::clamp(vals[i], 0.0, max_k_trans);
     }
   }
   for (int i = 3; i < 6; ++i) {
     if (vals[i] < 0.0 || vals[i] > max_k_rot) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, vals[i], max_k_rot);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Topic stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        vals[i],
+        max_k_rot);
       vals[i] = std::clamp(vals[i], 0.0, max_k_rot);
     }
   }
   topic_stiffness_.setZero();
   topic_stiffness_.diagonal() << vals[0], vals[1], vals[2], vals[3], vals[4], vals[5];
   use_topic_stiffness_ = true;
-  RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
+  RCLCPP_INFO_THROTTLE(
+    get_node()->get_logger(),
+    *get_node()->get_clock(),
+    100,
     "Variable stiffness received: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
-    vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+    vals[0],
+    vals[1],
+    vals[2],
+    vals[3],
+    vals[4],
+    vals[5]);
 }
 
 void CartesianController::log_debug_info(const rclcpp::Time & time) {

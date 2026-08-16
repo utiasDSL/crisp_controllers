@@ -125,25 +125,19 @@ cartesian_admittance_controller:
 
   nullspace:
     stiffness:
-      type: double
-      default_value: 1.0
-      description: "Stiffness of the nullspace controller."
+      type: double_array
+      default_value: [1.0]
+      description: "Per-joint stiffnesses of the nullspace controller. If this is a single element, applies to all joints."
       validation:
-        bounds<>: [0.0, 500.0]
+        size_gt<>: [0]
+        element_bounds<>: [0.0, 100000.0]
     damping:
-      type: double
-      default_value: -1.0
-      description: "Damping of the nullspace controller. If negative, then 2 sqrt(stiffness) is used."
+      type: double_array
+      default_value: [-1.0]
+      description: "Per-joint damping of the nullspace controller. If negative, then 2 sqrt(stiffness) is used. If this is a single element, applies to all joints."
       validation:
-        bounds<>: [-1.0, 500.0]
-    weights:
-      __map_joints:
-        value:
-          type: double
-          default_value: 1.0
-          description: "Weights for each joint for the nullspace parameters."
-          validation:
-            bounds<>: [0.0, 500.0]
+        size_gt<>: [0]
+        element_bounds<>: [-1.0, 100000.0]
     regularization:
       type: double
       default_value: 0.000001
@@ -157,9 +151,12 @@ cartesian_admittance_controller:
       validation:
         one_of<>: [["kinematic", "dynamic", "none"]]
     max_tau:
-      type: double
-      default_value: 5
-      description: "Maximal torque value that can be applied in the nullspace. This is used to be sure that we do not interfere with the main task."
+      type: double_array
+      default_value: [5.0]
+      description: "Maximal torque value that can be applied in the nullspace. This is used to be sure that we do not interfere with the main task. If this is a single element, applies to all joints."
+      validation:
+        size_gt<>: [0]
+        lower_element_bounds<>: [0.0]
 
   noise:
     add_random_noise:

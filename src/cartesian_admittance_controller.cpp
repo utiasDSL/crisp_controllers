@@ -12,11 +12,11 @@
 #include <pinocchio/algorithm/compute-all-terms.hpp>
 #include <pinocchio/algorithm/frames.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
+#include <pinocchio/algorithm/utils/force.hpp>
 #include <pinocchio/multibody/fwd.hpp>
 #include <pinocchio/parsers/urdf.hpp>
 #include <pinocchio/spatial/explog.hpp>
 #include <pinocchio/spatial/fwd.hpp>
-#include <pinocchio/algorithm/utils/force.hpp>
 
 #include "pinocchio/algorithm/model.hpp"
 
@@ -26,6 +26,7 @@
 #include <crisp_controllers/pch.hpp>
 #include <crisp_controllers/utils/friction_model.hpp>
 #include <crisp_controllers/utils/joint_limits.hpp>
+#include <crisp_controllers/utils/nullspace_gains.hpp>
 #include <crisp_controllers/utils/pseudo_inverse.hpp>
 #include "crisp_controllers/utils/fiters.hpp"
 #include "crisp_controllers/utils/torque_rate_saturation.hpp"
@@ -66,7 +67,6 @@ CartesianAdmittanceController::state_interface_configuration() const {
 
 controller_interface::return_type
 CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::Duration & period) {
-
   // 1. Update current state information with EMA filtered values
   updateCurrentState();
 
@@ -86,7 +86,9 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   if (new_target_stiffness_) {
     parse_target_stiffness_();
     new_target_stiffness_ = false;
-    setStiffnessAndDamping();
+    // An invalid live update must not bring down an active torque controller, so the previous
+    // gains are kept and the failure is only reported.
+    (void)setStiffnessAndDamping();
   }
 
   // 3. Parse F/T sensor data
@@ -107,8 +109,7 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   pinocchio::updateFramePlacements(model_, data_);
   end_effector_pose = data_.oMf[end_effector_frame_id];
 
-  if (!end_effector_pose.translation().allFinite() ||
-      !end_effector_pose.rotation().allFinite()) {
+  if (!end_effector_pose.translation().allFinite() || !end_effector_pose.rotation().allFinite()) {
     RCLCPP_ERROR_THROTTLE(
       get_node()->get_logger(),
       *get_node()->get_clock(),
@@ -166,8 +167,10 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
 
   // 10. Admittance dynamics: accel = M_inv * (F_ext - D * vel + K * error)
   // Spring term +K*(desired - inner) is a restoring force toward the desired pose
-  Eigen::Matrix<double, 6, 6> K_adm = use_topic_adm_stiffness_ ? topic_adm_stiffness_ : adm_stiffness_;
-  Eigen::Vector<double, 6> adm_force = ft_wrench_world - adm_damping_ * inner_motion_ + K_adm * adm_error;
+  Eigen::Matrix<double, 6, 6> K_adm =
+    use_topic_adm_stiffness_ ? topic_adm_stiffness_ : adm_stiffness_;
+  Eigen::Vector<double, 6> adm_force =
+    ft_wrench_world - adm_damping_ * inner_motion_ + K_adm * adm_error;
   Eigen::Vector<double, 6> accel = adm_mass_inv_ * adm_force;
 
   // 10. Semi-implicit Euler integration of the admittance target
@@ -256,8 +259,7 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   tau_secondary << nullspace_stiffness * (q_ref - q) + nullspace_damping * (dq_ref - dq);
 
   tau_nullspace << nullspace_projection * tau_secondary;
-  tau_nullspace =
-    tau_nullspace.cwiseMin(params_.nullspace.max_tau).cwiseMax(-params_.nullspace.max_tau);
+  tau_nullspace = tau_nullspace.cwiseMin(nullspace_max_tau).cwiseMax(-nullspace_max_tau);
 
   tau_friction =
     params_.use_friction ? get_friction(dq, fp1, fp2, fp3) : Eigen::VectorXd::Zero(model_.nv);
@@ -301,7 +303,7 @@ CartesianAdmittanceController::update(const rclcpp::Time & time, const rclcpp::D
   params_listener_->refresh_dynamic_parameters();
   if (params_listener_->is_old(params_)) {
     params_ = params_listener_->get_params();
-    setStiffnessAndDamping();
+    (void)setStiffnessAndDamping();
     setAdmittanceParameters();
   }
 
@@ -398,16 +400,17 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
     RCLCPP_ERROR_STREAM(
       get_node()->get_logger(),
       "end_effector_frame '" << params_.end_effector_frame
-        << "' is not present in the robot model. Refusing to configure: "
-           "activating with an invalid frame results in undefined behavior "
-           "(out-of-bounds access into pinocchio::Data, manifesting as a "
-           "segfault or NaN/Inf in computed torques).");
+                             << "' is not present in the robot model. Refusing to configure: "
+                                "activating with an invalid frame results in undefined behavior "
+                                "(out-of-bounds access into pinocchio::Data, manifesting as a "
+                                "segfault or NaN/Inf in computed torques).");
     return CallbackReturn::ERROR;
   }
   end_effector_frame_id = model_.getFrameId(params_.end_effector_frame);
   if (params_.ft_sensor.frame.empty()) {
     ft_sensor_frame_id = end_effector_frame_id;
-    RCLCPP_WARN(get_node()->get_logger(),
+    RCLCPP_WARN(
+      get_node()->get_logger(),
       "ft_sensor.frame is not set, using end_effector_frame for F/T wrench transformation. "
       "Set ft_sensor.frame to the actual sensor measurement frame for correct results.");
   } else {
@@ -444,8 +447,11 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
 
   nullspace_stiffness = Eigen::MatrixXd::Zero(model_.nv, model_.nv);
   nullspace_damping = Eigen::MatrixXd::Zero(model_.nv, model_.nv);
+  nullspace_max_tau = Eigen::VectorXd::Zero(model_.nv);
 
-  setStiffnessAndDamping();
+  if (!setStiffnessAndDamping()) {
+    return CallbackReturn::ERROR;
+  }
   setAdmittanceParameters();
 
   new_target_pose_ = false;
@@ -506,8 +512,8 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   };
 
   auto target_wrench_callback =
-    [this, target_wrench_topic](
-      const std::shared_ptr<geometry_msgs::msg::WrenchStamped> msg) -> void {
+    [this,
+     target_wrench_topic](const std::shared_ptr<geometry_msgs::msg::WrenchStamped> msg) -> void {
     if (!check_topic_publisher_count(target_wrench_topic)) {
       RCLCPP_WARN_THROTTLE(
         get_node()->get_logger(),
@@ -548,7 +554,9 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
     stiffness_sub_ = get_node()->create_subscription<std_msgs::msg::Float64MultiArray>(
       params_.variable_stiffness.topic, rclcpp::QoS(1), target_stiffness_callback);
 
-    RCLCPP_INFO(get_node()->get_logger(), "Variable impedance stiffness enabled on topic: %s",
+    RCLCPP_INFO(
+      get_node()->get_logger(),
+      "Variable impedance stiffness enabled on topic: %s",
       params_.variable_stiffness.topic.c_str());
   }
 
@@ -564,7 +572,9 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   ft_sensor_sub_ = get_node()->create_subscription<geometry_msgs::msg::WrenchStamped>(
     params_.ft_sensor.topic, rclcpp::SensorDataQoS(), ft_sensor_callback);
 
-  RCLCPP_INFO(get_node()->get_logger(), "F/T sensor subscription on topic: %s",
+  RCLCPP_INFO(
+    get_node()->get_logger(),
+    "F/T sensor subscription on topic: %s",
     params_.ft_sensor.topic.c_str());
 
   // Variable admittance stiffness subscription
@@ -578,7 +588,9 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
     adm_stiffness_sub_ = get_node()->create_subscription<std_msgs::msg::Float64MultiArray>(
       params_.variable_admittance_stiffness.topic, rclcpp::QoS(1), target_adm_stiffness_callback);
 
-    RCLCPP_INFO(get_node()->get_logger(), "Variable admittance stiffness enabled on topic: %s",
+    RCLCPP_INFO(
+      get_node()->get_logger(),
+      "Variable admittance stiffness enabled on topic: %s",
       params_.variable_admittance_stiffness.topic.c_str());
   }
 
@@ -639,7 +651,25 @@ CartesianAdmittanceController::on_configure(const rclcpp_lifecycle::State & /*pr
   return CallbackReturn::SUCCESS;
 }
 
-void CartesianAdmittanceController::setStiffnessAndDamping() {
+bool CartesianAdmittanceController::setStiffnessAndDamping() {
+  const auto nullspace_stiffness_gains =
+    expand_nullspace_gains(params_.nullspace.stiffness, model_.nv);
+  const auto nullspace_damping_gains = expand_nullspace_gains(params_.nullspace.damping, model_.nv);
+  const auto nullspace_max_tau_gains = expand_nullspace_gains(params_.nullspace.max_tau, model_.nv);
+  if (!nullspace_stiffness_gains || !nullspace_damping_gains || !nullspace_max_tau_gains) {
+    RCLCPP_ERROR_THROTTLE(
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
+      "Each nullspace parameter must hold either a single value or one value per degree of "
+      "freedom (%d), but stiffness has %zu, damping has %zu and max_tau has %zu.",
+      model_.nv,
+      params_.nullspace.stiffness.size(),
+      params_.nullspace.damping.size(),
+      params_.nullspace.max_tau.size());
+    return false;
+  }
+
   if (use_topic_stiffness_) {
     stiffness = topic_stiffness_;
   } else {
@@ -653,15 +683,27 @@ void CartesianAdmittanceController::setStiffnessAndDamping() {
   const double max_k_rot = params_.variable_max_impedance_stiffness.rotational;
   for (int i = 0; i < 3; ++i) {
     if (stiffness(i, i) < 0.0 || stiffness(i, i) > max_k_trans) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Translational stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, stiffness(i, i), max_k_trans);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Translational stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        stiffness(i, i),
+        max_k_trans);
       stiffness(i, i) = std::clamp(stiffness(i, i), 0.0, max_k_trans);
     }
   }
   for (int i = 3; i < 6; ++i) {
     if (stiffness(i, i) < 0.0 || stiffness(i, i) > max_k_rot) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Rotational stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, stiffness(i, i), max_k_rot);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Rotational stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        stiffness(i, i),
+        max_k_rot);
       stiffness(i, i) = std::clamp(stiffness(i, i), 0.0, max_k_rot);
     }
   }
@@ -678,19 +720,12 @@ void CartesianAdmittanceController::setStiffnessAndDamping() {
 
   nullspace_stiffness.setZero();
   nullspace_damping.setZero();
+  nullspace_stiffness.diagonal() = *nullspace_stiffness_gains;
+  nullspace_damping.diagonal() =
+    resolve_nullspace_damping(*nullspace_damping_gains, *nullspace_stiffness_gains);
+  nullspace_max_tau = *nullspace_max_tau_gains;
 
-  auto weights = Eigen::VectorXd(model_.nv);
-  for (size_t i = 0; i < params_.joints.size(); ++i) {
-    weights[i] = params_.nullspace.weights.joints_map.at(params_.joints.at(i)).value;
-  }
-  nullspace_stiffness.diagonal() << params_.nullspace.stiffness * weights;
-  nullspace_damping.diagonal() << 2.0 * nullspace_stiffness.diagonal().cwiseSqrt();
-
-  if (params_.nullspace.damping >= 0.0) {
-    nullspace_damping.diagonal() = params_.nullspace.damping * weights;
-  } else {
-    nullspace_damping.diagonal() = 2.0 * nullspace_stiffness.diagonal().cwiseSqrt();
-  }
+  return true;
 }
 
 void CartesianAdmittanceController::setAdmittanceParameters() {
@@ -714,17 +749,27 @@ void CartesianAdmittanceController::setAdmittanceParameters() {
   const double max_ak_rot = params_.variable_max_admittance_stiffness.rotational;
   for (int i = 0; i < 3; ++i) {
     if (adm_stiffness_(i, i) < 0.0 || adm_stiffness_(i, i) > max_ak_trans) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
         "Admittance translational stiffness[%d]=%.1f out of [0, %.1f], clamping.",
-        i, adm_stiffness_(i, i), max_ak_trans);
+        i,
+        adm_stiffness_(i, i),
+        max_ak_trans);
       adm_stiffness_(i, i) = std::clamp(adm_stiffness_(i, i), 0.0, max_ak_trans);
     }
   }
   for (int i = 3; i < 6; ++i) {
     if (adm_stiffness_(i, i) < 0.0 || adm_stiffness_(i, i) > max_ak_rot) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
         "Admittance rotational stiffness[%d]=%.1f out of [0, %.1f], clamping.",
-        i, adm_stiffness_(i, i), max_ak_rot);
+        i,
+        adm_stiffness_(i, i),
+        max_ak_rot);
       adm_stiffness_(i, i) = std::clamp(adm_stiffness_(i, i), 0.0, max_ak_rot);
     }
   }
@@ -750,13 +795,10 @@ void CartesianAdmittanceController::updateCurrentState(bool initialize) {
     double dq_meas = state_interfaces_[num_joints + i].get_value();
 #endif
 
-    q_ref[i] = initialize
-      ? q_meas
-      : exponential_moving_average(q_ref[i], q_target[i], params_.filter.q_ref);
+    q_ref[i] =
+      initialize ? q_meas : exponential_moving_average(q_ref[i], q_target[i], params_.filter.q_ref);
 
-    q[i] = initialize
-      ? q_meas
-      : exponential_moving_average(q[i], q_meas, params_.filter.q);
+    q[i] = initialize ? q_meas : exponential_moving_average(q[i], q_meas, params_.filter.q);
 
     if (continous_joint_types.count(joint.shortname())) {
       q_pin[joint.idx_q()] = std::cos(q[i]);
@@ -765,9 +807,7 @@ void CartesianAdmittanceController::updateCurrentState(bool initialize) {
       q_pin[joint.idx_q()] = q[i];
     }
 
-    dq[i] = initialize
-      ? dq_meas
-      : exponential_moving_average(dq[i], dq_meas, params_.filter.dq);
+    dq[i] = initialize ? dq_meas : exponential_moving_average(dq[i], dq_meas, params_.filter.dq);
 
     q_target[i] = initialize ? q_meas : q_target[i];
   }
@@ -775,7 +815,6 @@ void CartesianAdmittanceController::updateCurrentState(bool initialize) {
 
 CallbackReturn
 CartesianAdmittanceController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
-
   // Update the current state with initial measurements (no EMA filtering)
   updateCurrentState(true);
 
@@ -847,34 +886,54 @@ void CartesianAdmittanceController::parse_target_stiffness_() {
   }
   const double max_k_trans = params_.variable_max_impedance_stiffness.translational;
   const double max_k_rot = params_.variable_max_impedance_stiffness.rotational;
-  std::array<double, 6> vals = {msg->data[0], msg->data[1], msg->data[2],
-                                msg->data[3], msg->data[4], msg->data[5]};
+  std::array<double, 6> vals = {
+    msg->data[0], msg->data[1], msg->data[2], msg->data[3], msg->data[4], msg->data[5]};
   for (int i = 0; i < 3; ++i) {
     if (vals[i] < 0.0 || vals[i] > max_k_trans) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic impedance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, vals[i], max_k_trans);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Topic impedance stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        vals[i],
+        max_k_trans);
       vals[i] = std::clamp(vals[i], 0.0, max_k_trans);
     }
   }
   for (int i = 3; i < 6; ++i) {
     if (vals[i] < 0.0 || vals[i] > max_k_rot) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic impedance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, vals[i], max_k_rot);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Topic impedance stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        vals[i],
+        max_k_rot);
       vals[i] = std::clamp(vals[i], 0.0, max_k_rot);
     }
   }
   topic_stiffness_.setZero();
   topic_stiffness_.diagonal() << vals[0], vals[1], vals[2], vals[3], vals[4], vals[5];
   use_topic_stiffness_ = true;
-  RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
+  RCLCPP_INFO_THROTTLE(
+    get_node()->get_logger(),
+    *get_node()->get_clock(),
+    100,
     "Variable impedance stiffness received: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
-    vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+    vals[0],
+    vals[1],
+    vals[2],
+    vals[3],
+    vals[4],
+    vals[5]);
 }
 
 void CartesianAdmittanceController::parse_ft_sensor_() {
   auto msg = *ft_sensor_buffer_.readFromRT();
-  ft_wrench_ << msg->wrench.force.x, msg->wrench.force.y, msg->wrench.force.z,
-    msg->wrench.torque.x, msg->wrench.torque.y, msg->wrench.torque.z;
+  ft_wrench_ << msg->wrench.force.x, msg->wrench.force.y, msg->wrench.force.z, msg->wrench.torque.x,
+    msg->wrench.torque.y, msg->wrench.torque.z;
 }
 
 void CartesianAdmittanceController::parse_target_adm_stiffness_() {
@@ -890,28 +949,48 @@ void CartesianAdmittanceController::parse_target_adm_stiffness_() {
   }
   const double max_ak_trans = params_.variable_max_admittance_stiffness.translational;
   const double max_ak_rot = params_.variable_max_admittance_stiffness.rotational;
-  std::array<double, 6> avals = {msg->data[0], msg->data[1], msg->data[2],
-                                 msg->data[3], msg->data[4], msg->data[5]};
+  std::array<double, 6> avals = {
+    msg->data[0], msg->data[1], msg->data[2], msg->data[3], msg->data[4], msg->data[5]};
   for (int i = 0; i < 3; ++i) {
     if (avals[i] < 0.0 || avals[i] > max_ak_trans) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic admittance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, avals[i], max_ak_trans);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Topic admittance stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        avals[i],
+        max_ak_trans);
       avals[i] = std::clamp(avals[i], 0.0, max_ak_trans);
     }
   }
   for (int i = 3; i < 6; ++i) {
     if (avals[i] < 0.0 || avals[i] > max_ak_rot) {
-      RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
-        "Topic admittance stiffness[%d]=%.1f out of [0, %.1f], clamping.", i, avals[i], max_ak_rot);
+      RCLCPP_WARN_THROTTLE(
+        get_node()->get_logger(),
+        *get_node()->get_clock(),
+        100,
+        "Topic admittance stiffness[%d]=%.1f out of [0, %.1f], clamping.",
+        i,
+        avals[i],
+        max_ak_rot);
       avals[i] = std::clamp(avals[i], 0.0, max_ak_rot);
     }
   }
   topic_adm_stiffness_.setZero();
   topic_adm_stiffness_.diagonal() << avals[0], avals[1], avals[2], avals[3], avals[4], avals[5];
   use_topic_adm_stiffness_ = true;
-  RCLCPP_INFO_THROTTLE(get_node()->get_logger(), *get_node()->get_clock(), 100,
+  RCLCPP_INFO_THROTTLE(
+    get_node()->get_logger(),
+    *get_node()->get_clock(),
+    100,
     "Variable admittance stiffness received: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]",
-    avals[0], avals[1], avals[2], avals[3], avals[4], avals[5]);
+    avals[0],
+    avals[1],
+    avals[2],
+    avals[3],
+    avals[4],
+    avals[5]);
 }
 
 void CartesianAdmittanceController::log_debug_info(const rclcpp::Time & time) {
@@ -939,13 +1018,19 @@ void CartesianAdmittanceController::log_debug_info(const rclcpp::Time & time) {
     RCLCPP_INFO_STREAM_THROTTLE(
       get_node()->get_logger(), *get_node()->get_clock(), 1000, "J: " << J);
     RCLCPP_INFO_STREAM_THROTTLE(
-      get_node()->get_logger(), *get_node()->get_clock(), 1000,
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
       "inner_SE3 pos: " << inner_SE3_.translation().transpose());
     RCLCPP_INFO_STREAM_THROTTLE(
-      get_node()->get_logger(), *get_node()->get_clock(), 1000,
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
       "inner_motion: " << inner_motion_.transpose());
     RCLCPP_INFO_STREAM_THROTTLE(
-      get_node()->get_logger(), *get_node()->get_clock(), 1000,
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
       "ft_wrench: " << ft_wrench_.transpose());
   }
 
@@ -979,13 +1064,19 @@ void CartesianAdmittanceController::log_debug_info(const rclcpp::Time & time) {
       1000,
       "nullspace_damping: " << nullspace_damping);
     RCLCPP_INFO_STREAM_THROTTLE(
-      get_node()->get_logger(), *get_node()->get_clock(), 1000,
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
       "adm_mass: " << adm_mass_.diagonal().transpose());
     RCLCPP_INFO_STREAM_THROTTLE(
-      get_node()->get_logger(), *get_node()->get_clock(), 1000,
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
       "adm_stiffness: " << adm_stiffness_.diagonal().transpose());
     RCLCPP_INFO_STREAM_THROTTLE(
-      get_node()->get_logger(), *get_node()->get_clock(), 1000,
+      get_node()->get_logger(),
+      *get_node()->get_clock(),
+      1000,
       "adm_damping: " << adm_damping_.diagonal().transpose());
   }
 
@@ -1067,7 +1158,9 @@ bool CartesianAdmittanceController::check_topic_publisher_count(const std::strin
       get_node()->get_logger(),
       *get_node()->get_clock(),
       5000,
-      "Failed to get publisher info for topic '%s': %s", topic_name.c_str(), e.what());
+      "Failed to get publisher info for topic '%s': %s",
+      topic_name.c_str(),
+      e.what());
     return true;  // Allow message through if check fails
   }
   size_t publisher_count = topic_info.size();

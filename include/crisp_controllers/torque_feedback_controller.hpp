@@ -132,6 +132,13 @@ private:
    */
   void publish_wrench_callback_();
 
+  /**
+   * @brief Expand the nullspace parameters into one gain per joint
+   * @return false if a nullspace parameter holds neither a single value nor one value per
+   * joint, in which case the previous values are kept
+   */
+  [[nodiscard]] bool setNullspaceGains();
+
   /// Names of controlled joints
   std::vector<std::string> joint_names_;
   /// Number of controlled joints
@@ -151,8 +158,12 @@ private:
   /// Initial joint positions recorded on activation (nullspace target)
   Eigen::VectorXd q_init_;
 
-  /// Nullspace weights (computed from parameters)
-  Eigen::VectorXd nullspace_weights_;
+  /// Nullspace stiffness per joint (expanded from parameters)
+  Eigen::VectorXd nullspace_stiffness_;
+  /// Nullspace damping per joint (expanded from parameters)
+  Eigen::VectorXd nullspace_damping_;
+  /// Maximum nullspace torque per joint (expanded from parameters)
+  Eigen::VectorXd nullspace_max_tau_;
 
   /// Friction parameters as Eigen vectors
   Eigen::VectorXd friction_fp1_;

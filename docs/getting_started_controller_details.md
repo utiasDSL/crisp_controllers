@@ -68,6 +68,23 @@ where:
 The nullspace position can be set with `robot.set_target_joint(...)` when using the Cartesian controller.
 It will publish a target joint position which is interpreted as the nullspace target.
 
+The `nullspace.stiffness`, `nullspace.damping` and `nullspace.max_tau` parameters fill the diagonals of
+\( \mathbf{K}_{p,\text{ns}} \) and \( \mathbf{K}_{d,\text{ns}} \) and the torque limit.
+Each of them takes either a single value, which is applied to every joint,
+or one value per joint so that each joint can be tuned individually:
+
+```yaml
+nullspace:
+    stiffness: [5.0, 4.0, 4.0, 3.0, 3.0, 3.0]
+    damping: [1.0, 0.8, 0.8, 0.75, 0.75, 0.75]
+    max_tau: [5.0]
+    projector_type: none
+```
+
+Any other number of values is rejected and the controller refuses to configure.
+A negative damping value asks for the critical damping \( 2\sqrt{k} \) of that same joint,
+so `damping: [-1.0]` derives all the derivative gains from the stiffnesses.
+
 
 ## Variable Stiffness
 
