@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.2](https://github.com/learnsyslab/crisp_controllers/compare/v2.4.1...v2.4.2) (2026-08-16)
+
+
+### Bug Fixes
+
+* Ensure CI runs on pull request events ([#70](https://github.com/learnsyslab/crisp_controllers/issues/70)) ([0279dc8](https://github.com/learnsyslab/crisp_controllers/commit/0279dc8f1196dab6a2b2cd5af853dd3d4dc3a969))
+
 ## [2.4.1](https://github.com/learnsyslab/crisp_controllers/compare/v2.4.0...v2.4.1) (2026-07-25)
 
 
