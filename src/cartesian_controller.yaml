@@ -12,6 +12,26 @@ cartesian_controller:
     default_value: ""
     description: "Name of the end-effector frame"
 
+  # Locked-joint configuration. Non-arm joints (spine/base/torso/other arm) are
+  # removed from the model via pinocchio buildReducedModel at their REAL current
+  # values (not 0), so the arm base frame matches reality on a raised spine /
+  # rotated base. Base/torso joints are read from joint_states_topic; the spine
+  # joint's true value is ALWAYS read from spine_service (since /joint_states may
+  # carry a joint_state_publisher default of 0 for it).
+  locked_joints:
+    joint_states_topic:
+      type: string
+      default_value: "/joint_states"
+      description: "Topic read once at configure for locked-joint positions (base/torso)."
+    spine_joint:
+      type: string
+      default_value: "franka_spine_vertical_joint"
+      description: "Name of the spine joint whose true value comes from spine_service."
+    spine_service:
+      type: string
+      default_value: "/franka_spine_node/get_position"
+      description: "franka_spine_msgs/srv/GetPosition service giving the true spine position, since /joint_states may carry a default 0 for it."
+
   use_operational_space:
     type: bool
     default_value: False

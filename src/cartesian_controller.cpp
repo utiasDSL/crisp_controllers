@@ -6,7 +6,9 @@
 #include <Eigen/src/Core/Matrix.h>  // NOLINT(build/include_order)
 #include <fmt/format.h>
 #include <controller_interface/controller_interface_base.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <rclcpp/logging.hpp>
+#include <rclcpp/executors/single_threaded_executor.hpp>
 
 #include <pinocchio/algorithm/aba.hpp>
 #include <pinocchio/algorithm/compute-all-terms.hpp>
@@ -20,6 +22,8 @@
 #include "pinocchio/algorithm/model.hpp"
 
 #include <std_msgs/msg/float64_multi_array.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
+#include <franka_spine_msgs/srv/get_position.hpp>
 
 #include <crisp_controllers/cartesian_controller.hpp>
 #include <crisp_controllers/pch.hpp>
@@ -98,7 +102,11 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
 
   /*target_pose_ = pinocchio::SE3(target_orientation_.toRotationMatrix(),
    * target_position_);*/
-  end_effector_pose = data_.oMf[end_effector_frame_id];
+  // Express the EE pose relative to base_frame (matches TF/streamed targets),
+  // falling back to the model world root if base_frame is unset. See on_configure.
+  end_effector_pose = (base_frame_id_ >= 0)
+    ? data_.oMf[base_frame_id_].inverse() * data_.oMf[end_effector_frame_id]
+    : data_.oMf[end_effector_frame_id];
 
   if (!end_effector_pose.translation().allFinite() ||
       !end_effector_pose.rotation().allFinite()) {
@@ -304,7 +312,115 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
     }
   }
 
+  // -------------------------------------------------------------------------
+  // Populate the LOCKED-joint configuration with the ROBOT'S REAL values instead
+  // of zeros. If left at zero, pinocchio builds the reduced model as if the spine
+  // is fully lowered and the base/torso joints are at 0 -- so the arm's base frame
+  // (and thus every EE pose / Jacobian) is offset and rotated from reality. On the
+  // Mobile FR3 Duo the spine is raised ~0.44 m and the base steer joints are
+  // non-zero (they set each arm's mounting orientation), so locking them at 0
+  // produces a wrong model -> frame-wrong commands and reflexes.
+  //
+  // Sources (verified on robot-0009-thor; see docs/SPINE_JOINT_STATE_BUG.md):
+  //   * base / torso joints: /joint_states (correct there).
+  //   * spine (franka_spine_vertical_joint): NOT correct in /joint_states (a
+  //     joint_state_publisher default of 0). Read the true value from the spine
+  //     driver service /franka_spine_node/get_position.
+  std::map<std::string, double> locked_values;
+
+  // A DEDICATED node + executor for the one-shot reads below. We must NOT spin
+  // get_node(): the controller's node is already owned by the controller_manager
+  // executor, so spinning it here throws "Node has already been added to an
+  // executor" (fails on_configure). A separate node on the same ROS graph reads
+  // joint_states + the spine service without touching the controller node.
+  auto io_node = std::make_shared<rclcpp::Node>(
+    std::string(get_node()->get_name()) + "_locked_cfg_io");
+  rclcpp::executors::SingleThreadedExecutor io_exec;
+  io_exec.add_node(io_node);
+
+  // 1) one-shot read of joint_states for base/torso joint positions.
+  {
+    auto js = std::make_shared<sensor_msgs::msg::JointState>();
+    bool got = false;
+    auto sub = io_node->create_subscription<sensor_msgs::msg::JointState>(
+      params_.locked_joints.joint_states_topic, rclcpp::QoS(10),
+      [&js, &got](const sensor_msgs::msg::JointState::SharedPtr msg) {
+        *js = *msg;
+        got = true;
+      });
+    rclcpp::Time t0 = io_node->now();
+    while (!got && (io_node->now() - t0).seconds() < 3.0) {
+      io_exec.spin_some();
+      rclcpp::sleep_for(std::chrono::milliseconds(20));
+    }
+    if (got) {
+      for (size_t i = 0; i < js->name.size() && i < js->position.size(); ++i) {
+        locked_values[js->name[i]] = js->position[i];
+      }
+      RCLCPP_INFO(get_node()->get_logger(),
+        "Read %zu joint positions from joint_states for locked-joint config.",
+        js->name.size());
+    } else {
+      RCLCPP_WARN(get_node()->get_logger(),
+        "No joint_states within 3s; locked base/torso joints default to 0.");
+    }
+  }
+
+  // 2) authoritative spine position from the spine driver service (overrides the
+  //    bogus 0 that joint_states carries for the spine). ALWAYS read.
+  {
+    auto spine_cli =
+      io_node->create_client<franka_spine_msgs::srv::GetPosition>(
+        params_.locked_joints.spine_service);
+    if (spine_cli->wait_for_service(std::chrono::seconds(2))) {
+      auto req = std::make_shared<franka_spine_msgs::srv::GetPosition::Request>();
+      auto fut = spine_cli->async_send_request(req);
+      if (io_exec.spin_until_future_complete(fut, std::chrono::seconds(3)) ==
+          rclcpp::FutureReturnCode::SUCCESS) {
+        auto resp = fut.get();
+        if (resp->success) {
+          locked_values[params_.locked_joints.spine_joint] = resp->position;
+          RCLCPP_INFO(get_node()->get_logger(),
+            "Spine position from driver service: %.4f m (overrides joint_states).",
+            resp->position);
+        } else {
+          RCLCPP_WARN(get_node()->get_logger(),
+            "Spine get_position returned success=false; spine stays at prior value.");
+        }
+      } else {
+        RCLCPP_WARN(get_node()->get_logger(),
+          "Spine get_position call timed out; spine stays at prior value.");
+      }
+    } else {
+      RCLCPP_WARN(get_node()->get_logger(),
+        "Spine service '%s' unavailable; spine locked-value may be wrong.",
+        params_.locked_joints.spine_service.c_str());
+    }
+  }
+  io_exec.remove_node(io_node);
+
+  // 3) build q_locked: for each joint being locked, if we have a real value for it,
+  //    write it at that joint's configuration index (idx_q). Continuous joints
+  //    (idx_q spans 2 for cos/sin) are handled explicitly.
   Eigen::VectorXd q_locked = Eigen::VectorXd::Zero(raw_model_.nq);
+  for (pinocchio::JointIndex jid : list_of_joints_to_lock_by_id) {
+    const std::string & jname = raw_model_.names[jid];
+    auto it = locked_values.find(jname);
+    if (it == locked_values.end()) {
+      continue;  // no real value -> leave at 0
+    }
+    const auto & joint = raw_model_.joints[jid];
+    int iq = joint.idx_q();
+    if (continous_joint_types.count(joint.shortname())) {
+      q_locked[iq] = std::cos(it->second);
+      q_locked[iq + 1] = std::sin(it->second);
+    } else {
+      q_locked[iq] = it->second;
+    }
+    RCLCPP_INFO_STREAM(get_node()->get_logger(),
+      "Locked joint '" << jname << "' set to real value " << it->second
+      << " (was 0).");
+  }
   model_ = pinocchio::buildReducedModel(raw_model_, list_of_joints_to_lock_by_id, q_locked);
   data_ = pinocchio::Data(model_);
 
@@ -334,6 +450,19 @@ CartesianController::on_configure(const rclcpp_lifecycle::State & /*previous_sta
     return CallbackReturn::ERROR;
   }
   end_effector_frame_id = model_.getFrameId(params_.end_effector_frame);
+  // Resolve base_frame so the reported/controlled EE pose can be expressed
+  // relative to it (matches TF), rather than in the pinocchio model world root.
+  if (!params_.base_frame.empty() && model_.existFrame(params_.base_frame)) {
+    base_frame_id_ = static_cast<int>(model_.getFrameId(params_.base_frame));
+    RCLCPP_INFO_STREAM(get_node()->get_logger(),
+      "EE pose will be expressed relative to base_frame '" << params_.base_frame
+      << "' (id " << base_frame_id_ << ").");
+  } else {
+    base_frame_id_ = -1;
+    RCLCPP_WARN_STREAM(get_node()->get_logger(),
+      "base_frame '" << params_.base_frame << "' not set/found; EE pose stays in the "
+      "model world root (may not match TF).");
+  }
   q = Eigen::VectorXd::Zero(model_.nv);
   q_pin = Eigen::VectorXd::Zero(model_.nq);
   dq = Eigen::VectorXd::Zero(model_.nv);
@@ -606,7 +735,10 @@ CartesianController::on_activate(const rclcpp_lifecycle::State & /*previous_stat
   pinocchio::forwardKinematics(model_, data_, q_pin, dq);
   pinocchio::updateFramePlacements(model_, data_);
 
-  end_effector_pose = data_.oMf[end_effector_frame_id];
+  // Seed relative to base_frame (matches TF), see on_configure / update().
+  end_effector_pose = (base_frame_id_ >= 0)
+    ? data_.oMf[base_frame_id_].inverse() * data_.oMf[end_effector_frame_id]
+    : data_.oMf[end_effector_frame_id];
 
   target_position_ = end_effector_pose.translation();
   target_orientation_ = Eigen::Quaterniond(end_effector_pose.rotation());

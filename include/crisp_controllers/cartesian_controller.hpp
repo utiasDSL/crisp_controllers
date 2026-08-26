@@ -180,6 +180,12 @@ private:
   /** @brief Frame ID of the end effector in the robot model */
   int end_effector_frame_id;
 
+  /** @brief Frame ID of the base frame (base_frame param) in the reduced model,
+   *  or -1 if base_frame is unset/not found. When >=0, the reported/controlled EE
+   *  pose is expressed RELATIVE to this frame (oMf[base]^-1 * oMf[ee]) so it matches
+   *  base_frame / TF, instead of the pinocchio model world root. */
+  int base_frame_id_ = -1;
+
   /** @brief Pinocchio robot model */
   pinocchio::Model model_;
   /** @brief Pinocchio data for computations */

@@ -61,6 +61,8 @@ find_package(Eigen3 REQUIRED)
 find_package(pinocchio REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(franka_spine_msgs REQUIRED)
 find_package(generate_parameter_library REQUIRED)
 
 generate_parameter_library(
@@ -135,6 +137,8 @@ target_link_libraries(${PROJECT_NAME}
     pinocchio::pinocchio
     realtime_tools::realtime_tools
     ${std_msgs_TARGETS}
+    ${sensor_msgs_TARGETS}
+    ${franka_spine_msgs_TARGETS}
 )
 
 # ros2_control did not export namespaced targets until after humble
