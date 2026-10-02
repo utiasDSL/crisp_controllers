@@ -228,9 +228,7 @@ CartesianController::update(const rclcpp::Time & time, const rclcpp::Duration & 
 
   tau_previous = tau_d;
 
-  params_listener_->refresh_dynamic_parameters();
-  if (params_listener_->is_old(params_)) {
-    params_ = params_listener_->get_params();
+  if (params_listener_->try_update_params(params_)) {
     setStiffnessAndDamping();
   }
 
