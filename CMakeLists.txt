@@ -184,6 +184,11 @@ ament_export_dependencies(
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 
 if(BUILD_TESTING)
+  add_test(NAME test_public_headers
+    COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+      -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/check_public_headers.cmake
+  )
+
   find_package(ament_cmake_gtest REQUIRED)
 
   ament_add_gtest(test_torque_rate_saturation

@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstddef>
 
-#include <Eigen/src/Core/Matrix.h>  // NOLINT(build/include_order)
+#include <Eigen/Core>
 #include <fmt/format.h>
 #include <controller_interface/controller_interface_base.hpp>
 #include <rclcpp/logging.hpp>
